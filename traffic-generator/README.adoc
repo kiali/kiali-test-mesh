@@ -1,0 +1,15 @@
+= Kiali Test Mesh
+:toc: macro
+:toc-title:
+
+toc::[]
+
+= Introduction
+
+Kiali Traffic Generator is a component which generate the traffic for visualization of Kiali Test Meshes on Kiali Service Graph.
+
+It uses https://github.com/tsenart/vegeta[Vegeta], a lightweight golang traffic generator.
+
+== Deploying in OpenShift
+
+ansible-playbook ansible/install.yml

@@ -1,0 +1,80 @@
+- name: Instal Kiali Test Mesh
+  hosts: localhost
+  tasks:
+  - name: Delete Kiali Test Meshes Namespaces
+    command: "oc delete project {{item}}"
+    ignore_errors: true
+    with_items:
+      - kiali-test-depth
+      - kiali-test-breath
+      - kiali-test-circle
+      - kiali-test-circle-callback
+      - kiali-test-hourglass
+      - kiali-test-box
+      - kiali-test-depth-sink
+      - kiali-test-breadth-sink
+
+  - name: Wait for the previous command to complete
+    pause:
+      seconds: 120
+
+  - name: Create Kiali Test Meshes Projects
+    shell: "oc create namespace {{item}}"
+    ignore_errors: true
+    with_items:
+      - kiali-test-depth
+      - kiali-test-breath
+      - kiali-test-circle
+      - kiali-test-circle-callback
+      - kiali-test-hourglass
+      - kiali-test-box
+      - kiali-test-depth-sink
+      - kiali-test-breadth-sink
+
+
+  - name: Grant Permissions to each Kiali Test Meshes Projects
+    shell: "oc adm policy add-scc-to-user privileged -z default -n {{item}}"
+    with_items:
+      - kiali-test-depth
+      - kiali-test-breath
+      - kiali-test-circle
+      - kiali-test-circle-callback
+      - kiali-test-hourglass
+      - kiali-test-box
+      - kiali-test-depth-sink
+      - kiali-test-breadth-sink
+
+  - name: Deploy Kiali Test Meshes
+    shell: "oc process -f https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/deploy/openshift/test-app-template.yaml -p SERVICE_NAME={{ item[1] }} -p IMAGE_NAME='kiali/kiali-test-service' -p IMAGE_VERSION=latest | istioctl kube-inject -f - | oc  apply -n {{ item[0] }} -f -"
+    with_nested:
+      - ['kiali-test-depth', 'kiali-test-breath', 'kiali-test-circle', 'kiali-test-circle-callback', 'kiali-test-hourglass', 'kiali-test-box', 'kiali-test-depth-sink', 'kiali-test-breadth-sink']
+      - ['a', 'b', 'c', 'd', 'e', 'f']
+
+  - name: Wait for the previous command to complete
+    pause:
+      seconds: 60
+
+  - name: Deploy Traffic Generator ConfigMaps
+    shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator-configmap.yaml | DURATION='0s' ROUTE=\"{{item.route}}\" RATE='20'  envsubst | oc apply -n {{ item.namespace }} -f -"
+    loop:
+      - {namespace: 'kiali-test-depth', route: "http://a/route?path=a,b,c,d,e,f"}
+      - {namespace: 'kiali-test-breath', route: "http://a/route?path=a;http://a/route?path=b;http://a/route?path=c;http://a/route?path=d;http://a/route?path=e;http://a/route?path=f"}
+      - {namespace: 'kiali-test-circle', route: "http://a/route?path=a,b,c,d,e,f,a"}
+      - {namespace: 'kiali-test-circle-callback', route: "http://a/route?path=a,b,c,d,e,f,a;http://a/route?path=a,f,e,d,c,b,a"}
+      - {namespace: 'kiali-test-hourglass', route: "http://a/route?path=a,b,c,d,e;http://a/route?path=a,c,e"}
+      - {namespace: 'kiali-test-box', route: "http://a/route?path=a,b,d,c,a,d,c,b"}
+      - {namespace: 'kiali-test-depth-sink', route: "http://a/route?path=a,f;http://a/route?path=a,b,f;http://a/route?path=a,b,c,f;http://a/route?path=a,b,c,d,f;http://a/route?path=a,b,c,d,e,f"}
+      - {namespace: 'kiali-test-breadth-sink', route: "http://a/route?path=a,f;http://a/route?path=b,f;http://a/route?path=c,f;http://a/route?path=d,f;http://a/route?path=e,f"}
+
+
+  - name: Deploy Trafic Generator
+    shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator.yaml | IMAGE=kiali/traffic-generator envsubst | oc apply -n {{item}} -f -"
+    with_items:
+      - kiali-test-depth
+      - kiali-test-breath
+      - kiali-test-circle
+      - kiali-test-circle-callback
+      - kiali-test-hourglass
+      - kiali-test-box
+      - kiali-test-depth-sink
+      - kiali-test-breadth-sink
