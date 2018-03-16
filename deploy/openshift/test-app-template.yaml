@@ -1,0 +1,50 @@
+id: kiali-test-service
+kind: Template
+apiVersion: v1
+name: Kiali Test Service Template
+description: Deploys an example service replicaset with a service
+metadata:
+  name: kiali-test-service
+  labels:
+    kiali: test-service
+parameters:
+- name: SERVICE_NAME
+  description: The name to use for the service
+  required: true
+objects:
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${SERVICE_NAME}
+    labels:
+      kiali: test-service
+      kiali: test-service-${SERVICE_NAME}
+      app: ${SERVICE_NAME}
+  spec:  
+    selector:
+      kiali: test-service-${SERVICE_NAME}
+    ports:
+    - name: http
+      port: 80
+      targetPort: 8888
+- kind: ReplicaSet
+  apiVersion: extensions/v1beta1
+  metadata:
+    name: kiali-test-service-${SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        kiali: test-service-${SERVICE_NAME}
+    template:
+      metadata:
+        labels:
+          kiali: test-service-${SERVICE_NAME}
+          app: ${SERVICE_NAME}
+      spec:
+        containers:
+          - name: kiali-test-service-${SERVICE_NAME}
+            image: kiali/kiali-test-service:latest
+            imagePullPolicy: IfNotPresent
+            ports:
+            - containerPort: 8888 
