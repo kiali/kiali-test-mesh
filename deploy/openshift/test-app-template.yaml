@@ -11,6 +11,12 @@ parameters:
 - name: SERVICE_NAME
   description: The name to use for the service
   required: true
+- name: IMAGE_NAME
+  description: The name to use for the image
+  default: kiali/kiali-test-service
+- name: IMAGE_VERSION
+  description: The name to use for the image version
+  default: latest
 objects:
 - kind: Service
   apiVersion: v1
@@ -20,7 +26,7 @@ objects:
       kiali: test-service
       kiali: test-service-${SERVICE_NAME}
       app: ${SERVICE_NAME}
-  spec:  
+  spec:
     selector:
       kiali: test-service-${SERVICE_NAME}
     ports:
@@ -44,7 +50,7 @@ objects:
       spec:
         containers:
           - name: kiali-test-service-${SERVICE_NAME}
-            image: kiali/kiali-test-service:latest
+            image: ${IMAGE_NAME}:${IMAGE_VERSION}
             imagePullPolicy: IfNotPresent
             ports:
-            - containerPort: 8888 
+            - containerPort: 8888
