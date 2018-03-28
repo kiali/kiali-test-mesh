@@ -13,10 +13,10 @@ parameters:
   required: true
 - name: IMAGE_NAME
   description: The name to use for the image
-  default: kiali/kiali-test-service
+  value: kiali/kiali-test-service
 - name: IMAGE_VERSION
   description: The name to use for the image version
-  default: latest
+  value: latest
 objects:
 - kind: Service
   apiVersion: v1
