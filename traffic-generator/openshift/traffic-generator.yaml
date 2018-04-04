@@ -4,6 +4,7 @@ metadata:
   name: kiali-traffic-generator
   labels:
     app: kiali-traffic-generator
+    kiali-test: traffic-generator
 spec:
   replicas: 1
   strategy:
@@ -12,11 +13,12 @@ spec:
     metadata:
       labels:
         app: kiali-traffic-generator
+        kiali-test: traffic-generator
     spec:
       containers:
-      - image: kiali/traffic-generator:latest
+      - image: kiali/kiali-test-mesh-traffic-generator:latest
         name: kiali-traffic-generator
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: DURATION
           valueFrom:

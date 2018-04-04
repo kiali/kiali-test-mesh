@@ -1,40 +1,16 @@
-NAME ?= "KialiTestService"
-BINARY_NAME ?=kiali-test-service
-# Identifies the current build.
-# These will be embedded in the app and displayed when it starts.
-VERSION ?= 0.0.1.Final-SNAPSHOT
-COMMIT_HASH ?= $(shell git rev-parse HEAD)
+all:	build-service build-traffic-generator
 
-# Environment variables set when running the Go compiler.
-GO_BUILD_ENVVARS = \
-        GOOS=linux \
-        GOARCH=amd64 \
-        CGO_ENABLED=0 \
+build-service:
+	@echo About to build the Kiali Test Service
+	make -C test-service clean build docker-build 
 
-DOCKER_NAME ?= kiali/kiali-test-service
-DOCKER_TAG ?= latest
-
-all: build
-
-build:
-	@echo Building...
-	${GO_BUILD_ENVVARS} go build \
-		-o ${GOPATH}/bin/${BINARY_NAME} -ldflags "-X main.name=${NAME} -X main.version=${VERSION} -X main.commitHash=${COMMIT_HASH}"
-
-docker-build:
-	@echo Building the docker image : ${DOCKER_NAME}:${DOCKER_TAG}
-	@mkdir -p _output/docker
-	@cp ${GOPATH}/bin/kiali-test-service _output/docker
-	@cp deploy/docker/* _output/docker
-	@docker build -t ${DOCKER_NAME}:${DOCKER_TAG} _output/docker
+build-traffic-generator:
+	@echo About to build the Kiali Test Traffic Generator
+	make -C traffic-generator clean docker-build
 
 openshift-deploy:
-	@echo Deploying test examples to OpenShift namespace
-	@./hack/deploy-example.sh
-
-clean:
-	@echo "Cleaning any build artifacts"
-	@echo "  - Removing the _output directory"
-	@rm -rf _output
-	@echo "  - Removing the binary from \$$GOPATH/bin"
-	@rm -f ${GOPATH}/bin/kiali-test-service
+	@echo About to deploy a few sample projects to OpenShift
+	./hack/openshift-deploy.sh -n kiali-test-depth -c hack/test-configs/test-depth.yaml
+	./hack/openshift-deploy.sh -n kiali-test-breadth -c hack/test-configs/test-breadth.yaml
+	./hack/openshift-deploy.sh -n kiali-test-hourglass -c hack/test-configs/test-hourglass.yaml
+	./hack/openshift-deploy.sh -n kiali-test-circle-callback -c hack/test-configs/test-circle-callback.yaml

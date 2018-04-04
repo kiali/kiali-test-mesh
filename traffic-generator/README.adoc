@@ -10,6 +10,14 @@ Kiali Traffic Generator is a component which generate the traffic for visualizat
 
 It uses https://github.com/tsenart/vegeta[Vegeta], a lightweight golang traffic generator.
 
-== Deploying in OpenShift
+= Building the Docker image
 
-ansible-playbook ansible/install.yml
+[NOTE]
+In order to build the 'Kiali Test Mesh Traffic Generator' you will need to have make and docker installed and available on your $PATH.
+
+To build the docker image run the following commands:
+
+[source,shell]
+----
+make docker-build
+----

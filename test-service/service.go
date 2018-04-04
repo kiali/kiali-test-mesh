@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/kiali/kiali-test-mesh/web"
+	"github.com/kiali/kiali-test-mesh/test-service/web"
 )
 
 // vars to be set during the build.
