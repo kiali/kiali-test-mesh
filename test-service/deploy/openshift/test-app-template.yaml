@@ -6,7 +6,7 @@ description: Deploys an example service replicaset with a service
 metadata:
   name: kiali-test-service
   labels:
-    kiali: test-service
+    kiali-test: test-service
 parameters:
 - name: SERVICE_NAME
   description: The name to use for the service
@@ -23,12 +23,12 @@ objects:
   metadata:
     name: ${SERVICE_NAME}
     labels:
-      kiali: test-service
-      kiali: test-service-${SERVICE_NAME}
+      kiali-test: test-service
+      kiali-test: test-service-${SERVICE_NAME}
       app: ${SERVICE_NAME}
   spec:
     selector:
-      kiali: test-service-${SERVICE_NAME}
+      kiali-test: test-service-${SERVICE_NAME}
     ports:
     - name: http
       port: 80
@@ -41,11 +41,11 @@ objects:
     replicas: 1
     selector:
       matchLabels:
-        kiali: test-service-${SERVICE_NAME}
+        kiali-test: test-service-${SERVICE_NAME}
     template:
       metadata:
         labels:
-          kiali: test-service-${SERVICE_NAME}
+          kiali-test: test-service-${SERVICE_NAME}
           app: ${SERVICE_NAME}
       spec:
         containers:

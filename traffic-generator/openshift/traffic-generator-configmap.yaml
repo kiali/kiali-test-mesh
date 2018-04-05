@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traffic-generator-config
+  labels:
+    kiali-test: traffic-generator-config
+data:
+  duration: "${DURATION}"
+  route: ${ROUTE}
+  rate: "${RATE}"

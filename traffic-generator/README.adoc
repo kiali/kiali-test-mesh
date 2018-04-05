@@ -1,0 +1,23 @@
+= Kiali Test Mesh
+:toc: macro
+:toc-title:
+
+toc::[]
+
+= Introduction
+
+Kiali Traffic Generator is a component which generate the traffic for visualization of Kiali Test Meshes on Kiali Service Graph.
+
+It uses https://github.com/tsenart/vegeta[Vegeta], a lightweight golang traffic generator.
+
+= Building the Docker image
+
+[NOTE]
+In order to build the 'Kiali Test Mesh Traffic Generator' you will need to have make and docker installed and available on your $PATH.
+
+To build the docker image run the following commands:
+
+[source,shell]
+----
+make docker-build
+----

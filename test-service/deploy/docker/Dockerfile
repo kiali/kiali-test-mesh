@@ -1,6 +1,6 @@
 FROM centos:centos7
   
-LABEL maintainer="TODO <TODO-dev@lists.jboss.org>"
+LABEL maintainer="Kiali <kiali-dev@googlegroups.com>"
 
 COPY kiali-test-service /opt/kiali/
 
