@@ -44,7 +44,14 @@ function deploy_services {
 
   # deploy services
   for i in a b c d e f; do
-   oc process -f ${template} -p SERVICE_NAME=${i}  | istioctl kube-inject -f - | oc create -n ${namespace} -f -
+   oc process -f ${template} -p SERVICE_NAME=${i} -p SERVICE_VERSION=v1 | istioctl kube-inject -f - | oc create -n ${namespace} -f -
+  done
+
+  # Deploy other versions for some of the services
+  for i in b d f; do
+    for n in $(seq 2 $(( ( RANDOM % 5 )  + 2 ))); do
+      oc process -f ${template} -p SERVICE_NAME=${i} -p SERVICE_VERSION=v${n} | istioctl kube-inject -f - | oc create -n ${namespace} -f -
+    done
   done
 }
 
