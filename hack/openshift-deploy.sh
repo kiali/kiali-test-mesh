@@ -32,14 +32,14 @@ function setup {
 
   # get rid of existing deployments
   oc delete all,configmap -n ${namespace} --selector=kiali-test
-  
+
   # grant the namespace the permissions required for envoy to run properly
   oc adm policy add-scc-to-user privileged -z default -n ${namespace}
 }
 
 function deploy_services {
   namespace=${1}
-  
+
   template=${SOURCE_ROOT}/test-service/deploy/openshift/test-app-template.yaml
 
   # deploy services
@@ -50,9 +50,9 @@ function deploy_services {
 
 function deploy_traffic_generator {
   namespace=${1}
-  
+
   template=${SOURCE_ROOT}/traffic-generator/openshift/traffic-generator.yaml
- 
+
   oc create -f ${template} -n ${namespace}
 }
 

@@ -2,7 +2,7 @@ all:	build-service build-traffic-generator
 
 build-service:
 	@echo About to build the Kiali Test Service
-	make -C test-service clean build docker-build 
+	make -C test-service clean build docker-build
 
 build-traffic-generator:
 	@echo About to build the Kiali Test Traffic Generator
