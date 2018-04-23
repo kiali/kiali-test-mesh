@@ -1,0 +1,29 @@
+sudo: required
+services:
+- docker
+language: go
+go:
+- 1.9.4
+notifications:
+  irc:
+    channels:
+    - chat.freenode.net#BOGUS_DOES_NOT_EXIST
+before_script:
+- GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
+env:
+
+  global:
+  - secure: RNaZI7YDnfTVICyHGm0KE+rRMNFZ0N4HEU4afpxzshuUY6CP5+7xcu6sXhdxSnsxHgEgIeaO02Lrk6qpBaCABLH9Xm9wTv6LYLZJIHHgw9eMV3Eqrl1TQCAdHN83eUwNNK/l9hvvg9xzlK61Gk/1Deeg6RNqAbU2TRp7rIS/+3FvnUETQQlK6MZHzBREWT8AjNLJYH0ub6R7xSb3OANRUlI+NeHZH47N/U3ifPOa7PqQ6EPdMC7LIiNVJhP+7OT64Wvn/29SeM7OSeVFENx8CFmVTgw8zQiNvM9TV7osGqlIo+/6PG/qdRrwbSObFll6F5pF4tOnP/O08eKwlbNwD6AlsBCjtgi8Kc1K7F0nL+dANi1ITgyPBu4DMqmpn5qiSg8SspIVhgTgCsm3F+8xCQsiDtaIe6Y2JtN37Hco9NddBSCCUvyVl6NiNcLDeZK9LgDuAD/DvC7bMb8IInUYXYqbi9M2zjTGtjdXt9kvEpil7/XNso0I8F8nwYYKdcSopmQyri0pIA1p1uZtdCatJQJnuIVQpeGPj2cr0nYuyy2Y8HDwRYpOfVEr/nsZlWH98kb8l35auRJ4M2qArG2fySH0mLSXo+17Iq0sKo8VX7wHn08nCUjldidDtF6Lif+YkTnBT1P3XYeAP3sF/pxmVHqJNKCX9zMyWT2IpI+Psrk=
+  - secure: RaJ9AUmr7psqtJZnC2LjQgrCGO4k5xL6SSwk6xqNxB/w/LpjtYv/481hvkmf78DUBk45IE6K4d6aUKWKhq3LhKdtyWe8I2q7GuQzv5D+F523lgaOhp6dVf5hScfNShNkgUOPrYUqAzpbr3sLBA3h4e6Q658y1ELGOH8QXBmvCHjaHEqD3bAJMqkrvMNr5yY2KlmglJTdSYkHYapjvnPzwqYNeT3Psala7r3exIuRYvEWo7NA7fzaUt46HXPTgDX10qqmzTKkBqYq0mA95nbmYbp8aOtOOzIY7ZjJ0Vx3NxVQinEFBcah8yODQi6O/pq3kw4P+83AtYaIGZSS9+QlHyZcFPmPzBLOapZzI4SOnhopPcBhh74ZjCPjtSsHtHxLUJWxKuQlqyG/Mox0kTKM+yGrrZdlMl3c9P8KhmRXIYV4RVr1TbS0T/uYN6kDEXDJpnFG8eNsSo7scSFjaRyFSVHcwHRK+fPNEIL22K+baNUKqzZAWI4PDpxW1b3oj8eI3RrnWdQhXGvqiJdF6hNKckDxg/m8yQFnp0Ve5asIwUUrEVWVOVGajdlOQPOmcdNdgrPw4VBOgNdcrAoAXMusqQGuqtK3wYrdIRbwWT5an+6ZhqozGqroO6KiNTORsUAg+PfzsSXE9LvD0EeI2ngb5nQT0evrosllil7qx0sImVg=
+
+script:
+  - export GOPATH=$HOME/kiali-test-mesh; mkdir -p $GOPATH; cd $GOPATH; mkdir -p src/github.com/kiali;
+  cd src/github/kiali; git clone https://github.com/kiali/kiali-test-mesh; cd kiali-test-mesh;
+  make build-service
+
+  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+  - docker push kiali/kiali-test-service
+
+branches:
+  only:
+  - master - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
