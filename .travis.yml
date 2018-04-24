@@ -25,4 +25,5 @@ script:
 
 branches:
   only:
-  - master - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
+  - master
+  - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
