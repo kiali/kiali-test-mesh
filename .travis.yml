@@ -17,10 +17,11 @@ env:
   - secure: RaJ9AUmr7psqtJZnC2LjQgrCGO4k5xL6SSwk6xqNxB/w/LpjtYv/481hvkmf78DUBk45IE6K4d6aUKWKhq3LhKdtyWe8I2q7GuQzv5D+F523lgaOhp6dVf5hScfNShNkgUOPrYUqAzpbr3sLBA3h4e6Q658y1ELGOH8QXBmvCHjaHEqD3bAJMqkrvMNr5yY2KlmglJTdSYkHYapjvnPzwqYNeT3Psala7r3exIuRYvEWo7NA7fzaUt46HXPTgDX10qqmzTKkBqYq0mA95nbmYbp8aOtOOzIY7ZjJ0Vx3NxVQinEFBcah8yODQi6O/pq3kw4P+83AtYaIGZSS9+QlHyZcFPmPzBLOapZzI4SOnhopPcBhh74ZjCPjtSsHtHxLUJWxKuQlqyG/Mox0kTKM+yGrrZdlMl3c9P8KhmRXIYV4RVr1TbS0T/uYN6kDEXDJpnFG8eNsSo7scSFjaRyFSVHcwHRK+fPNEIL22K+baNUKqzZAWI4PDpxW1b3oj8eI3RrnWdQhXGvqiJdF6hNKckDxg/m8yQFnp0Ve5asIwUUrEVWVOVGajdlOQPOmcdNdgrPw4VBOgNdcrAoAXMusqQGuqtK3wYrdIRbwWT5an+6ZhqozGqroO6KiNTORsUAg+PfzsSXE9LvD0EeI2ngb5nQT0evrosllil7qx0sImVg=
 
 script:
-  - export GOPATH=$HOME/kiali-test-mesh; mkdir -p $GOPATH; cd $GOPATH; mkdir -p src/github.com/kiali; cd src/github.com/kiali git clone https://github.com/kiali/kiali-test-mesh; cd kiali-test-mesh; make build-service
+  - export GOPATH=$HOME/kiali-test-mesh; mkdir -p $GOPATH; cd $GOPATH; mkdir -p src/github.com/kiali; cd src/github.com/kiali; git clone https://github.com/kiali/kiali-test-mesh; cd kiali-test-mesh; make all
 
   - docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
   - docker push kiali/kiali-test-service
+  - docker push kiali/kiali-test-mesh-traffic-generator
 
 branches:
   only:
