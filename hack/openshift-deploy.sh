@@ -2,6 +2,10 @@
 
 set -x
 
+# Settings for creating many versions to each service
+RANDOM_VERSIONS=${RANDOM_VERSIONS:-false}
+MAX_NUMBER_OF_VERSIONS=${MAX_NUMBER_OF_VERSIONS:-5}
+
 # Get the directory of this file
 SOURCE_ROOT=$(dirname "${BASH_SOURCE}")/..
 
@@ -47,9 +51,16 @@ function deploy_services {
    oc process -f ${template} -p SERVICE_NAME=${i} -p SERVICE_VERSION=v1 | istioctl kube-inject -f - | oc create -n ${namespace} -f -
   done
 
+  if [[ ${RANDOM_VERSIONS} != 'false' ]]; then
+    let number_of_versions=$(( ( RANDOM % $MAX_NUMBER_OF_VERSIONS ) + 2 ))
+    echo $number_of_versions
+  else
+    let number_of_versions=$MAX_NUMBER_OF_VERSIONS
+  fi
+
   # Deploy other versions for some of the services
   for i in b d f; do
-    for n in $(seq 2 $(( ( RANDOM % 5 )  + 2 ))); do
+    for n in $(seq 2 $number_of_versions); do
       oc process -f ${template} -p SERVICE_NAME=${i} -p SERVICE_VERSION=v${n} | istioctl kube-inject -f - | oc create -n ${namespace} -f -
     done
   done
