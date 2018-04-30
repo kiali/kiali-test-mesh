@@ -19,6 +19,7 @@ env:
 script:
   - export GOPATH=$HOME/kiali-test-mesh; mkdir -p $GOPATH; cd $GOPATH; mkdir -p src/github.com/kiali; cd src/github.com/kiali; git clone https://github.com/kiali/kiali-test-mesh; cd kiali-test-mesh; make all
 
+allow_failures:
   - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
   - docker push kiali/kiali-test-service
   - docker push kiali/kiali-test-mesh-traffic-generator
