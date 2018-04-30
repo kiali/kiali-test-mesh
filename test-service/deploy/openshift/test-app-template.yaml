@@ -11,6 +11,9 @@ parameters:
 - name: SERVICE_NAME
   description: The name to use for the service
   required: true
+- name: SERVICE_VERSION
+  description: The version of the deployment
+  value: v1
 - name: IMAGE_NAME
   description: The name to use for the image
   value: kiali/kiali-test-service
@@ -33,6 +36,24 @@ objects:
     - name: http
       port: 80
       targetPort: 8888
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: ${SERVICE_NAME}-${SERVICE_VERSION}
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: ${SERVICE_NAME}
+          version: ${SERVICE_VERSION}
+      spec:
+        containers:
+        - name: details
+          image: kiali/kiali-test-service
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8888
 - kind: ReplicaSet
   apiVersion: extensions/v1beta1
   metadata:
