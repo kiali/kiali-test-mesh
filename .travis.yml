@@ -1,17 +1,17 @@
 sudo: required
 
 services:
-  - docker
+- docker
 
 language: go
 
 go:
-  - 1.9.4
+- 1.9.4
 
 notifications:
   irc:
     channels:
-      - chat.freenode.net.#kiali
+    - chat.freenode.net.#kiali
 
 before_script:
   - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
@@ -23,9 +23,15 @@ env:
 
 script:
   - export GOPATH=$HOME/kiali-test-mesh; mkdir -p $GOPATH; cd $GOPATH; mkdir -p src/github.com/kiali; cd src/github.com/kiali; git clone https://github.com/kiali/kiali-test-mesh; cd kiali-test-mesh; make all
-  - if ["$TRAVIS_PULL_REQUEST" = "false"]; then [docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"; docker push kiali/kiali-test-service; docker push kiali/kiali-test-mesh-traffic-generator]; fi
+
+after_success:
+- export DOCKER_USER=$(if [ "$DOCKER_USER" == "" ]; then echo "unknown"; else echo $DOCKER_USER ; fi)
+- export DOCKER_PASSWORD=$(if [ "$DOCKER_PASSWORD" == "" ]; then echo "unknown"; else echo $DOCKER_PASSWORD ; fi)
+- docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+- docker push kiali/kiali-test-service
+- docker push kiali/kiali-test-mesh-traffic-generator
 
 branches:
   only:
-    - master
-    - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
+  - master
+  - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
