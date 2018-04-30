@@ -1,30 +1,31 @@
 sudo: required
+
 services:
-- docker
+  - docker
+
 language: go
+
 go:
-- 1.9.4
+  - 1.9.4
+
 notifications:
   irc:
     channels:
-    - chat.freenode.net.#kiali
-before_script:
-- GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
-env:
+      - chat.freenode.net.#kiali
 
+before_script:
+  - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
+
+env:
   global:
   - secure: "fVNUzYMRsQQXxm0y65+S2A/JChnOzy/r+ob9osVNtTez+hJGxS5TgcqpqTFfyQdG+99YS3m/xqKAbk3sVdAeWRlE8vMw37onc7bBIEgCpxc0cYQBRvMmQ10fSFxjekZuD1vXEOg8YQUBVBH5dEGfkEULx7ar2NJOz32PYE0mtVU8RjP/yHLcf7KcITH82c2kX1O2eHHnm8s3Z1HalFDhKxSkCwq3kRXYioz6ECw3T10tMny9oihPY2nvlgUUxLbF+bYPa5y1f0uzA3XhuVzz8llV8V4QOuTKQaYLd+9FOq0PmQMcPm3MS7AuMn7MWhR5cdude4hyLgYs21zz6wiZJOvgteYAyguKZZF0hVwKmwdwg+JqX2djIAGSaLU3p6qsbKtggyikhLat/w0lGLTh/Wu2WF/CuAnzqaNovQZ4jHRGjZzm7VezCNUSzPsvL5g7OsI3aKI4VMbnxT7S3TFxC7G3/eXOEwSUwcBmzmav8552ueKQBvGzsoBIUwBGQAtVkBXHiLAsAz9Asc2mOGuYCFdgshg9OJTTy8imgcD42hqpy5GIw+qkgCsNGKRk67bh78B5rW+AgQQHhJ0MJDrPFfx2KWWWRtkpLkQZLOllJjc28WQrHuTNoCsUGvGIMv+xhoOhzd26nWcAJITh4PROkNK+/ER3o4O0FwJqqsRW000="
   - secure: "pKS26vfWEC9V2nFCfy4a288oYIvnqes4bGbvZiooINVuzgdDHw07R/ARxOE0YTsI5UvlADMwYxmGxmORWCDl6wv7B8h05YUYP5iCpEhymVRlZuG0Z4HflAlYz1SrmxF9L06oQiGejMnJbwQ1R5SNrJ4ctXjFuY6IPnIA+lWjKimk9CvJw+IkYNSIn6k1XzZUpEI+eXGzECE536YUUbJotIAblePsBUqs3NCppHWgmepY1sHUliCGPnMwMxhhcEG1mlfQA2WlGaqPUpuew4hEO0CEkwkq7HB34sXALHTLxrvOG88bkSwX1Jl23uz0j63PgPiPAh13hzYbgfPShyThT7kLm+ObL91WfE1dF4nwhUDMBLWgHdwzkYNyRiNRpce9kh/vlc0jzkDdlLfImEBPldTyC29SlKaYy2M9LqBVunl+l/aIEIacsmft+bKEXonjaHVYMJJ91GLdMofq5Ds9saV4rnn52yNZfUejHbdgG47e/dNedSVsFpMiMy0pqZaygwHmqvNoBAsJb2QfAoixqO9Xzt2C/HxtPtkTvAPD+rp2BP7Ed+GW4Oe1O3aEWaqVKOYQIZkHtW2xgin0Ju0fgwuprdwIzCawIJE/bN6VnDooHRdzKb7AN/nuyAz15Dt9RsrQNHBVIRj9R8Rj+2l7UanNysNPmIhNCM9JnBKQB6k="
 
 script:
   - export GOPATH=$HOME/kiali-test-mesh; mkdir -p $GOPATH; cd $GOPATH; mkdir -p src/github.com/kiali; cd src/github.com/kiali; git clone https://github.com/kiali/kiali-test-mesh; cd kiali-test-mesh; make all
-
-allow_failures:
-  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-  - docker push kiali/kiali-test-service
-  - docker push kiali/kiali-test-mesh-traffic-generator
+  - if ["$TRAVIS_PULL_REQUEST" = "false"]; then [docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"; docker push kiali/kiali-test-service; docker push kiali/kiali-test-mesh-traffic-generator]; fi
 
 branches:
   only:
-  - master
-  - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
+    - master
+    - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
