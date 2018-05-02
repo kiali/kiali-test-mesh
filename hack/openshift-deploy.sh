@@ -44,24 +44,25 @@ function setup {
 function deploy_services {
   namespace=${1}
 
-  template=${SOURCE_ROOT}/test-service/deploy/openshift/test-app-template.yaml
+  local service_template=${SOURCE_ROOT}/test-service/deploy/openshift/service-template.yaml
+  local app_template=${SOURCE_ROOT}/test-service/deploy/openshift/app-template.yaml
 
   # deploy services
   for i in a b c d e f; do
-   oc process -f ${template} -p SERVICE_NAME=${i} -p SERVICE_VERSION=v1 | istioctl kube-inject -f - | oc create -n ${namespace} -f -
+   oc process -f ${service_template} -p SERVICE_NAME=${i} | istioctl kube-inject -f - | oc create -n ${namespace} -f -
   done
 
   if [[ ${RANDOM_VERSIONS} != 'false' ]]; then
-    let number_of_versions=$(( ( RANDOM % $MAX_NUMBER_OF_VERSIONS ) + 2 ))
+    let number_of_versions=$(( ( RANDOM % $MAX_NUMBER_OF_VERSIONS ) + 1 ))
     echo $number_of_versions
   else
     let number_of_versions=$MAX_NUMBER_OF_VERSIONS
   fi
 
   # Deploy other versions for some of the services
-  for i in b d f; do
-    for n in $(seq 2 $number_of_versions); do
-      oc process -f ${template} -p SERVICE_NAME=${i} -p SERVICE_VERSION=v${n} | istioctl kube-inject -f - | oc create -n ${namespace} -f -
+  for i in a b c d e f; do
+    for n in $(seq 1 $number_of_versions); do
+      oc process -f ${app_template} -p SERVICE_NAME=${i} -p SERVICE_VERSION=v${n} | istioctl kube-inject -f - | oc create -n ${namespace} -f -
     done
   done
 }
