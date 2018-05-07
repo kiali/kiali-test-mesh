@@ -29,12 +29,13 @@ objects:
     replicas: 1
     selector:
       matchLabels:
-        kiali: test-service-${SERVICE_NAME}
+        kiali-test: test-service-${SERVICE_NAME}
     template:
       metadata:
         labels:
-          kiali: test-service-${SERVICE_NAME}
+          kiali-test: test-service-${SERVICE_NAME}
           app: ${SERVICE_NAME}
+          version: ${SERVICE_VERSION}
       spec:
         containers:
           - name: kiali-test-service-${SERVICE_NAME}-${SERVICE_VERSION}
