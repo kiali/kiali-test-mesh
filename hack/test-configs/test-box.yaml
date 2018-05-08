@@ -5,6 +5,6 @@ metadata:
   labels:
     kiali-test: traffic-generator-config
 data:
-  duration: "0s"
+  duration: "0"
   route: http://a/route?path=a,b,d,c,a,d,c,b
   rate: "20"

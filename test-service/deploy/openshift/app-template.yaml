@@ -1,8 +1,8 @@
 id: kiali-test-service
 kind: Template
 apiVersion: v1
-name: Kiali Test Service Template
-description: Deploys an example service replicaset with a service
+name: Kiali Test Application
+description: Deploys replicasets for the test mesh
 metadata:
   name: kiali-test-service
   labels:
@@ -21,43 +21,10 @@ parameters:
   description: The name to use for the image version
   value: latest
 objects:
-- kind: Service
-  apiVersion: v1
-  metadata:
-    name: ${SERVICE_NAME}
-    labels:
-      kiali-test: test-service
-      kiali-test: test-service-${SERVICE_NAME}
-      app: ${SERVICE_NAME}
-  spec:
-    selector:
-      kiali-test: test-service-${SERVICE_NAME}
-    ports:
-    - name: http
-      port: 80
-      targetPort: 8888
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    name: ${SERVICE_NAME}-${SERVICE_VERSION}
-  spec:
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          app: ${SERVICE_NAME}
-          version: ${SERVICE_VERSION}
-      spec:
-        containers:
-        - name: details
-          image: kiali/kiali-test-service
-          imagePullPolicy: IfNotPresent
-          ports:
-          - containerPort: 8888
 - kind: ReplicaSet
   apiVersion: extensions/v1beta1
   metadata:
-    name: kiali-test-service-${SERVICE_NAME}
+    name: kiali-test-service-${SERVICE_NAME}-${SERVICE_VERSION}
   spec:
     replicas: 1
     selector:
@@ -68,9 +35,10 @@ objects:
         labels:
           kiali-test: test-service-${SERVICE_NAME}
           app: ${SERVICE_NAME}
+          version: ${SERVICE_VERSION}
       spec:
         containers:
-          - name: kiali-test-service-${SERVICE_NAME}
+          - name: kiali-test-service-${SERVICE_NAME}-${SERVICE_VERSION}
             image: ${IMAGE_NAME}:${IMAGE_VERSION}
             imagePullPolicy: IfNotPresent
             ports:
