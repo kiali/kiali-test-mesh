@@ -1,0 +1,148 @@
+- name: Instal Kiali Test Mesh
+  hosts: localhost
+  tasks:
+  - name: Initialize Service Variable and Version
+    set_fact:
+      services: []
+      versions: []
+      even_services: []
+
+  - name: Generate Service Array
+    set_fact: services="{{services}} + ['service-{{ item }}']"
+    with_sequence: start=1 end={{number_of_services}} format=%d
+
+  - name: Generate Versions Array
+    set_fact: versions="{{versions}} + ['v{{ item }}']"
+    with_sequence: start=1 end={{number_of_versions}} format=%d
+
+  - name: Set Depth, Circle and Circle Callback Routes and empty strings for others
+    set_fact:
+      kiali_test_depth_route: "http://{{services[0]}}/route?path={{ services | join(',') }}"
+      kiali_test_breath_route: ""
+      kiali_test_breath_sink_route: ""
+      kiali_test_hourglass_route: ""
+      kiali_test_depth_sink_route: ""
+      kiali_test_box_route: "http://{{services[0]}}/route?path=="
+      box_stride: "{{ (((number_of_services | int)/4) | int ) }}"
+      kiali_test_circle_route: "http://{{services[0]}}/route?path={{ services | join(',') }},{{services[0]}}"
+      kiali_test_circle_callback_route: "http://{{services[0]}}/route?path={{ services | join(',') }},{{services[0]}};http://{{services[0]}}/route?path={{services[0]}},{{ services | reverse | join(',') }}"
+
+  - name: Set Breath Route
+    set_fact:
+      kiali_test_breath_route: "http://{{services[0]}}/route?path={{item}};{{kiali_test_breath_route}}"
+    with_items:
+      - "{{ services | reverse | list  }}"
+
+  - name: Set Breath Sink Route
+    set_fact:
+      kiali_test_breath_sink_route: "http://{{services[0]}}/route?path={{item}},{{services[-1]}};{{kiali_test_breath_sink_route}}"
+    when: "item != services[-1]"
+    with_items:
+      - "{{ services | reverse | list }} "
+
+  - name: Set Depth Sink Route
+    set_fact:
+      kiali_test_depth_sink_route: "http://{{services[0]}}/route?path={{ services[:(item | int)] | union([services[-1]]) | join(',') }};{{kiali_test_depth_sink_route}}"
+    when: (item | int) != (number_of_services | int)
+    with_sequence: start={{number_of_services}} end=1 stride=-1 format=%d
+
+
+  # Generate Even Array in order to make it simple to Hourglass
+  - name: Generate Hourglass Even Elements Array
+    set_fact: even_services="{{even_services}} + ['service-{{ item }}']"
+    when: "(item | int) %2 == 1"
+    with_sequence: start=1 end={{number_of_services}} format=%d
+
+
+  # if the mesh is odd number so we subtract one to make it even
+  - name: Hourglass Mesh if length is Odd
+    set_fact:
+      kiali_test_hourglass_route: "http://{{services[0]}}/route?path={{  services | difference([services[-1]]) | join(',') }};http://{{services[0]}}/route?path={{  services | intersect(even_services) | join(',') }}"
+    when: services | length % 2 == 0
+
+
+  - name: Hourglass Mesh if length is Even
+    set_fact:
+      kiali_test_hourglass_route: "http://{{services[0]}}/route?path={{  services | join(',') }};http://{{services[0]}}/route?path={{  services | intersect(even_services) | join(',') }}"
+    when: services | length % 2 == 1
+
+
+  - name: Delete Test Mesh Projects
+    openshift_raw:
+      api_version: v1
+      kind: Project
+      name: "{{ item }}"
+      state: absent
+    ignore_errors: true
+    with_items:
+      - "{{ meshes }}"
+
+  - name: Create Test Mesh Projects
+    openshift_raw:
+      api_version: v1
+      kind: Project
+      name: "{{ item }}"
+      state: present
+    register: projectStatus
+    until: projectStatus.changed == true
+    retries: 100
+    delay: 20
+    with_items:
+      - "{{ meshes }}"
+
+
+  - name: Grant Permissions to each Kiali Test Meshes Projects
+    shell: "oc adm policy add-scc-to-user privileged -z default -n {{item}}"
+    with_items:
+      - "{{ meshes }}"
+
+  - name: Deploy Kiali Test Meshes Services
+    shell: "oc process -f https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/test-service/deploy/openshift/service-template.yaml -p SERVICE_NAME={{ item[1] }} | istioctl kube-inject -f - | oc  apply -n {{ item[0] }} -f -"
+    with_nested:
+      - "{{ meshes }}"
+      - "{{ services }}"
+
+  - name: Deploy Kiali Test Pods
+    shell: "oc process -f https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/test-service/deploy/openshift/app-template.yaml -p SERVICE_NAME={{ item[1] }} -p IMAGE_NAME='kiali/kiali-test-service' -p SERVICE_VERSION={{ item[2] }} -p IMAGE_VERSION=latest | istioctl kube-inject -f - | oc  apply -n {{ item[0] }} -f -"
+    with_nested:
+      - "{{ meshes }}"
+      - "{{ services }}"
+      - "{{ versions }}"
+
+  - name: Wait until all pods are running
+    openshift_raw:
+      definition:
+        apiVersion: v1
+        kind: ReplicaSet
+        metadata:
+          name: "kiali-test-service-{{item[1]}}-{{item[2]}}"
+          namespace: "{{item[0]}}"
+        spec:
+          selector:
+            matchLabels:
+              kiali-test: "test-service-{{item[1]}}"
+    with_nested:
+      - "{{ meshes }}"
+      - "{{ services }}"
+      - "{{ versions }}"
+    register: replicaResult
+    until: replicaResult.result.status.ready_replicas == 1
+    retries: 100
+    delay: 10
+
+  - name: Deploy Traffic Generator ConfigMaps to Kiali Namespaces
+    shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator-configmap.yaml | DURATION='0s' ROUTE=\"{{item.route}}\" RATE='1'  envsubst | oc apply -n {{item.namespace}} -f -"
+    when: "item.namespace in meshes"
+    with_items:
+    - { namespace: 'kiali-test-depth', route: '{{kiali_test_depth_route}}' }
+    - { namespace: 'kiali-test-breath', route: '{{kiali_test_breath_route}}' }
+    - { namespace: 'kiali-test-circle', route: '{{kiali_test_circle_route}}' }
+    - { namespace: 'kiali-test-circle-callback', route: '{{kiali_test_circle_callback_route}}' }
+    - { namespace: 'kiali-test-hourglass', route: '{{kiali_test_hourglass_route}}' }
+    - { namespace: 'kiali-test-depth-sink', route: '{{kiali_test_depth_sink_route}}' }
+    - { namespace: 'kiali-test-breath-sink', route: '{{kiali_test_breath_sink_route}}' }
+
+  - name: Deploy Trafic Generator
+    shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator.yaml  | oc apply -n {{item}} -f -"
+    with_items:
+      - "{{ meshes }}"

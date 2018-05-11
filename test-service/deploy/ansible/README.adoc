@@ -1,0 +1,49 @@
+= Kiali Test Mesh Ansible Installer
+:toc: macro
+:toc-title:
+
+toc::[]
+
+== Introduction
+Ansible installer for Kiali Test Mesh
+
+A straightforward instalation command is
+
+[source,shell]
+----
+ansible-playbook deploy_test_meshes.yml -e number_of_services=6 -e number_of_versions=1 -e '{"meshes": ["kiali-test-depth", "kiali-test-breath", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breath-sink"]}' -v
+----
+which
+
+- `number_of_services` is the number of services will be deployed per namespace
+
+- `number_of_versions` is the number of versions each service will have per namespace
+
+- `meshes` specifies which mesh will be installed.
+
+
+== Available Meshes
+[NOTE]
+Meshes presented on the following picture are using one version per service. More versions per service can  change how the graph will look like.
+
+=== Kiali Test Depth
+image::images//kiali-test-depth.png[]
+
+
+=== Kiali Test Breath
+image::images//kiali-test-breath.png[]
+
+=== Kiali Test Circle
+image::images//kiali-test-circle.png[]
+
+=== Kiali Test Circle Callback
+image::images//kiali-test-circle-callback.png[]
+
+=== Kiali Test Circle Hourglass
+image::images/kiali-test-hourglass.png[]
+
+=== Kiali Test Depth Sink
+image::images/kiali-test-depth-sink.png[]
+
+=== Kiali Test Breath Sink
+image::images/kiali-test-breath-sink.png[]
