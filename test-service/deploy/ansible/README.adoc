@@ -4,6 +4,10 @@
 
 toc::[]
 
+== Dependecies
+- Ansible 2.5+ (`sudo dnf install ansible`)
+- Openshift Pip Module (`pip install openshift`)
+
 == Introduction
 Ansible installer for Kiali Test Mesh
 
