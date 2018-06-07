@@ -64,12 +64,14 @@ func (s Server) Start() error {
 		if err != nil {
 			fmt.Errorf("Error", err)
 			http.Error(w, "Oops", 500)
+			return
 		}
 
 		buf, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			fmt.Errorf("Error", err)
 			http.Error(w, "Oops", 500)
+			return
 		}
 
 		message := string(buf)
