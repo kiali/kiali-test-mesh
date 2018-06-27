@@ -10,7 +10,4 @@ build-traffic-generator:
 
 openshift-deploy:
 	@echo About to deploy a few sample projects to OpenShift
-	./hack/openshift-deploy.sh -n kiali-test-depth -c hack/test-configs/test-depth.yaml
-	./hack/openshift-deploy.sh -n kiali-test-breadth -c hack/test-configs/test-breadth.yaml
-	./hack/openshift-deploy.sh -n kiali-test-hourglass -c hack/test-configs/test-hourglass.yaml
-	./hack/openshift-deploy.sh -n kiali-test-circle-callback -c hack/test-configs/test-circle-callback.yaml
+	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=6 -e number_of_versions=1 -e '{"meshes": ["kiali-test-depth", "kiali-test-breath", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breath-sink"]}' -v
