@@ -10,7 +10,7 @@ Kiali test components to be used to generate test service meshes to validate tha
 
 Currently this project will just build a simple web server, 'Kiali Test Service', which allows for easy routing between other similar test services with a REST call. This allow someone to create arbitary service mesh topologies just by varying the URLs being used. This is useful for testing purposes and making sure that the service graph can properly render different types of service meshes.
 
-A few example service mesh topologies can also be generated during the build using the `make openshift-deploy'. 
+A few example service mesh topologies can also be generated during the build using the `make openshift-deploy'.
 
 === Kiali Test Service
 
@@ -57,20 +57,6 @@ To build the 'Kiali Test Service' docker image you will need to just run the 'do
 [source,shell]
 ----
 make docker-build
-----
-
-== Deploying to OpenShift
-
-[NOTE]
-The following instructions assume that you have access to an OpenShift cluster, that the 'oc' command is available on your path and that your current user has cluster permissions. It also assumes that you have the 'istioctl' command available on your path. The example service meshes will install many pods which may not fit in a single default OpenShift node, these pods are lightweight and for testing purposes you may want to increase the max-pods value for your node.
-
-=== Example Service Meshes
-
-The 'make openshift-deploy' command will automatically install several service meshes into your OpenShift cluster with the prefix of 'kiali-test'. You should then be able to view them in the 'Kiali Console'
-
-[source,shell]
-----
-make openshift-deploy
 ----
 
 

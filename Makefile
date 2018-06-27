@@ -1,3 +1,9 @@
+AVAILABLE_MESHES ?= '{"meshes": ["kiali-test-depth", "kiali-test-breath", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breath-sink"]}'
+MESHES ?= '{"meshes": ["kiali-test-depth", "kiali-test-breath", "kiali-test-circle-callback", "kiali-test-hourglass"]}'
+NUM_SERVICES ?=1
+NUM_VERSIONS ?=1
+
+
 all:	build-service build-traffic-generator
 
 build-service:
@@ -10,4 +16,9 @@ build-traffic-generator:
 
 openshift-deploy:
 	@echo About to deploy a few sample projects to OpenShift
-	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=6 -e number_of_versions=1 -e '{"meshes": ["kiali-test-depth", "kiali-test-breath", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breath-sink"]}' -v
+	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e ${MESHES} -v
+
+
+openshift-deploy-all-meshes:
+	@echo About to deploy a all projects available to OpenShift
+	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e ${AVAILABLE_MESHES} -v
