@@ -1,7 +1,6 @@
-AVAILABLE_MESHES ?= '{"meshes": ["kiali-test-depth", "kiali-test-breath", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}'
+AVAILABLE_MESHES ?= '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}'
 NUM_SERVICES ?=1
 NUM_VERSIONS ?=1
-
 
 all:	build-service build-traffic-generator
 
@@ -17,9 +16,9 @@ openshift-deploy-kiali-test-depth:
 	@echo About to deploy Kiali Test Depth to OpenShift
 	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e '{"meshes": ["kiali-test-depth"]}' -v
 
-openshift-deploy-kiali-test-breath:
-	@echo About to deploy Kiali Test Breath to OpenShift
-	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e '{"meshes": ["kiali-test-breath"]}' -v
+openshift-deploy-kiali-test-breadth:
+	@echo About to deploy Kiali Test breadth to OpenShift
+	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e '{"meshes": ["kiali-test-breadth"]}' -v
 
 openshift-deploy-kiali-test-circle:
 	@echo About to deploy Kiali Test Circle to OpenShift
@@ -38,9 +37,9 @@ openshift-deploy-kiali-test-depth-sink:
 	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e '{"meshes": ["kiali-test-depth-sink"]}' -v
 
 openshift-deploy-kiali-test-breadth-sink:
-	@echo About to deploy Kiali Test Breath Sink to OpenShift
-	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e '{"meshes": ["kiali-test-breath-sink"]}' -v
+	@echo About to deploy Kiali Test Breadth Sink to OpenShift
+	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e '{"meshes": ["kiali-test-breadth-sink"]}' -v
 
 openshift-deploy-all-meshes:
-	@echo About to deploy a all Kiali Test Meshes available to OpenShift
+	@echo About to deploy all Kiali Test Meshes available to OpenShift
 	ansible-playbook ./test-service/deploy/ansible/deploy_test_meshes.yml -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e ${AVAILABLE_MESHES} -v

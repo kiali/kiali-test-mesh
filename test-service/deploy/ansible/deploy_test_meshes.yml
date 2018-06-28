@@ -18,8 +18,8 @@
   - name: Set Depth, Circle and Circle Callback Routes and empty strings for others
     set_fact:
       kiali_test_depth_route: "http://{{services[0]}}/route?path={{ services | join(',') }}"
-      kiali_test_breath_route: ""
-      kiali_test_breath_sink_route: ""
+      kiali_test_breadth_route: ""
+      kiali_test_breadth_sink_route: ""
       kiali_test_hourglass_route: ""
       kiali_test_depth_sink_route: ""
       kiali_test_box_route: "http://{{services[0]}}/route?path=="
@@ -27,15 +27,15 @@
       kiali_test_circle_route: "http://{{services[0]}}/route?path={{ services | join(',') }},{{services[0]}}"
       kiali_test_circle_callback_route: "http://{{services[0]}}/route?path={{ services | join(',') }},{{services[0]}};http://{{services[0]}}/route?path={{services[0]}},{{ services | reverse | join(',') }}"
 
-  - name: Set Breath Route
+  - name: Set Breadth Route
     set_fact:
-      kiali_test_breath_route: "http://{{services[0]}}/route?path={{item}};{{kiali_test_breath_route}}"
+      kiali_test_breadth_route: "http://{{services[0]}}/route?path={{item}};{{kiali_test_breadth_route}}"
     with_items:
       - "{{ services | reverse | list  }}"
 
-  - name: Set Breath Sink Route
+  - name: Set Breadth Sink Route
     set_fact:
-      kiali_test_breath_sink_route: "http://{{services[0]}}/route?path={{item}},{{services[-1]}};{{kiali_test_breath_sink_route}}"
+      kiali_test_breadth_sink_route: "http://{{services[0]}}/route?path={{item}},{{services[-1]}};{{kiali_test_breadth_sink_route}}"
     when: "item != services[-1]"
     with_items:
       - "{{ services | reverse | list }} "
@@ -135,12 +135,12 @@
     when: "item.namespace in meshes"
     with_items:
     - { namespace: 'kiali-test-depth', route: '{{kiali_test_depth_route}}' }
-    - { namespace: 'kiali-test-breath', route: '{{kiali_test_breath_route}}' }
+    - { namespace: 'kiali-test-breadth', route: '{{kiali_test_breadth_route}}' }
     - { namespace: 'kiali-test-circle', route: '{{kiali_test_circle_route}}' }
     - { namespace: 'kiali-test-circle-callback', route: '{{kiali_test_circle_callback_route}}' }
     - { namespace: 'kiali-test-hourglass', route: '{{kiali_test_hourglass_route}}' }
     - { namespace: 'kiali-test-depth-sink', route: '{{kiali_test_depth_sink_route}}' }
-    - { namespace: 'kiali-test-breath-sink', route: '{{kiali_test_breath_sink_route}}' }
+    - { namespace: 'kiali-test-breadth-sink', route: '{{kiali_test_breadth_sink_route}}' }
 
   - name: Deploy Trafic Generator
     shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator.yaml  | oc apply -n {{item}} -f -"

@@ -15,7 +15,7 @@ A straightforward instalation command is
 
 [source,shell]
 ----
-ansible-playbook deploy_test_meshes.yml -e number_of_services=6 -e number_of_versions=1 -e '{"meshes": ["kiali-test-depth", "kiali-test-breath", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breath-sink"]}' -v
+ansible-playbook deploy_test_meshes.yml -e number_of_services=6 -e number_of_versions=1 -e '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}' -v
 ----
 which
 
@@ -34,8 +34,8 @@ Meshes presented on the following picture are using one version per service. Mor
 image::images//kiali-test-depth.png[]
 
 
-=== Kiali Test Breath
-image::images//kiali-test-breath.png[]
+=== Kiali Test Breadth
+image::images//kiali-test-breadth.png[]
 
 === Kiali Test Circle
 image::images//kiali-test-circle.png[]
@@ -49,5 +49,5 @@ image::images/kiali-test-hourglass.png[]
 === Kiali Test Depth Sink
 image::images/kiali-test-depth-sink.png[]
 
-=== Kiali Test Breath Sink
-image::images/kiali-test-breath-sink.png[]
+=== Kiali Test Breadth Sink
+image::images/kiali-test-breadth-sink.png[]
