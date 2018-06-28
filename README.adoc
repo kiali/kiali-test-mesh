@@ -1,0 +1,31 @@
+= Deploying to OpenShift
+
+[NOTE]
+The following instructions assume that you have access to an OpenShift cluster, that the 'oc' command is available on your path and that your current user has cluster permissions. It also assumes that you have the 'istioctl' command available on your path. The example service meshes will install many pods which may not fit in a single default OpenShift node, these pods are lightweight and for testing purposes you may want to increase the max-pods value for your node and you must have ansible installer on your environment
+
+== Dependencies needed to Deploy on Openshift
+
+[source,shell]
+----
+# Create a place to put ansible
+mkdir $HOME/source && cd $HOME/source
+
+# Get latest Ansible, put it in your environment
+git clone git://github.com/ansible/ansible.git
+source ansible/hacking/env-setup
+
+# Make sure pip is upgraded to the latest
+sudo pip install --upgrade pip
+
+# Install the openshift python client library
+pip install --user openshift
+----
+
+== Example Service Meshes
+
+The 'make openshift-deploy' command will automatically install several service meshes into your OpenShift cluster with the prefix of 'kiali-test'. You should then be able to view them in the 'Kiali Console'
+
+[source,shell]
+----
+make openshift-deploy
+----

@@ -28,10 +28,6 @@ docker-build:
 	@cp deploy/docker/* _output/docker
 	@docker build -t ${DOCKER_NAME}:${DOCKER_TAG} _output/docker
 
-openshift-deploy:
-	@echo Deploying test examples to OpenShift namespace
-	@./hack/deploy-example.sh
-
 clean:
 	@echo "Cleaning any build artifacts"
 	@echo "  - Removing the _output directory"
