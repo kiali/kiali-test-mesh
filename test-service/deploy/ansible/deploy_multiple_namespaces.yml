@@ -29,6 +29,11 @@
         kiali_test_breadth_sink_route: ""
         kiali_test_breadth_sink_namespace: ""
 
+    - name: 'check if number_of_services is greater than number_max_of_namespaces'
+      fail: msg="Please make sure the number_of_services are greater than number_max_of_namespaces"
+      when: "number_of_services > number_max_of_namespaces"
+
+
     - name: Generate Versions Array
       set_fact: versions="{{versions}} + ['v{{ item }}']"
       with_sequence: start=1 end={{number_of_versions}} format=%d
