@@ -9,6 +9,7 @@
       - kiali-test-hourglass
       - kiali-test-depth-sink
       - kiali-test-breadth-sink
+    random: false
 
   tasks:
     - name: Initialize Variables
@@ -29,9 +30,9 @@
         kiali_test_breadth_sink_route: ""
         kiali_test_breadth_sink_namespace: ""
 
-    - name: 'check if number_max_of_namespaces is greater than number_of_services'
-      fail: msg="Please make sure the number_of_services are greater than number_max_of_namespaces"
-      when: "number_max_of_namespaces  > number_of_services "
+    - name: 'check if number_of_namespaces is greater than number_of_services'
+      fail: msg="Please make sure the number_of_services are greater than number_of_namespaces"
+      when: "number_of_namespaces  > number_of_services "
 
 
     - name: Generate Versions Array
@@ -39,20 +40,18 @@
       with_sequence: start=1 end={{number_of_versions}} format=%d
 
     - name: Generate Services Array
-      set_fact: services="{{services}} + ['service-{{ item }}']"
+      set_fact:
+        services="{{services}} + ['{{ item }}']"
       with_sequence: start=1 end={{number_of_services}} format=%d
-
-    - name: Generate Namespaces Array
-      set_fact: namespaces="{{namespaces}} + ['{{ item }}']"
-      with_sequence: start=1 end={{number_max_of_namespaces}} format=%d
 
     - name: Create Service and Namespace Dict
       set_fact:
       args:
         service:
-          name: "{{ item.0 }}"
-          namespace: "{{item.1}}-{{namespaces| random()}}"
-          fqdn: "{{ item.0 }}.{{item.1}}-{{namespaces| random()}}.svc.cluster.local"
+          name: "service-{{ item.0 }}"
+          namespace: "{{item.1}}-{{ (item.0 | int) % (number_of_namespaces | int) }}"
+          fqdn: "service-{{ item.0 }}.{{item.1}}-{{ (item.0 | int) % (number_of_namespaces | int) }}.svc.cluster.local"
+      when: "random == false"
       with_nested:
         - "{{ services }}"
         - "{{ kiali_test_mesh | intersect(meshes) }}"
