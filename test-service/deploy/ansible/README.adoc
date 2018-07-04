@@ -59,7 +59,7 @@ A straightforward instalation command is
 
 [source,shell]
 ----
-ansible-playbook deploy_test_meshes.yml -e number_of_services=5 -e number_of_versions=2 -e number_max_of_namespaces=2 -e '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}' -v
+ansible-playbook deploy_test_multiple_namespaces_meshes.yml -e number_of_services=5 -e number_of_versions=2 -e number_of_namespaces=2 -e '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}' -v
 ----
 which
 
@@ -69,4 +69,4 @@ which
 
 - `meshes` specifies which mesh will be installed.
 
-- `number_max_of_namespaces` is the number max of namespaces. The playbook will randomize the choice of namespace for each service (eg: in 2 namespaces of max with 4 services, we could have scenario 1 with: 3 services at namespace-1 and 1 service at namespace-2 or we could have scenario 2 with 2 services on each namespace).
+- `number_of_namespaces` is the number max of namespaces. The playbook will distribute equally through the namespaces.
