@@ -174,7 +174,8 @@
         - "{{ all_services }}"
         - "{{ versions }}"
       register: replicaResult
-      until: replicaResult.result.status.ready_replicas == 1
+      until: (replicaResult.result.status.ready_replicas is defined and replicaResult.result.status.ready_replicas == 1) or
+           (replicaResult.result.status.readyReplicas is defined and replicaResult.result.status.readyReplicas == 1)
       retries: 100
       delay: 10
 
