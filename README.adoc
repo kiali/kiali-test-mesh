@@ -48,13 +48,13 @@ The following are the types of test meshes you can deploy.
 There is a Makefile target per test mesh type - the target name is the name of the test mesh prefixed with `openshift-deploy-`. For example the following will depoy a kiali-test-depth test mesh with a single service:
 
 ```
-make openshift-kiali-test-depth
+make openshift-deploy-kiali-test-depth
 ```
 
 This will deploy the kiali-test-circle test mesh with 2 services with each service having 2 versions:
 
 ```
-NUM_SERVICES=2 NUM_VERSIONS=2 make openshift-kiali-test-circle
+NUM_SERVICES=2 NUM_VERSIONS=2 make openshift-deploy-kiali-test-circle
 ```
 
 === Deploy a Test Mesh Across Multiple Test Namespaces
@@ -62,7 +62,7 @@ NUM_SERVICES=2 NUM_VERSIONS=2 make openshift-kiali-test-circle
 To deploy a test mesh across multiple namespaces, pass in the NUM_NAMESPACES environment variable. Make sure NUM_SERVICES is the same or greater than NUM_NAMESPACES:
 
 ```
-NUM_NAMESPACES=2 NUM_SERVICES=2 make openshift-kiali-test-hourglass
+NUM_NAMESPACES=2 NUM_SERVICES=2 make openshift-deploy-kiali-test-hourglass
 ```
 
 === Deploy All Test Meshes At Once
