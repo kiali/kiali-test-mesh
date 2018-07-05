@@ -31,7 +31,7 @@
         kiali_test_breadth_sink_namespace: ""
 
     - name: 'check if number_of_namespaces is greater than number_of_services'
-      fail: msg="Please make sure the number_of_services are greater than number_of_namespaces"
+      fail: msg="Please make sure the number_of_services are greater than or equal to number_of_namespaces"
       when: "number_of_namespaces  > number_of_services "
 
 
