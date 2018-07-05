@@ -1,7 +1,7 @@
 = Deploying to OpenShift
 
 [NOTE]
-The following instructions assume that you have access to an OpenShift cluster, that the 'oc' command is available on your path and that your current user has cluster permissions. It also assumes that you have the 'istioctl' command available on your path. The example service meshes will install many pods which may not fit in a single default OpenShift node, these pods are lightweight and for testing purposes you may want to increase the max-pods value for your node and you must have ansible installer on your environment
+The following instructions assume that you have access to an OpenShift cluster, that the `oc` command is available on your path and that your current user has cluster permissions. It also assumes that you have the `istioctl` command available on your path as well as Ansible (`ansible-playbook`). The example service meshes will install many pods which may not fit in a single default OpenShift node. These pods are lightweight and for testing purposes. You may want to increase the max-pods value for your node.
 
 == Dependencies needed to Deploy on Openshift
 
@@ -23,9 +23,63 @@ pip install --user openshift
 
 == Example Service Meshes
 
+This project contains a Makefile that can deploy several different types of test meshes. There is one make target per test mesh type. See link:./test-service/deploy/ansible/README.adoc[here for details on the test mesh types.]
+
+You can customize each test mesh to contain different numbers of test services and different number of versions per test service, as well as have test mesh services communicate across multiple namespaces.
+
+To define the number of services your test mesh will contain, set the environment variable NUM_SERVICES (the default is "1").
+
+To define the number of versions per service, set the environment variable NUM_VERSIONS (the default is "1").
+
+To deploy a test mesh across multiple namespaces, set the environment variable NUM_NAMESPACES to the number of namespaces you want (the default is "1").
+
+=== Deploy a Test Mesh
+
+The following are the types of test meshes you can deploy.
+
+* kiali-test-depth
+* kiali-test-breadth
+* kiali-test-circle
+* kiali-test-circle-callback
+* kiali-test-hourglass
+* kiali-test-depth-sink
+* kiali-test-breadth-sink
+
+There is a Makefile target per test mesh type - the target name is the name of the test mesh prefixed with `openshift-deploy-`. For example the following will depoy a kiali-test-depth test mesh with a single service:
+
+```
+make openshift-kiali-test-depth
+```
+
+This will deploy the kiali-test-circle test mesh with 2 services with each service having 2 versions:
+
+```
+NUM_SERVICES=2 NUM_VERSIONS=2 make openshift-kiali-test-circle
+```
+
+=== Deploy a Test Mesh Across Multiple Test Namespaces
+
+To deploy a test mesh across multiple namespaces, pass in the NUM_NAMESPACES environment variable. Make sure NUM_SERVICES is the same or greater than NUM_NAMESPACES:
+
+```
+NUM_NAMESPACES=2 NUM_SERVICES=2 make openshift-kiali-test-hourglass
+```
+
+=== Deploy All Test Meshes At Once
+
+[WARNING]
+Deploying the full set of test meshes require alot of resources on the machine running OpenShift. If you are running on a limited machine (e.g. a laptop) these may not deploy or they may deploy but run poorly.
+
 The 'make openshift-deploy' command will automatically install several service meshes into your OpenShift cluster with the prefix of 'kiali-test'. You should then be able to view them in the 'Kiali Console'
 
 [source,shell]
 ----
 make openshift-deploy
 ----
+
+If you want to deploy only a subset of test-meshes, set the environment variable AVAILABLE_MESHES to the YAML that defines the meshes you want. The full set of test meshes looks like this - remove the ones you don't want:
+
+```
+export AVAILABLE_MESHES='{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}'
+make openshift-deploy
+```
