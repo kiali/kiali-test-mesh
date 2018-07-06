@@ -35,7 +35,6 @@ openshift-deploy-kiali-test-circle-callback:
 	ansible-playbook ${PLAYBOOK} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-circle-callback"]}' -v
 
 openshift-deploy-kiali-test-hourglass:
-	# THIS IS NOT IMPLEMENTED YET FOR MULTI-NAMESPACE - @GBAUFAKE WILL FIX AND REMOVE THIS COMMENT
 	@echo About to deploy Kiali Test Hourglass to OpenShift
 	ansible-playbook ${PLAYBOOK} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-hourglass"]}' -v
 
