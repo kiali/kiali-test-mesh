@@ -16,6 +16,7 @@
       set_fact:
         versions: []
         services: []
+        even_services: []
         namespaces: []
         kiali_test_depth_route: ""
         kiali_test_depth_namespace: ""
@@ -77,6 +78,33 @@
         kiali_test_circle_callback_route: "http://{{fqdn_services_circle_callback[0]}}/route?path={{ fqdn_services_circle_callback | join(',') }},{{fqdn_services_circle_callback[0]}};http://{{fqdn_services_circle_callback[0]}}/route?path={{fqdn_services_circle_callback[0]}},{{ fqdn_services_circle_callback | reverse | join(',') }}"
         kiali_test_circle_callback_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-circle-callback') | list | first }}"
       when: "'kiali-test-circle-callback' in meshes"
+
+
+    # Generate Even Array in order to make it simple to Hourglass
+    - name: Generate Hourglass Even Elements Array
+      set_fact: even_services="{{even_services}} + ['service-{{ item }}.kiali-test-hourglass-{{ (item.0 | int) % (number_of_namespaces | int) }}.svc.cluster.local']"
+      when: "(item | int) %2 == 1 and 'kiali-test-hourglass' in meshes"
+      with_sequence: start=1 end={{number_of_services}} format=%d
+
+
+    # if the mesh is odd number so we subtract one to make it even
+    - name: Hourglass Mesh if length is Odd
+      vars:
+        fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-hourglass') | list}}"
+      set_fact:
+        kiali_test_hourglass_route: "http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | difference([fqdn_services_hourglass[-1]]) | join(',') }};http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | intersect(even_services) | join(',') }}"
+        kiali_test_hourglass_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-hourglass') | list | first }}"
+      when: (fqdn_services_hourglass | length % 2 == 0) and 'kiali-test-hourglass' in meshes
+
+
+    - name: Hourglass Mesh if length is Even
+      vars:
+        fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-hourglass') | list}}"
+      set_fact:
+        kiali_test_hourglass_route: "http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | join(',') }};http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | intersect(even_services) | join(',') }}"
+        kiali_test_hourglass_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-hourglass') | list | first }}"
+      when: (fqdn_services_hourglass | length % 2 == 1) and 'kiali-test-hourglass' in meshes
+
 
 
     - name: Set Circle route
@@ -146,7 +174,6 @@
       with_items:
         - "{{ all_services | map(attribute='namespace') | list | unique }}"
 
-
     - name: Deploy Kiali Test Meshes Services
       shell: "oc process -f https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/test-service/deploy/openshift/service-template.yaml -p SERVICE_NAME={{ item.name }} | istioctl kube-inject -f - | oc  apply -n {{ item.namespace }} -f -"
       with_items:
@@ -189,6 +216,7 @@
         - { namespace: "{{ kiali_test_breadth_namespace }}", route: '{{kiali_test_breadth_route}}', mesh: "kiali-test-breadth" }
         - { namespace: "{{ kiali_test_circle_namespace }}", route: '{{kiali_test_circle_route}}', mesh: "kiali-test-circle" }
         - { namespace: "{{ kiali_test_circle_callback_namespace }}", route: '{{kiali_test_circle_callback_route}}', mesh: "kiali-test-circle-callback" }
+        - { namespace: "{{ kiali_test_hourglass_namespace }}", route: '{{kiali_test_hourglass_route}}', mesh: "kiali-test-hourglass" }
         - { namespace: "{{ kiali_test_breadth_sink_namespace }}", route: '{{kiali_test_breadth_sink_route}}', mesh: "kiali-test-breadth-sink" }
         - { namespace: "{{ kiali_test_depth_sink_namespace }}", route: '{{kiali_test_depth_sink_route}}', mesh: "kiali-test-depth-sink" }
 
@@ -199,6 +227,7 @@
         - { namespace: "{{ kiali_test_depth_namespace }}", mesh: "kiali-test-depth" }
         - { namespace: "{{ kiali_test_breadth_namespace }}", mesh: "kiali-test-breadth" }
         - { namespace: "{{ kiali_test_circle_namespace }}", mesh: "kiali-test-circle" }
+        - { namespace: "{{ kiali_test_hourglass_namespace }}", mesh: "kiali-test-hourglass"}
         - { namespace: "{{ kiali_test_circle_callback_namespace }}", mesh: "kiali-test-circle-callback" }
         - { namespace: "{{ kiali_test_breadth_sink_namespace }}", mesh: "kiali-test-breadth-sink" }
         - { namespace: "{{ kiali_test_depth_sink_namespace }}", mesh: "kiali-test-depth-sink" }
