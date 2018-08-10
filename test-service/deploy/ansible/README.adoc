@@ -15,7 +15,7 @@ A straightforward instalation command is
 
 [source,shell]
 ----
-ansible-playbook deploy_test_meshes.yml -e number_of_services=6 -e number_of_versions=1 -e '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}' -v
+ansible-playbook deploy_test_meshes.yml -e number_of_services=6 -e number_of_versions=1 -e number_of_apps=6 -e deployment_type='Deployment' -e '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}' -v
 ----
 which
 
@@ -24,6 +24,10 @@ which
 - `number_of_versions` is the number of versions each service will have per namespace
 
 - `meshes` specifies which mesh will be installed.
+
+- `number_of_apps` is the number of apps each workload will match. The playbook will distribute equally through the services
+
+- `deployment_type` is the type of Deployment on Openshift (it can be ReplicaSet or Deployment - deployment will be use in case this variable is not defined)
 
 
 == Available Meshes
@@ -59,7 +63,7 @@ A straightforward instalation command is
 
 [source,shell]
 ----
-ansible-playbook deploy_test_multiple_namespaces_meshes.yml -e number_of_services=5 -e number_of_versions=2 -e number_of_namespaces=2 -e '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}' -v
+ansible-playbook deploy_test_multiple_namespaces_meshes.yml -e number_of_services=5 -e number_of_versions=2 -e number_of_namespaces=2 -e number_of_apps=6 -e deployment_type='Deployment' -e '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}' -v
 ----
 which
 
@@ -70,3 +74,7 @@ which
 - `meshes` specifies which mesh will be installed.
 
 - `number_of_namespaces` is the number max of namespaces. The playbook will distribute equally through the namespaces.
+
+- `number_of_apps` is the number of apps each workload will match. The playbook will distribute equally through the services
+
+- `deployment_type` is the type of Deployment on Openshift (it can be ReplicaSet or Deployment - deployment will be use in case this variable is not defined)

@@ -1,0 +1,56 @@
+id: kiali-test-service
+kind: Template
+apiVersion: v1
+name: Kiali Test Application
+description: Deploys replicasets for the test mesh
+parameters:
+- name: SERVICE_NAME
+  description: The name to use for the service
+  required: true
+
+- name: WORKLOAD_NAME
+  description: The name to use for the workload
+  required: true
+
+- name: APP_NAME
+  description: The name to use for the app name
+  required: true
+
+- name: WORKLOAD_VERSION
+  description: The version of the deployment
+  value: v1
+
+- name: IMAGE_NAME
+  description: The name to use for the image
+  value: kiali/kiali-test-service
+
+- name: DEPLOYMENT_TYPE
+  description: The type of Deployment (Deployment or ReplicaSet)
+  value: Deployment
+  required: true
+- name: IMAGE_VERSION
+  description: The name to use for the image version
+  value: latest
+objects:
+- kind: ${DEPLOYMENT_TYPE}
+  apiVersion: extensions/v1beta1
+  metadata:
+    name: kiali-${WORKLOAD_NAME}-${WORKLOAD_VERSION}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: ${APP_NAME}
+        version: ${WORKLOAD_NAME}-${WORKLOAD_VERSION}
+    template:
+      metadata:
+        labels:
+          app: ${APP_NAME}
+          version: ${WORKLOAD_NAME}-${WORKLOAD_VERSION}
+      spec:
+        containers:
+          - name: kiali-${WORKLOAD_NAME}-${WORKLOAD_VERSION}
+            image: ${IMAGE_NAME}:${IMAGE_VERSION}
+            imagePullPolicy: IfNotPresent
+            ports:
+            - containerPort: 8888

@@ -1,0 +1,22 @@
+- name: Delete Test Mesh Projects
+  openshift_raw:
+    api_version: v1
+    kind: Project
+    name: "{{ item }}"
+    state: absent
+  ignore_errors: true
+  with_items:
+    - "{{ all_services | map(attribute='namespace') | list | unique  }}"
+
+- name: Create Test Mesh Projects
+  openshift_raw:
+    api_version: v1
+    kind: Project
+    name: "{{ item }}"
+    state: present
+  register: projectStatus
+  until: projectStatus.changed == true
+  retries: 100
+  delay: 20
+  with_items:
+    - "{{ all_services | map(attribute='namespace') | list | unique }}"

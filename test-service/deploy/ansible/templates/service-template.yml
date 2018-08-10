@@ -1,0 +1,35 @@
+id: kiali-test-service
+kind: Template
+apiVersion: v1
+name: Kiali Test Service Template
+description: Deploys a service for the test mesh
+parameters:
+- name: SERVICE_NAME
+  description: The name to use for the service
+  required: true
+
+- name: APP_NAME
+  description: The name to use for the app name
+  required: true
+
+- name: IMAGE_NAME
+  description: The name to use for the image
+  value: kiali/kiali-test-service
+
+
+- name: IMAGE_VERSION
+  description: The name to use for the image version
+  value: latest
+
+objects:
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${SERVICE_NAME}
+  spec:
+    selector:
+      app: ${APP_NAME}
+    ports:
+    - name: http
+      port: 80
+      targetPort: 8888
