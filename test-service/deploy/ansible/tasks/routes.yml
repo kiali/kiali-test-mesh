@@ -1,0 +1,82 @@
+  - name: Set Depth route
+    vars:
+      fqdn_services_depth: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-depth') | list | difference(all_services | map(attribute='fqdn') | select('search', 'kiali-test-depth-sink') | list)}}"
+    set_fact:
+      kiali_test_depth_route: "http://{{fqdn_services_depth[0]}}/route?path={{ fqdn_services_depth | list | join(',') }}"
+      kiali_test_depth_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-depth') | list | first }}"
+    when: "'kiali-test-depth' in meshes"
+
+  - name: Set Circle Callback
+    vars:
+      fqdn_services_circle_callback: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-circle-callback') | list}}"
+    set_fact:
+      kiali_test_circle_callback_route: "http://{{fqdn_services_circle_callback[0]}}/route?path={{ fqdn_services_circle_callback | join(',') }},{{fqdn_services_circle_callback[0]}};http://{{fqdn_services_circle_callback[0]}}/route?path={{fqdn_services_circle_callback[0]}},{{ fqdn_services_circle_callback | reverse | join(',') }}"
+      kiali_test_circle_callback_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-circle-callback') | list | first }}"
+    when: "'kiali-test-circle-callback' in meshes"
+
+
+  # Generate Even Array in order to make it simple to Hourglass
+  - name: Generate Hourglass Even Elements Array
+    set_fact: even_services="{{even_services}} + ['service-{{ item }}.kiali-test-hourglass-{{ (item.0 | int) % (number_of_namespaces | int) }}.svc.cluster.local']"
+    when: "(item | int) %2 == 1 and 'kiali-test-hourglass' in meshes"
+    with_sequence: start=1 end={{number_of_services}} format=%d
+
+
+  # if the mesh is odd number so we subtract one to make it even
+  - name: Hourglass Mesh if length is Odd
+    vars:
+      fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-hourglass') | list}}"
+    set_fact:
+      kiali_test_hourglass_route: "http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | difference([fqdn_services_hourglass[-1]]) | join(',') }};http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | intersect(even_services) | join(',') }}"
+      kiali_test_hourglass_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-hourglass') | list | first }}"
+    when: (fqdn_services_hourglass | length % 2 == 0) and 'kiali-test-hourglass' in meshes
+
+
+  - name: Hourglass Mesh if length is Even
+    vars:
+      fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-hourglass') | list}}"
+    set_fact:
+      kiali_test_hourglass_route: "http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | join(',') }};http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | intersect(even_services) | join(',') }}"
+      kiali_test_hourglass_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-hourglass') | list | first }}"
+    when: (fqdn_services_hourglass | length % 2 == 1) and 'kiali-test-hourglass' in meshes
+
+
+
+  - name: Set Circle route
+    vars:
+      fqdn_services_circle: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-circle') | list | difference(all_services | map(attribute='fqdn') | select('search', 'kiali-test-circle-callback') | list)}}"
+    set_fact:
+      kiali_test_circle_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-circle') | list | first }}"
+      kiali_test_circle_route: "http://{{fqdn_services_circle[0]}}/route?path={{ fqdn_services_circle | join(',') }},{{fqdn_services_circle[0]}}"
+    when: "'kiali-test-circle' in meshes"
+
+  - name: Set Breadth Sink Route
+    vars:
+      fqdn_services_breadth_sink_route: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-breadth-sink') | list}}"
+    set_fact:
+      kiali_test_breadth_sink_route: "http://{{fqdn_services_breadth_sink_route[0]}}/route?path={{item}},{{fqdn_services_breadth_sink_route[-1]}};{{kiali_test_breadth_sink_route}}"
+      kiali_test_breadth_sink_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-breadth-sink') | list | first }}"
+    when: "item != fqdn_services_breadth_sink_route [-1] and 'kiali-test-breadth-sink' in meshes"
+    with_items:
+      - "{{ fqdn_services_breadth_sink_route | reverse | list }} "
+
+  - name: Set Breadth Route
+    vars:
+      fqdn_services_breadth_route: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-breadth') | list | difference(all_services | map(attribute='fqdn') | select('search', 'kiali-test-breadth-sink') | list) }}"
+    set_fact:
+      kiali_test_breadth_route: "http://{{fqdn_services_breadth_route[0]}}/route?path={{item}};{{kiali_test_breadth_route}}"
+      kiali_test_breadth_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-breadth') | list | first }}"
+    with_items:
+      - "{{ fqdn_services_breadth_route | reverse | list  }}"
+    when: "'kiali-test-breadth' in meshes"
+
+
+
+  - name: Set Depth Sink Route
+    vars:
+      fqdn_services_depth_sink_route: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-depth-sink') | list}}"
+    set_fact:
+      kiali_test_depth_sink_route: "http://{{fqdn_services_depth_sink_route[0]}}/route?path={{ fqdn_services_depth_sink_route[:(item | int)] | union([fqdn_services_depth_sink_route[-1]]) | join(',') }};{{kiali_test_depth_sink_route}}"
+      kiali_test_depth_sink_namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-depth-sink') | list | first }}"
+    when: (item | int) != (number_of_services | int) and 'kiali-test-depth-sink' in meshes
+    with_sequence: start={{number_of_services}} end=1 stride=-1 format=%d
