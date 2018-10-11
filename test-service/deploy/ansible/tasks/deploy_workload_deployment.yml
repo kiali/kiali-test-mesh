@@ -1,0 +1,2 @@
+- name: Deploy Workload Deployment {{ item.name }} 
+  shell: "oc process -f templates/workload-deployment.yml -p NAME={{ item.name }} -p PROJECT_NAME={{ item.project_name }} -p BUILD_NUMBER={{ item.build_number }} | istioctl kube-inject -f - | oc  apply -n {{ item.namespace }} -f -"

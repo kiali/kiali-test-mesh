@@ -66,6 +66,7 @@
           namespace: "{{item.1}}-{{ (item.0 | int) % (number_of_namespaces | int) }}"
           fqdn: "service-{{ item.0 }}.{{item.1}}-{{ (item.0 | int) % (number_of_namespaces | int) }}.svc.cluster.local"
           app: "app{{ (item.0 | int) % (number_of_apps | int) }}"
+          pod_name_label: "app{{ (item.0 | int) % (number_of_apps | int) }}"
       when: "random == false"
       with_nested:
         - "{{ services }}"
@@ -78,6 +79,9 @@
 
     - import_tasks: tasks/routes.yml
 
-    - import_tasks: tasks/namespace.yml
+    - name: Configure the namespaces
+      include: tasks/namespace.yml
+      with_items:
+      - "{{ all_services | map(attribute='namespace') | list | unique  }}"
 
     - import_tasks: tasks/deploy.yml

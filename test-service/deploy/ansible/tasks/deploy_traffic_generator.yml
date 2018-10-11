@@ -1,0 +1,5 @@
+- name: Deploy Traffic Generator Configmap in {{ item.namespace }}
+  shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator-configmap.yaml | DURATION='0s' ROUTE=\"{{item.route}}\" RATE='1'  envsubst | oc apply -n {{item.namespace}} -f -"
+
+- name: Deploy Traffic Generator in {{ item.namespace }}
+  shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator.yaml | istioctl kube-inject -f - | oc apply -n {{item.namespace}} -f -"

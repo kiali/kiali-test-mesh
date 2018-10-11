@@ -8,18 +8,9 @@ parameters:
   description: The name to use for the service
   required: true
 
-- name: APP_NAME
-  description: The name to use for the app name
+- name: POD_NAME_LABEL
+  description: The name label used on all the pods in the service
   required: true
-
-- name: IMAGE_NAME
-  description: The name to use for the image
-  value: kiali/kiali-test-service
-
-
-- name: IMAGE_VERSION
-  description: The name to use for the image version
-  value: latest
 
 objects:
 - kind: Service
@@ -28,7 +19,7 @@ objects:
     name: ${SERVICE_NAME}
   spec:
     selector:
-      app: ${APP_NAME}
+      name : ${POD_NAME_LABEL}
     ports:
     - name: http
       port: 80

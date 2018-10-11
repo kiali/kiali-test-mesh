@@ -42,11 +42,13 @@ objects:
       matchLabels:
         app: ${APP_NAME}
         version: ${WORKLOAD_NAME}-${WORKLOAD_VERSION}
+        name: ${APP_NAME}
     template:
       metadata:
         labels:
           app: ${APP_NAME}
           version: ${WORKLOAD_NAME}-${WORKLOAD_VERSION}
+          name: ${APP_NAME}
       spec:
         containers:
           - name: kiali-${WORKLOAD_NAME}-${WORKLOAD_VERSION}
