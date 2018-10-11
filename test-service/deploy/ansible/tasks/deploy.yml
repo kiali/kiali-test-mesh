@@ -1,10 +1,5 @@
-  - name: Grant Permissions to each Kiali Test Meshes Projects
-    shell: "oc adm policy add-scc-to-user privileged -z default -n {{item}}"
-    with_items:
-      - "{{ all_services | map(attribute='namespace') | list | unique }}"
-
   - name: Deploy Kiali Test Meshes Services
-    shell: "oc process -f templates/service-template.yml -p SERVICE_NAME={{ item.name }} -p APP_NAME={{ item.app }} | istioctl kube-inject -f - | oc  apply -n {{ item.namespace }} -f -"
+    include: tasks/deploy_service.yml
     with_items:
       - "{{ all_services }}"
 
@@ -36,8 +31,8 @@
     retries: 100
     delay: 10
 
-  - name: Deploy Traffic Generator ConfigMaps to Kiali Namespaces
-    shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator-configmap.yaml | DURATION='0s' ROUTE=\"{{item.route}}\" RATE='1'  envsubst | oc apply -n {{item.namespace}} -f -"
+  - name: Deploy the Traffic Genertors to the Kiali Namespaces
+    include: tasks/deploy_traffic_generator.yml
     when: "item.mesh in meshes and item.namespace != ''"
     with_items:
       - { namespace: "{{ kiali_test_depth_namespace }}", route: '{{kiali_test_depth_route}}', mesh: "kiali-test-depth" }
@@ -47,15 +42,3 @@
       - { namespace: "{{ kiali_test_hourglass_namespace }}", route: '{{kiali_test_hourglass_route}}', mesh: "kiali-test-hourglass" }
       - { namespace: "{{ kiali_test_breadth_sink_namespace }}", route: '{{kiali_test_breadth_sink_route}}', mesh: "kiali-test-breadth-sink" }
       - { namespace: "{{ kiali_test_depth_sink_namespace }}", route: '{{kiali_test_depth_sink_route}}', mesh: "kiali-test-depth-sink" }
-
-  - name: Deploy Trafic Generator
-    shell: "curl https://raw.githubusercontent.com/kiali/kiali-test-mesh/master/traffic-generator/openshift/traffic-generator.yaml | istioctl kube-inject -f - | oc apply -n {{item.namespace}} -f -"
-    when: "item.mesh in meshes and item.namespace != ''"
-    with_items:
-      - { namespace: "{{ kiali_test_depth_namespace }}", mesh: "kiali-test-depth" }
-      - { namespace: "{{ kiali_test_breadth_namespace }}", mesh: "kiali-test-breadth" }
-      - { namespace: "{{ kiali_test_circle_namespace }}", mesh: "kiali-test-circle" }
-      - { namespace: "{{ kiali_test_hourglass_namespace }}", mesh: "kiali-test-hourglass"}
-      - { namespace: "{{ kiali_test_circle_callback_namespace }}", mesh: "kiali-test-circle-callback" }
-      - { namespace: "{{ kiali_test_breadth_sink_namespace }}", mesh: "kiali-test-breadth-sink" }
-      - { namespace: "{{ kiali_test_depth_sink_namespace }}", mesh: "kiali-test-depth-sink" }

@@ -31,12 +31,19 @@ which
 
 
 == Available Meshes
+
+== Kiali Complex Test Mesh
+This mesh crosses multiple namespaces, uses deployments and replicatsets, and includes both workloads and applications. It is meant to be used to see how Kiali handles more complex scenarios.
+
+image::images/kiali-complex-test-mesh.png[]
+
 [NOTE]
-Meshes presented on the following picture are using one version per service. More versions per service can  change how the graph will look like.
+Mesh images presented below are using one version per service. More versions per service can change how the graph will look like.
+
+The images below are out of date with the more recent Kiali versions, but they still represent the overall layout of what the meshes should look like.
 
 === Kiali Test Depth
 image::images//kiali-test-depth.png[]
-
 
 === Kiali Test Breadth
 image::images//kiali-test-breadth.png[]
@@ -55,7 +62,6 @@ image::images/kiali-test-depth-sink.png[]
 
 === Kiali Test Breadth Sink
 image::images/kiali-test-breadth-sink.png[]
-
 
 = Kiali Test Mesh Multi-Namespace Ansible Installer
 

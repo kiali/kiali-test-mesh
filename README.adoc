@@ -83,3 +83,16 @@ If you want to deploy only a subset of test-meshes, set the environment variable
 export AVAILABLE_MESHES='{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}'
 make openshift-deploy
 ```
+
+
+=== Deploying the Complex Test Mesh
+The complex test mesh is a different type of mesh than the others. This mesh does not take any parameters and is not configurable.
+
+This mesh includes mixing different configuration options. It spans multiple namespaces, uses deployments and replicasets, and apps and workloads. It is meant as a testing mesh to see how Kiali handles more complex scenarios. 
+
+To deploy the complex test mesh:
+
+[source,shell]
+----
+make openshift-deploy-kiali-complex-mesh  
+----

@@ -1,0 +1,74 @@
+- name: Instal Kiali Test Mesh
+  hosts: localhost
+  vars:
+   namespaces:
+     - kiali-test-frontend
+     - kiali-test-reviews
+     - kiali-test-ratings
+
+  tasks:
+    - name: Remove any existing namespaces and setup new ones
+      include: tasks/namespace.yml
+      with_items: "{{ namespaces }}"
+
+    # Setup the kiali-test-frontend namespace
+    - name: Create the frontend services
+      include: tasks/deploy_service.yml
+      with_items:
+      - { namespace: 'kiali-test-frontend', name: 'productpage', pod_name_label: 'productpage' }
+      - { namespace: 'kiali-test-frontend', name: 'details', pod_name_label: 'details' }
+
+    - name: Create the Productpage V1 Deployment
+      include: tasks/deploy_app_deployment.yml
+      with_items:
+      - { namespace: 'kiali-test-frontend', name: 'productpagev1', app: 'productpage', version: 'v1' }
+
+    - name: Create the Details V1 App
+      include: tasks/deploy_app_replicaset.yml
+      with_items:
+      - { namespace: 'kiali-test-frontend', name: 'detailsv1', app: 'details', version: 'v1' }
+
+    # Setup the kiali-test-reviews namespace
+    - name: Create the reviews service
+      include: tasks/deploy_service.yml
+      with_items:
+      - { namespace: 'kiali-test-reviews', name: 'reviews', pod_name_label: 'reviews' }
+
+    - name: Create the Reviews V1 Deployment
+      include: tasks/deploy_app_deployment.yml
+      with_items:
+      - { namespace: 'kiali-test-reviews', name: 'reviewsv1', app: 'reviews', version: 'v1' }
+
+    - name: Create the Review V2 ReplicaSet
+      include: tasks/deploy_app_replicaset.yml
+      with_items:
+      - { namespace: 'kiali-test-reviews', name: 'reviewsv2', app: 'reviews', version: 'v2' }
+
+    - name: Create the Reviews Workload
+      include: tasks/deploy_workload_deployment.yml
+      with_items:
+      - { namespace: 'kiali-test-reviews', name: 'reviews003', project_name: 'reviews', build_number: '0.0.3' }
+
+    # Setup the kiali-test-ratings namespace
+    - name: Create the ratings service
+      include: tasks/deploy_service.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratings', pod_name_label: 'ratings' }
+     
+    - name: Create the Ratings V1 Deployment
+      include: tasks/deploy_app_deployment.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratingsv1', app: 'ratings', version: 'v1' }
+
+    - name: Creat the Ratings Workload
+      include: tasks/deploy_app_deployment.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratingsv2', app: 'ratings', version: 'v2' }
+
+
+    - name: Create the traffic generator
+      include: tasks/deploy_traffic_generator.yml
+      with_items:
+      - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local' }
+
+
