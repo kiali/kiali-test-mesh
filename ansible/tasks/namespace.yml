@@ -1,5 +1,5 @@
 - name: Deleting Namespace {{ item }}
-  openshift_raw:
+  k8s:
     api_version: v1
     kind: Project
     name: "{{ item }}"
@@ -7,7 +7,7 @@
   ignore_errors: true
 
 - name: Create Namespace {{ item }}
-  openshift_raw:
+  k8s:
     api_version: v1
     kind: Project
     name: "{{ item }}"

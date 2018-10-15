@@ -68,7 +68,7 @@ NUM_NAMESPACES=2 NUM_SERVICES=2 make openshift-deploy-kiali-test-hourglass
 === Deploy All Test Meshes At Once
 
 [WARNING]
-Deploying the full set of test meshes require alot of resources on the machine running OpenShift. If you are running on a limited machine (e.g. a laptop) these may not deploy or they may deploy but run poorly.
+Deploying the full set of test meshes require a lot of resources on the machine running OpenShift. If you are running on a limited machine (e.g. a laptop) these may not deploy or they may deploy but run poorly.
 
 The 'make openshift-deploy' command will automatically install several service meshes into your OpenShift cluster with the prefix of 'kiali-test'. You should then be able to view them in the 'Kiali Console'
 
@@ -88,11 +88,11 @@ make openshift-deploy
 === Deploying the Complex Test Mesh
 The complex test mesh is a different type of mesh than the others. This mesh does not take any parameters and is not configurable.
 
-This mesh includes mixing different configuration options. It spans multiple namespaces, uses deployments and replicasets, and apps and workloads. It is meant as a testing mesh to see how Kiali handles more complex scenarios. 
+This mesh includes mixing different configuration options. It spans multiple namespaces, uses deployments and replicasets, and apps and workloads. It is meant as a testing mesh to see how Kiali handles more complex scenarios.
 
 To deploy the complex test mesh:
 
 [source,shell]
 ----
-make openshift-deploy-kiali-complex-mesh  
+make openshift-deploy-kiali-complex-mesh
 ----
