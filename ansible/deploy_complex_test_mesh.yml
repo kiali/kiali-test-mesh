@@ -54,21 +54,43 @@
       include: tasks/deploy_service.yml
       with_items:
       - { namespace: 'kiali-test-ratings', name: 'ratings', pod_name_label: 'ratings' }
-     
+
     - name: Create the Ratings V1 Deployment
       include: tasks/deploy_app_deployment.yml
       with_items:
       - { namespace: 'kiali-test-ratings', name: 'ratingsv1', app: 'ratings', version: 'v1' }
 
-    - name: Creat the Ratings Workload
+    - name: Create the Ratings V2 Deployment
       include: tasks/deploy_app_deployment.yml
       with_items:
       - { namespace: 'kiali-test-ratings', name: 'ratingsv2', app: 'ratings', version: 'v2' }
 
+    - name: Create the Ratings V3 Deployment (Without Sidecar)
+      include: tasks/deploy_app_deployment_without_sidecar.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratingsv3', app: 'ratings', version: 'v3' }
+
+    - name: Create the Ratings V4 ReplicaSet (Without Sidecar)
+      include: tasks/deploy_app_replicaset_without_sidecar.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratingsv4', app: 'ratings', version: 'v4' }
+
+    - name: Create the Ratings V5 StatefulSet
+      include: tasks/deploy_app_statefulset.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratingsv5', app: 'ratings', version: 'v5' }
+
+    - name: Create the Ratings V6 DaemonSet
+      include: tasks/deploy_app_daemonset.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratingsv6', app: 'ratings', version: 'v6' }
+
+    - name: Create the Ratings V6 ReplicationController
+      include: tasks/deploy_app_replication_controller.yml
+      with_items:
+      - { namespace: 'kiali-test-ratings', name: 'ratingsv7', app: 'ratings', version: 'v7' }
 
     - name: Create the traffic generator
       include: tasks/deploy_traffic_generator.yml
       with_items:
       - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local' }
-
-

@@ -4,11 +4,8 @@ NUM_SERVICES ?= 1
 NUM_VERSIONS ?= 1
 NUM_APPS ?= 1
 NUM_NAMESPACES ?= 1
-ifeq (${NUM_NAMESPACES},1)
-  PLAYBOOK=./test-service/deploy/ansible/deploy_test_meshes.yml
-else
-  PLAYBOOK=./test-service/deploy/ansible/deploy_test_multiple_namespaces_meshes.yml
-endif
+PLAYBOOK=./ansible/deploy_test_meshes.yml
+
 
 all:	build-service build-traffic-generator
 
@@ -50,7 +47,7 @@ openshift-deploy-kiali-test-breadth-sink:
 
 openshift-deploy-kiali-complex-mesh:
 	@echo About to deploy the Kiali Complex Test Mesh to OpenShift
-	ansible-playbook ./test-service/deploy/ansible/deploy_complex_test_mesh.yml -v
+	ansible-playbook ./ansible/deploy_complex_test_mesh.yml -v
 
 openshift-deploy-all-meshes:
 	@echo About to deploy all Kiali Test Meshes available to OpenShift

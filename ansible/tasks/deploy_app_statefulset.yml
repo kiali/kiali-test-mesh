@@ -1,0 +1,2 @@
+- name: Deploy StatefulSet {{ item.name }}
+  shell: "oc process -f templates/app-statefulset.yml -p NAME={{ item.name }} -p APP_NAME={{ item.app }} -p APP_VERSION={{ item.version }} | istioctl kube-inject -f - | oc  apply -n {{ item.namespace }} -f -"
