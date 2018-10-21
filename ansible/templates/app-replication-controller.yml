@@ -28,12 +28,13 @@ objects:
   spec:
     replicas: 3
     selector:
+      name: ${APP_NAME}
       app: ${APP_NAME}
       version: ${APP_VERSION}
     template:
       metadata:
-        name: ${APP_NAME}
         labels:
+          name: ${APP_NAME}
           app: ${APP_NAME}
           version: ${APP_VERSION}
       spec:
@@ -43,27 +44,3 @@ objects:
            imagePullPolicy: IfNotPresent
            ports:
            - containerPort: 8888
-
-
-  # metadata:
-  #   name: ${NAME}
-  # spec:
-  #   replicas: 1
-  #   selector:
-  #     matchLabels:
-  #       name: ${APP_NAME}
-  #       app: ${APP_NAME}
-  #       version: ${APP_VERSION}
-  #   template:
-  #     metadata:
-  #       labels:
-  #         name: ${APP_NAME}
-  #         app: ${APP_NAME}
-  #         version: ${APP_VERSION}
-  #     spec:
-  #       containers:
-  #         - name: kiali-${NAME}-${APP_VERSION}
-  #           image: ${IMAGE}
-  #           imagePullPolicy: IfNotPresent
-  #           ports:
-  #           - containerPort: 8888
