@@ -85,7 +85,7 @@
       with_items:
       - { namespace: 'kiali-test-ratings', name: 'ratingsv6', app: 'ratings', version: 'v6' }
 
-    - name: Create the Ratings V6 ReplicationController
+    - name: Create the Ratings V7 ReplicationController
       include: tasks/deploy_app_replication_controller.yml
       with_items:
       - { namespace: 'kiali-test-ratings', name: 'ratingsv7', app: 'ratings', version: 'v7' }

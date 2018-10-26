@@ -37,6 +37,33 @@ This mesh crosses multiple namespaces, uses deployments and replicatsets, and in
 
 image::images/kiali-complex-test-mesh.png[]
 
+=== Complex Mesh Components
+
+- Namespace: kiali-test-frontend
+  - Product Page (Service)
+    - Productpage V1 (Deployment - App)(With Istio Sidecar)
+  - Details (Service)
+    - Details V1 (ReplicaSet - App)(With Istio Sidecar)
+
+- Namespace: kiali-test-reviews
+  - Reviews  (Service)
+    - Reviews V1 (Deployment - App)(With Istio Sidecar)
+    - Reviews V2 (ReplicaSet - App)(With Istio Sidecar)
+    - Reviews V3 (Deployment - Separate Workload)(With Istio Sidecar)
+
+
+- Namespace: kiali-test-ratings
+  - Ratings (Service)
+    - Ratings V1 (Deployment - App)(With Istio Sidecar)
+    - Ratings V2 (Deployment - App)(With Istio Sidecar)
+    - Ratings V3 (Deployment - App)(Without Istio Sidecar)
+    - Ratings V4 (ReplicaSet - App)(Without Istio Sidecar)
+    - Ratings V5 (StatefulSet - App)(With Istio Sidecar)
+    - Ratings V6 (DaemonSet - App)(With Istio Sidecar)
+    - Ratings V6 (ReplicationController - App)(With Istio Sidecar)
+
+
+
 [NOTE]
 Mesh images presented below are using one version per service. More versions per service can change how the graph will look like.
 
