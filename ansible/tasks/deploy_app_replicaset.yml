@@ -1,2 +1,0 @@
-- name: Deploy ReplicaSet {{ item.name }} 
-  shell: "oc process -f templates/app-replicaset.yml -p NAME={{ item.name }} -p APP_NAME={{ item.app }} -p APP_VERSION={{ item.version }} | istioctl kube-inject -f - | oc  apply -n {{ item.namespace }} -f -"

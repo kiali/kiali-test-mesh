@@ -84,4 +84,4 @@
       with_items:
       - "{{ all_services | map(attribute='namespace') | list | unique  }}"
 
-    - import_tasks: tasks/deploy.yml
+    - import_tasks: tasks/scale_mesh.yml

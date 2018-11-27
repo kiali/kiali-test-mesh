@@ -26,7 +26,7 @@ objects:
   metadata:
     name: ${NAME}
   spec:
-    replicas: 3
+    replicas: 1
     selector:
       name: ${APP_NAME}
       app: ${APP_NAME}
