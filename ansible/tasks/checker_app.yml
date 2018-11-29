@@ -12,7 +12,6 @@
             app: "{{ item.app }}"
   register: status
   until: (status.result.status.ready_replicas is defined and status.result.status.ready_replicas == 1) or
-       (status.result.status.readyReplicas is defined and status.result.status.readyReplicas == 1) or
-       (status.result.status.numberReady is defined and status.result.status.numberReady == 2)
+       (status.result.status.readyReplicas is defined and status.result.status.readyReplicas == 1) 
   retries: 100
   delay: 10
