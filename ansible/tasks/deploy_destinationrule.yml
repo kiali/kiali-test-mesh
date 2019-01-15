@@ -1,0 +1,2 @@
+- name: Deploy Kiali Test Meshes Destination Rule
+  shell: "cat templates/destinationrule-template.yml | DESTINATION_RULE_NAME={{ item.name }} DESTINATION_RULE_HOST={{ item.host }} SUBSET_NAME={{item.subset_name}} SUBSET_VERSION={{item.subset_version}} envsubst | oc  apply -n {{ item.namespace }} -f -"
