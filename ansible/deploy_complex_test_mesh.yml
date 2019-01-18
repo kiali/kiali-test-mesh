@@ -90,6 +90,16 @@
       with_items:
       - { namespace: 'kiali-test-ratings', file: 'templates/app-replication-controller.yml', name: 'ratingsv7', app: 'ratings', version: 'v7', sidecar: true }
 
+    - name: Create the Details VS
+      include: tasks/deploy_virtualservice.yml
+      with_items:
+      - { namespace: 'kiali-test-frontend', name: 'detailsvs', host: 'kiali.io', destination_host: 'details', destination_subset: 'v1' }
+
+    - name: Create the Details DR
+      include: tasks/deploy_destinationrule.yml
+      with_items:
+      - { namespace: 'kiali-test-frontend', name: 'detailsdr', host: 'details', subset_name: 'v1', subset_version: 'v1' }
+
     - name: Check if ReplicaSet/Deployment are running as expected before deploying traffic-generator
       include: tasks/checker_app.yml
       with_items:
@@ -114,4 +124,4 @@
     - name: Create the traffic generator
       include: tasks/deploy_traffic_generator.yml
       with_items:
-      - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local' }
+      - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=kiali.io;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local' }
