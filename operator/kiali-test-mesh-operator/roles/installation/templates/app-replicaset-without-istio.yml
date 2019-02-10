@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: kiali-{{ item.app }}-{{ item.version }}
+  namespace: {{ item.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ item.app }}
+      version: {{ item.version }}
+      name: {{ item.app }}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: {{ item.app }}
+        name: {{ item.app }}
+        version: {{ item.version }}
+    spec:
+      containers:
+      - image: kiali/kiali-test-service:latest
+        imagePullPolicy: IfNotPresent
+        name: kiali-{{ item.app }}-{{ item.version }}
+        ports:
+        - containerPort: 8888

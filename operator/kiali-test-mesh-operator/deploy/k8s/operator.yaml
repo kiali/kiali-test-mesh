@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiali-test-mesh-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: kiali-test-mesh-operator
+  template:
+    metadata:
+      labels:
+        name: kiali-test-mesh-operator
+    spec:
+      serviceAccountName: kiali-test-mesh-operator
+      containers:
+        - name: kiali-test-mesh-operator
+          image: "gbaufake/kiali-test-mesh-operator:0.1"
+          imagePullPolicy: "Always"
+          env:
+            - name: WATCH_NAMESPACE
+              value: ""
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "kiali-test-mesh-operator"

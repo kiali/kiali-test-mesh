@@ -1,0 +1,5 @@
+---
+- version: v1
+  group: kiali-test-mesh.kiali.io
+  kind: Installation
+  role: /opt/ansible/roles/installation

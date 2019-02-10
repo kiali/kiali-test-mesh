@@ -1,0 +1,12 @@
+- name: Deploy Traffic Generator Configmap in {{ item.namespace }}
+  k8s:
+   state: present
+   definition: "{{ lookup('template', 'templates/traffic-generator-configmap.yml') }}"
+
+- name: Deploy Traffic Generator in {{ item.namespace }}
+  k8s:
+   state: present
+   definition: "{{ lookup('template', 'templates/traffic-generator-istio.yml') }}"
+
+
+

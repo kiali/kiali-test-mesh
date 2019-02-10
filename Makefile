@@ -45,6 +45,19 @@ openshift-deploy-kiali-test-breadth-sink:
 	@echo About to deploy Kiali Test Breadth Sink to OpenShift
 	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-breadth-sink"]}' -v
 
-openshift-deploy-kiali-complex-mesh:
+
+operator-build:
+	@echo Building operator
+	cd operator/kiali-test-mesh-operator && operator-sdk build gbaufake/kiali-test-mesh-operator:0.1
+	docker push gbaufake/kiali-test-mesh-operator:0.1
+
+
+operator-deploy:
 	@echo About to deploy the Kiali Complex Test Mesh to OpenShift
-	ansible-playbook ./ansible/deploy_complex_test_mesh.yml -v
+	oc process -f operator/kiali-test-mesh-operator/deploy/openshift/operator.yaml | oc create -f -
+	oc create -f operator/kiali-test-mesh-operator/deploy/openshift/cr.yaml
+
+operator-remove:
+	@echo About to undeploy the Kiali Complex Test Mesh to OpenShift
+	oc process -f operator/kiali-test-mesh-operator/deploy/openshift/operator.yaml | oc delete -f -
+

@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: kiali-test-mesh-operator-job
+parameters:
+- displayName: Kiali Tesh Mesh Operator Namespace
+  description: The namespace for the Kiali Test Mesh Operator
+  name: OPERATOR_NAMESPACE
+  value: kiali-test-mesh-operator
+  required: true
+- displayName: Kiali Test Mesh Operator Image
+  description: The Image for the Kiali Test Mesh Operator
+  name: IMAGE_OPERATOR
+  value: gbaufake/kiali-test-mesh-operator:0.1
+objects:
+- kind: CustomResourceDefinition
+  apiVersion: apiextensions.k8s.io/v1beta1
+  metadata:
+    name: installations.kiali-test-mesh.kiali.io
+    namespace: ${OPERATOR_NAMESPACE}
+  spec:
+    group: kiali-test-mesh.kiali.io
+    names:
+      kind: Installation
+      listKind: InstallationList
+      plural: installations
+      singular: installation
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1
+    versions:
+    - name: v1
+      served: true
+      storage: true
+
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    name: kiali-test-mesh-operator
+    namespace: ${OPERATOR_NAMESPACE}
+
+- kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: kiali-test-mesh-operator
+  subjects:
+  - kind: ServiceAccount
+    name: kiali-test-mesh-operator
+    namespace: ${OPERATOR_NAMESPACE}
+  roleRef:
+    kind: ClusterRole
+    name: cluster-admin
+    apiGroup: rbac.authorization.k8s.io
+
+- kind: Deployment
+  apiVersion: apps/v1
+  metadata:
+    name: kiali-test-mesh-operator
+    namespace: ${OPERATOR_NAMESPACE}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        name: kiali-test-mesh-operator
+    template:
+      metadata:
+        labels:
+          name: kiali-test-mesh-operator
+      spec:
+        serviceAccountName: kiali-test-mesh-operator
+        containers:
+          - name: kiali-test-mesh-operator
+            image: ${IMAGE_OPERATOR}
+            imagePullPolicy: "Always"
+            env:
+              - name: WATCH_NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+              - name: POD_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: OPERATOR_NAME
+                value: "kiali-test-mesh-operator"

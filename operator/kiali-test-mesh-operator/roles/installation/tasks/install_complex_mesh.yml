@@ -1,0 +1,89 @@
+---
+# tasks file for complexmesh
+
+- name: Remove any existing namespaces and setup new ones
+  include: namespace.yml
+  with_items: "{{ namespaces }}"
+
+    # Setup the kiali-test-frontend namespace
+- name: Create Services
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+          name: "{{ item.name }}"
+          namespace: "{{ item.namespace }}"
+      spec:
+        selector:
+          name: "{{ item.pod_name_label }}"
+        ports:
+        - name: http
+          port: 80
+          targetPort: 8888
+  with_items:
+   - { namespace: 'kiali-test-frontend', name: 'productpage', pod_name_label: 'productpage' }
+   - { namespace: 'kiali-test-frontend', name: 'details', pod_name_label: 'details' }
+   - { namespace: 'kiali-test-reviews', name: 'reviews', pod_name_label: 'reviews' }
+   - { namespace: 'kiali-test-ratings', name: 'ratings', pod_name_label: 'ratings' }
+
+- name: Create Frontend Items
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  with_items:
+    - { namespace: 'kiali-test-frontend', file: 'templates/app-deployment.yml', app: 'productpage', version: 'v1'}
+    - { namespace: 'kiali-test-frontend', file: 'templates/app-replicaset.yml', app: 'details', version: 'v1'}
+    - { namespace: 'kiali-test-frontend', file: 'templates/destinationrule-template.yml', name: 'detailsdr', host: 'details', subset_name: 'v1', subset_version: 'v1' }
+    - { namespace: 'kiali-test-frontend', file: 'templates/virtualservice-template.yml', name: 'detailsvs', host: 'kiali.io', destination_host: 'details', destination_subset: 'v1' }
+    
+    
+- name: Create Reviews Items
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  with_items:
+    - { namespace: 'kiali-test-reviews', file: 'templates/app-deployment.yml', app: 'reviews', version: 'v1'}
+    - { namespace: 'kiali-test-reviews', file: 'templates/app-replicaset.yml', app: 'reviews', version: 'v2'}
+    - { namespace: 'kiali-test-reviews', file: 'templates/workload-deployment.yml', name: 'reviews003', project_name: 'reviews', build_number: '0.0.3'}
+
+    
+- name: Create Ratings Items
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  with_items:
+    - { namespace: 'kiali-test-ratings', file: 'templates/app-deployment.yml', app: 'ratings', version: 'v1'}
+    - { namespace: 'kiali-test-ratings', file: 'templates/app-deployment.yml', app: 'ratings', version: 'v2'}
+    - { namespace: 'kiali-test-ratings', file: 'templates/app-deployment-without-istio.yml', app: 'ratings', version: 'v3'}
+    - { namespace: 'kiali-test-ratings', file: 'templates/app-replicaset-without-istio.yml', app: 'ratings', version: 'v4'}
+    - { namespace: 'kiali-test-ratings', file: 'templates/app-statefulset.yml', app: 'ratings', version: 'v5' }
+    - { namespace: 'kiali-test-ratings', file: 'templates/app-daemonset.yml', app: 'ratings', version: 'v6' }
+
+     
+
+- name: Check if ReplicaSet/Deployment are running as expected before deploying traffic-generator
+  include: checker_app.yml
+  with_items:
+   - { namespace: 'kiali-test-frontend', name: 'kiali-productpage-v1', app: "productpage", deployment_type: 'Deployment', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-frontend', name: 'kiali-details-v1', app: "details", deployment_type: 'ReplicaSet', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-reviews', name: 'kiali-reviews-v1', app: "reviews", deployment_type: 'Deployment', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-reviews', name: 'kiali-reviews-v2', app: "reviews", deployment_type: 'ReplicaSet', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-ratings', name: 'kiali-ratings-v1', app: "ratings", deployment_type: 'Deployment', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-ratings', name: 'kiali-ratings-v2', app: "ratings", deployment_type: 'Deployment', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-ratings', name: 'kiali-ratings-v3', app: "ratings", deployment_type: 'Deployment', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-ratings', name: 'kiali-ratings-v4', app: "ratings", deployment_type: 'ReplicaSet', api_version: 'extensions/v1beta1'}
+   - { namespace: 'kiali-test-ratings', name: 'kiali-ratings-v5', app: "ratings", deployment_type: 'StatefulSet', api_version: 'apps/v1beta1'}
+
+- name: Check if DaemonSet are running as expected before deploying traffic-generator
+  include: checker_daemon_set.yml
+  with_items:
+   - { namespace: 'kiali-test-ratings', name: 'kiali-ratings-v6', app: "ratings", deployment_type: 'DaemonSet' , api_version: 'extensions/v1beta1'}
+
+
+
+- name: Create the traffic generator
+  include: deploy_traffic_generator.yml
+  with_items:
+   - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local' }
