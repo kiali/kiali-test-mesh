@@ -52,12 +52,32 @@ operator-build:
 	docker push gbaufake/kiali-test-mesh-operator:0.1
 
 
-operator-deploy:
-	@echo About to deploy the Kiali Complex Test Mesh to OpenShift
+operator-deploy-openshift:
+	@echo About to deploy the Kiali Tesh Mesh Operator to OpenShift
 	oc process -f operator/kiali-test-mesh-operator/deploy/openshift/operator.yaml | oc create -f -
 	oc create -f operator/kiali-test-mesh-operator/deploy/openshift/cr.yaml
 
-operator-remove:
+
+
+operator-deploy-k8s:
+	@echo About to deploy the Kiali Tesh Mesh Operator to K8s
+	kubectl create namespace kiali-test-mesh-operator
+	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/installation_crd.yaml
+	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/service_account.yaml
+	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/role_binding.yaml
+	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/operator.yaml
+
+
+
+operator-remove-openshift:
 	@echo About to undeploy the Kiali Complex Test Mesh to OpenShift
 	oc process -f operator/kiali-test-mesh-operator/deploy/openshift/operator.yaml | oc delete -f -
 
+
+operator-remove-k8s:
+	@echo About to deploy the Kiali Tesh Mesh Operator to K8s
+	kubectl delete namespace kiali-test-mesh-operator
+	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/installation_crd.yaml
+	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/service_account.yaml
+	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/role_binding.yaml
+	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/operator.yaml

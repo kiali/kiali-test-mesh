@@ -71,9 +71,17 @@ The complex test mesh is a different type of mesh than the others. This mesh doe
 
 This mesh includes mixing different configuration options. It spans multiple namespaces, uses deployments and replicasets, and apps and workloads. It is meant as a testing mesh to see how Kiali handles more complex scenarios.
 
-To deploy the complex test mesh:
+To deploy the complex test mesh use kiali-test-mesh-operator to deploy on openshift:
 
 [source,shell]
 ----
-make openshift-deploy-kiali-complex-mesh
+make operator-deploy-openshift
 ----
+
+
+[source,shell]
+----
+make operator-deploy-kubernetes
+----
+
+on CR (available at `operator/kiali-test-mesh-operator/deploy/openshift/cr.yaml`) make sure the `complex_mesh=true` is present
