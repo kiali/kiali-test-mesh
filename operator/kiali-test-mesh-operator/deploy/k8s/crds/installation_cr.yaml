@@ -1,7 +1,7 @@
 apiVersion: kiali-test-mesh.kiali.io/v1
 kind: Installation
 metadata:
-  name: kili-test-mesh-installation
+  name: kiali-test-mesh-installation
 spec:
   # Add fields here
   complex_mesh: true

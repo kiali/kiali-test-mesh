@@ -6,6 +6,8 @@ namespaces:
 - kiali-test-ratings
 
 complex_mesh: false
-proxy_image: 'docker.io/istio/proxyv2'
-proxy_init: 'docker.io/istio/proxy_init'
-proxy_version: '1.1.0-snapshot.5'
+
+
+istio_manual_injection:
+  enabled: false
+  version: '1.1.0-snapshot.5'
