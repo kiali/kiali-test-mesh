@@ -11,7 +11,7 @@
           matchLabels:
             app: "{{ item.app }}"
   register: status
-  until: (status.result.status.ready_replicas is defined and status.result.status.ready_replicas == 1) or
-       (status.result.status.readyReplicas is defined and status.result.status.readyReplicas == 1) 
+  until: (status.result.status.ready_replicas is defined and status.result.status.replicas and status.result.status.ready_replicas == status.result.status.replicas) or
+       (status.result.status.readyReplicas is defined and status.result.status.replicas and status.result.status.readyReplicas == status.result.status.replicas) 
   retries: 100
   delay: 10
