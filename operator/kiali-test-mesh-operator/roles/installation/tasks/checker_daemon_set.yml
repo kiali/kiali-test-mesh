@@ -6,10 +6,6 @@
       metadata:
         name: "{{ item.name }}"
         namespace: "{{ item.namespace }}"
-      spec:
-        selector:
-          matchLabels:
-            app: "{{ item.app }}"
   register: status
   until: (status.result.status.number_ready is defined and status.result.status.number_available is defined and status.result.status.number_ready == status.result.status.number_available ) or
         (status.result.status.numberReady is defined and status.result.status.numberAvailable is defined and status.result.status.numberReady ==  status.result.status.numberAvailable) 
