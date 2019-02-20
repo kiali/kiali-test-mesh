@@ -55,7 +55,7 @@ operator-build:
 operator-deploy-openshift:
 	@echo About to deploy the Kiali Tesh Mesh Operator to OpenShift
 	oc process -f operator/kiali-test-mesh-operator/deploy/openshift/operator.yaml | oc create -f -
-	oc create -f operator/kiali-test-mesh-operator/deploy/openshift/cr.yaml
+	oc create -f operator/kiali-test-mesh-operator/deploy/cr.yaml
 
 
 
@@ -66,6 +66,8 @@ operator-deploy-k8s:
 	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/service_account.yaml
 	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/role_binding.yaml
 	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/operator.yaml
+	kubectl create -f operator/kiali-test-mesh-operator/deploy/cr.yaml
+
 
 
 
