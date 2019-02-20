@@ -5,7 +5,8 @@ namespaces:
 - kiali-test-reviews
 - kiali-test-ratings
 
-complex_mesh: false
+complex_mesh:
+  enabled: true
 
 
 istio_manual_injection:
