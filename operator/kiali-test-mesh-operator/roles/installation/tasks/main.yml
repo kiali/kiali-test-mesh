@@ -5,4 +5,9 @@
 
 - name: Install Complex Mesh
   include: install_complex_mesh.yml
-  when: complex_mesh
+  when: complex_mesh.enabled
+
+
+- name: Install Bookinfo
+  include: install_bookinfo.yml
+  when: bookinfo.enabled
