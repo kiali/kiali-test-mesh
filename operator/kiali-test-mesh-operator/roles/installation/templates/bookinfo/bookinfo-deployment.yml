@@ -16,8 +16,8 @@ spec:
         version: {{ item.version }}
     spec:
       containers:
-      - name: {{item.app}}-container
-        image: {{ image }}:{{ bookinfo.version }}
+      - name: {{ item.app }}-container
+        image: {{ item.image }}:{{ bookinfo.version }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9080

@@ -5,7 +5,7 @@
 - name: Create Services
   k8s:
     state: present
-    definition: "{{ lookup('template', templates/bookinfo/bookinfo-service.yml) }}"
+    definition: "{{ lookup('template', 'templates/bookinfo/bookinfo-service.yml') }}"
   with_items:
     - {name: 'details', app: 'details'}
     - {name: 'ratings', app: 'ratings'}
@@ -16,18 +16,17 @@
 - name: Install Bookinfo Static Assets
   include: tasks/deploy_istio_item.yml
   with_items:
-   - {name: 'details-v1', app: 'details', version: 'v1', file: 'templates/bookinfo-deployment', image: 'istio/examples-bookinfo-details-v1', sidecar: true}
-   - {name: 'ratings-v1', app: 'ratings', version: 'v1', file: 'templates/bookinfo-deployment', image: 'istio/examples-bookinfo-ratings-v1', sidecar: true}
-   - {name: 'reviews-v1', app: 'reviews', version: 'v1', file: 'templates/bookinfo-deployment', image: 'istio/examples-bookinfo-reviews-v1', sidecar: true}
-   - {name: 'reviews-v2', app: 'reviews', version: 'v2', file: 'templates/bookinfo-deployment', image: 'istio/examples-bookinfo-reviews-v2', sidecar: true}
-   - {name: 'reviews-v3', app: 'reviews', version: 'v3', file: 'templates/bookinfo-deployment', image: 'istio/examples-bookinfo-reviews-v3', sidecar: true}
-   - {name: 'productpage-v1', app: 'productpage', version: 'v1', file: 'templates/bookinfo-deployment', image: 'istio/examples-bookinfo-productpage-v1', sidecar: true}
-
+   - {name: 'details-v1', app: 'details', version: 'v1', file: 'templates/bookinfo/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-details-v1', sidecar: true}
+   - {name: 'ratings-v1', app: 'ratings', version: 'v1', file: 'templates/bookinfo/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-ratings-v1', sidecar: true}
+   - {name: 'reviews-v1', app: 'reviews', version: 'v1', file: 'templates/bookinfo/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-reviews-v1', sidecar: true}
+   - {name: 'reviews-v2', app: 'reviews', version: 'v2', file: 'templates/bookinfo/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-reviews-v2', sidecar: true}
+   - {name: 'reviews-v3', app: 'reviews', version: 'v3', file: 'templates/bookinfo/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-reviews-v3', sidecar: true}
+   - {name: 'productpage-v1', app: 'productpage', version: 'v1', file: 'templates/bookinfo/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-productpage-v1', sidecar: true}
 
 - name: Deploy Bookinfo Istio Assets
   k8s:
     state: present
-    definition: "{{ lookup('template', item.file }}"
+    definition: "{{ lookup('template', item.file) }}"
   with_items:
    - {file: 'templates/bookinfo/istio/bookinfo-gateway.yml'}
    - {file: 'templates/bookinfo/istio/bookinfo-vs.yml'}
@@ -37,7 +36,7 @@
 - name: Deploy MongoDB
   k8s:
     state: present
-    definition: "{{ lookup('template', item.file }}"
+    definition: "{{ lookup('template', item.file) }}"
   when: bookinfo.mongodb
   with_items:
    - {file: 'templates/bookinfo/mongodb/service.yml'}
@@ -57,16 +56,16 @@
 
 - name: Deploy Ratings V2 MongoDB
   include: tasks/deploy_istio_item.yml
-  when: mongodb
+  when: bookinfo.mongodb
   with_items:
-    - {file: 'template/bookinfo/bookinfo-ratings-v2-mongodb.yml'}
+    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mongodb.yml'}
   
  
 - name: Deploy Ratings V2 MySQL
   include: tasks/deploy_istio_item.yml
-  when: mysql
+  when: bookinfo.mysql
   with_items:
-    - {file: 'template/bookinfo/bookinfo-ratings.yml'}
+    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mysql.yml'}
   
 
 - name: Check if ReplicaSet/Deployment are running as expected before deploying traffic-generator
@@ -88,7 +87,7 @@
    - {namespace: '{{ bookinfo.namespace }}', name: 'mongodb-v1', deployment_type: 'Deployment', api_version: 'extensions/v1beta1' }
 
 
-- name: Check if mongodb is running as expected before deploying traffic-generator
+- name: Check if mysql is running as expected before deploying traffic-generator
   include: checker_app.yml
   when: bookinfo.mysql
   with_items:
@@ -96,12 +95,7 @@
    - {namespace: '{{ bookinfo.namespace }}', name: 'mysqldb-v1', deployment_type: 'Deployment', api_version: 'extensions/v1beta1' }
 
 
-
-- name: Get Ingress Route
-  shell: oc get route istio-ingressgateway -o jsonpath='{.spec.host}{"\n"}' -n istio-system
-  register: internal_route
-
 - name: Create the traffic generator
   include: deploy_traffic_generator.yml
   with_items:
-   - { namespace: '{{ bookinfo.namespace }}', route: "http://{{ internal_route ['stdout'] }}/productpage", sidecar: true }
+   - { namespace: '{{ bookinfo.namespace }}', route: "http://istio-ingressgateway.istio-system.svc.cluster.local/productpage", sidecar: true }
