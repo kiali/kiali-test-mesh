@@ -61,7 +61,6 @@ operator-deploy-openshift:
 
 operator-deploy-k8s:
 	@echo About to deploy the Kiali Tesh Mesh Operator to K8s
-	kubectl create namespace kiali-test-mesh-operator
 	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/installation_crd.yaml
 	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/service_account.yaml
 	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/role_binding.yaml
