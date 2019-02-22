@@ -58,14 +58,14 @@
   include: tasks/deploy_istio_item.yml
   when: bookinfo.mongodb
   with_items:
-    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mongodb.yml'}
+    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mongodb.yml', sidecar: true}
   
  
 - name: Deploy Ratings V2 MySQL
   include: tasks/deploy_istio_item.yml
   when: bookinfo.mysql
   with_items:
-    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mysql.yml'}
+    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mysql.yml', sidecar: true}
   
 
 - name: Check if ReplicaSet/Deployment are running as expected before deploying traffic-generator
