@@ -76,4 +76,4 @@
 - name: Create the traffic generator
   include: deploy_traffic_generator.yml
   with_items:
-   - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local', sidecar: true }
+   - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local', sidecar: traffic_generator.sidecar }

@@ -98,4 +98,4 @@
 - name: Create the traffic generator
   include: deploy_traffic_generator.yml
   with_items:
-   - { namespace: '{{ bookinfo.namespace }}', route: "http://istio-ingressgateway.istio-system.svc.cluster.local/productpage", sidecar: true }
+   - { namespace: '{{ bookinfo.namespace }}', route: "http://istio-ingressgateway.istio-system.svc.cluster.local/productpage", sidecar: traffic_generator.sidecar }
