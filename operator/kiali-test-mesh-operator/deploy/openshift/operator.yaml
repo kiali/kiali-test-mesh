@@ -11,7 +11,7 @@ parameters:
 - displayName: Kiali Test Mesh Operator Image
   description: The Image for the Kiali Test Mesh Operator
   name: IMAGE_OPERATOR
-  value: gbaufake/kiali-test-mesh-operator:0.1
+  value: gbaufake/kiali-test-mesh-operator:0.2
 objects:
 - kind: CustomResourceDefinition
   apiVersion: apiextensions.k8s.io/v1beta1

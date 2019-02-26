@@ -48,8 +48,8 @@ openshift-deploy-kiali-test-breadth-sink:
 
 operator-build:
 	@echo Building operator
-	cd operator/kiali-test-mesh-operator && operator-sdk build gbaufake/kiali-test-mesh-operator:0.1
-	docker push gbaufake/kiali-test-mesh-operator:0.1
+	cd operator/kiali-test-mesh-operator && operator-sdk build gbaufake/kiali-test-mesh-operator:0.2
+	docker push gbaufake/kiali-test-mesh-operator:0.2
 
 
 operator-deploy-openshift:
