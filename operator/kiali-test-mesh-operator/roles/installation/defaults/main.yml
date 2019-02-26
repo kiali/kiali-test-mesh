@@ -11,7 +11,7 @@ complex_mesh:
 
 istio_manual_injection:
   enabled: false
-  version: '1.1.0-snapshot.6'
+  version: '1.1.0-rc.0'
 
 
 bookinfo:
