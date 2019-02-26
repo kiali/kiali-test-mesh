@@ -4,3 +4,5 @@
   kind: Installation
   role: /opt/ansible/roles/installation
   reconcilePeriod: 0
+  manageStatus: false
+  watchDependentResources: false
