@@ -61,19 +61,20 @@ Possible Options to add on Custom Resource
 
 
 ```
-complex_mesh:
-  enabled: true # Enabled by default
+spec:
+  complex_mesh:
+    enabled: true # Enabled by default
 
 
-istio_manual_injection:
-  enabled: false # Disabled by default
-  version: '1.1.0-snapshot.6' # version when you enable the manua inject via istioctl (it will download from Istio Release)
+  istio_manual_injection:
+    enabled: false # Disabled by default
+    version: '1.1.0-snapshot.6' # version when you enable the manual inject via istioctl (it will download from Istio Release)
 
 
-bookinfo:
-  enabled: true # enabled by default
-  version: 1.10.0 # version of bookinfo
-  namespace: bookinfo # standard default namespace for bookinfo
-  mongodb: true # mongodb enabled by default
-  mysql: true # mysql enabled by default
+  bookinfo:
+    enabled: true # enabled by default
+    version: 1.10.0 # version of bookinfo
+    namespace: bookinfo # standard default namespace for bookinfo
+    mongodb: true # mongodb enabled by default
+    mysql: true # mysql enabled by default
 ```
