@@ -1,6 +1,6 @@
 ---
 - version: v1
-  group: kiali-test-mesh.kiali.io
+  group: bookinfo.kiali.io
   kind: Bookinfo
   role: /opt/ansible/roles/bookinfo
   reconcilePeriod: 0
@@ -8,7 +8,7 @@
   watchDependentResources: false
 
 - version: v1
-  group: kiali-test-mesh.kiali.io
+  group: complexmesh.kiali.io
   kind: ComplexMesh
   role: /opt/ansible/roles/complex_mesh
   reconcilePeriod: 0

@@ -54,22 +54,26 @@ operator-build:
 	docker push ${OPERATOR_IMAGE}
 
 
+deploy-bookinfo:
+	@echo Deploy Bookinfo
+	oc create -f operator/kiali-test-mesh-operator/deploy/cr/bookinfo-cr.yaml
 
 operator-deploy-openshift: operator-remove-openshift
 	@echo About to deploy the Kiali Tesh Mesh Operator to OpenShift
 	oc new-project kiali-test-mesh-operator
-	oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo_crd.yaml
+	oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml
+	oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml
 	oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml
 	oc create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml
 	oc create -f operator/kiali-test-mesh-operator/deploy/operator.yaml
 
 
 
-
 operator-remove-openshift:
-	@echo About to undeploy the Kiali Complex Test Mesh to OpenShift
-	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/bookinfo_crd.yaml
+	@echo About to undeploy the Kiali Test Mesh Operator to OpenShift
+	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml
+	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/service_account.yaml
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/operator.yaml
-	oc delete namespace kiali-test-mesh-operator
+	oc delete namespace kiali-test-mesh-operator --ignore-not-found=true

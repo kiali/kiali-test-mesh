@@ -1,5 +1,0 @@
-apiVersion: kiali-test-mesh.kiali.io/v1
-kind: Bookinfo
-metadata:
-  name: kiali-test-mesh-bookinfo-installation
-  namespace: kiali-test-mesh-operator

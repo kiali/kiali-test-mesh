@@ -20,6 +20,8 @@ spec:
           image: gbaufake/kiali-test-mesh-operator:testing
           imagePullPolicy: "Always"
           env:
+            - name: "WATCH_NAMESPACE"
+              value: 'kiali-test-mesh-operator'
             - name: POD_NAME
               valueFrom:
                 fieldRef:
