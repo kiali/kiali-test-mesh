@@ -6,6 +6,8 @@ NUM_APPS ?= 1
 NUM_NAMESPACES ?= 1
 PLAYBOOK=./ansible/deploy_scale_mesh.yml
 
+OPERATOR_IMAGE ?= gbaufake/kiali-test-mesh-operator:testing
+
 
 all:	build-service build-traffic-generator
 
@@ -48,37 +50,26 @@ openshift-deploy-kiali-test-breadth-sink:
 
 operator-build:
 	@echo Building operator
-	cd operator/kiali-test-mesh-operator && operator-sdk build gbaufake/kiali-test-mesh-operator:0.2
-	docker push gbaufake/kiali-test-mesh-operator:0.2
+	cd operator/kiali-test-mesh-operator && operator-sdk build ${OPERATOR_IMAGE}
+	docker push ${OPERATOR_IMAGE}
 
 
-operator-deploy-openshift:
+
+operator-deploy-openshift: operator-remove-openshift
 	@echo About to deploy the Kiali Tesh Mesh Operator to OpenShift
-	oc process -f operator/kiali-test-mesh-operator/deploy/openshift/operator.yaml | oc create -f -
-	oc create -f operator/kiali-test-mesh-operator/deploy/cr.yaml
-
-
-
-operator-deploy-k8s:
-	@echo About to deploy the Kiali Tesh Mesh Operator to K8s
-	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/installation_crd.yaml
-	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/service_account.yaml
-	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/role_binding.yaml
-	kubectl create -f operator/kiali-test-mesh-operator/deploy/k8s/operator.yaml
-	kubectl create -f operator/kiali-test-mesh-operator/deploy/cr.yaml
+	oc new-project kiali-test-mesh-operator
+	oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo_crd.yaml
+	oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml
+	oc create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml
+	oc create -f operator/kiali-test-mesh-operator/deploy/operator.yaml
 
 
 
 
 operator-remove-openshift:
 	@echo About to undeploy the Kiali Complex Test Mesh to OpenShift
-	oc process -f operator/kiali-test-mesh-operator/deploy/openshift/operator.yaml | oc delete -f -
-
-
-operator-remove-k8s:
-	@echo About to deploy the Kiali Tesh Mesh Operator to K8s
-	kubectl delete namespace kiali-test-mesh-operator
-	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/installation_crd.yaml
-	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/service_account.yaml
-	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/role_binding.yaml
-	kubectl delete -f operator/kiali-test-mesh-operator/deploy/k8s/operator.yaml
+	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/bookinfo_crd.yaml
+	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/service_account.yaml
+	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml
+	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/operator.yaml
+	oc delete namespace kiali-test-mesh-operator
