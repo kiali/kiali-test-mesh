@@ -1,8 +1,16 @@
 ---
 - version: v1
   group: kiali-test-mesh.kiali.io
-  kind: Installation
-  role: /opt/ansible/roles/installation
+  kind: Bookinfo
+  role: /opt/ansible/roles/bookinfo
+  reconcilePeriod: 0
+  manageStatus: false
+  watchDependentResources: false
+
+- version: v1
+  group: kiali-test-mesh.kiali.io
+  kind: ComplexMesh
+  role: /opt/ansible/roles/complex_mesh
   reconcilePeriod: 0
   manageStatus: false
   watchDependentResources: false

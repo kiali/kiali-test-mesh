@@ -1,0 +1,7 @@
+
+- name: Install Istioctl
+  include: ../common_tasks/install_istioctl.yml
+  when: istio_manual_injection.enabled
+
+- name: Install Bookinfo
+  include: install_bookinfo.yml

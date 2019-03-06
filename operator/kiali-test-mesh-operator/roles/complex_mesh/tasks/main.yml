@@ -1,0 +1,8 @@
+
+- name: Install Istioctl
+  include: install_istioctl.yml
+  when: istio_manual_injection.enabled
+
+- name: Install Complex Mesh
+  include: install_complex_mesh.yml
+  when: complex_mesh.enabled

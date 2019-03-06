@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mysqldb-v1
+  namespace: {{ bookinfo.namespace }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+{% if not istio_manual_injection.enabled %}
+      annotations:
+        sidecar.istio.io/inject: "true"
+{% endif %}
+      labels:
+        app: mysqldb
+        version: v1
+    spec:
+      containers:
+      - name: mysqldb
+        image: istio/examples-bookinfo-mysqldb:{{ bookinfo.version }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-credentials
+                key: rootpasswd

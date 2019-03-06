@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mongodb-v1
+  namespace: {{ bookinfo.namespace }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+{% if not istio_manual_injection.enabled %}
+      annotations:
+        sidecar.istio.io/inject: "true"
+{% endif %}
+      labels:
+        app: mongodb
+        version: v1
+    spec:
+      containers:
+      - name: mongodb
+        image: istio/examples-bookinfo-mongodb:{{ bookinfo.version }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 27017
