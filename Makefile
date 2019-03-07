@@ -54,12 +54,26 @@ operator-build:
 	docker push ${OPERATOR_IMAGE}
 
 
-deploy-bookinfo:
-	@echo Deploy Bookinfo
-	oc create -f operator/kiali-test-mesh-operator/deploy/cr/bookinfo-cr.yaml
+deploy-bookinfo-manual-sidecar:
+	@echo Deploy Bookinfo with Manual Injection of the sidecar on Openshift
+	oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml
+
+deploy-bookinfo-automatic-sidecar:
+	@echo Deploy Bookinfo with Automatic Injection of the sidecar on Openshift
+	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml
+
+deploy-complex-mesh-manual-sidecar:
+	@echo Deploy Complex Mesh with Manual Injection of the sidecar on Openshift
+	oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml
+
+deploy-complex-mesh-automatic-sidecar:
+	@echo Deploy Complex Mesh with Automatic Injection of the sidecar on Openshift
+	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml
+
+
 
 operator-deploy-openshift: operator-remove-openshift
-	@echo About to deploy the Kiali Tesh Mesh Operator to OpenShift
+	@echo Deploy Kiali Tesh Mesh Operator on Openshift
 	oc new-project kiali-test-mesh-operator
 	oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml
 	oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml
@@ -68,9 +82,8 @@ operator-deploy-openshift: operator-remove-openshift
 	oc create -f operator/kiali-test-mesh-operator/deploy/operator.yaml
 
 
-
 operator-remove-openshift:
-	@echo About to undeploy the Kiali Test Mesh Operator to OpenShift
+	@echo Remove Kiali Test Mesh Operator on Openshift
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/service_account.yaml

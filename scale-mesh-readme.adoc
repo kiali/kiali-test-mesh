@@ -1,0 +1,43 @@
+== Example Service Meshes
+
+This project contains a Makefile that can deploy several different types of test meshes. There is one make target per test mesh type. See link:./test-service/deploy/ansible/README.adoc[here for details on the test mesh types.]
+
+You can customize each test mesh to contain different numbers of test services and different number of versions per test service, as well as have test mesh services communicate across multiple namespaces.
+
+To define the number of services your test mesh will contain, set the environment variable NUM_SERVICES (the default is "1").
+
+To define the number of versions per service, set the environment variable NUM_VERSIONS (the default is "1").
+
+To deploy a test mesh across multiple namespaces, set the environment variable NUM_NAMESPACES to the number of namespaces you want (the default is "1").
+
+=== Deploy Scale Mesh
+
+The following are the types of scale meshes you can deploy.
+
+* kiali-test-depth
+* kiali-test-breadth
+* kiali-test-circle
+* kiali-test-circle-callback
+* kiali-test-hourglass
+* kiali-test-depth-sink
+* kiali-test-breadth-sink
+
+There is a Makefile target per test mesh type - the target name is the name of the test mesh prefixed with `openshift-deploy-`. For example the following will depoy a kiali-test-depth test mesh with a single service:
+
+```
+make openshift-deploy-kiali-test-depth
+```
+
+This will deploy the kiali-test-circle test mesh with 2 services with each service having 2 versions:
+
+```
+NUM_SERVICES=2 NUM_VERSIONS=2 make openshift-deploy-kiali-test-circle
+```
+
+=== Deploy a Test Mesh Across Multiple Test Namespaces
+
+To deploy a test mesh across multiple namespaces, pass in the NUM_NAMESPACES environment variable. Make sure NUM_SERVICES is the same or greater than NUM_NAMESPACES:
+
+```
+NUM_NAMESPACES=2 NUM_SERVICES=2 make openshift-deploy-kiali-test-hourglass
+```
