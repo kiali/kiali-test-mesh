@@ -71,6 +71,23 @@ deploy-complex-mesh-automatic-sidecar:
 	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml
 
 
+remove-bookinfo-manual-sidecar:
+	@echo Deploy Bookinfo with Manual Injection of the sidecar on Openshift
+	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml
+
+remove-bookinfo-automatic-sidecar:
+	@echo Deploy Bookinfo with Automatic Injection of the sidecar on Openshift
+	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml
+
+remove-complex-mesh-manual-sidecar:
+	@echo Deploy Complex Mesh with Manual Injection of the sidecar on Openshift
+	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml
+
+remove-complex-mesh-automatic-sidecar:
+	@echo Deploy Complex Mesh with Automatic Injection of the sidecar on Openshift
+	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml
+
+
 
 operator-deploy-openshift: operator-remove-openshift
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift

@@ -44,6 +44,14 @@ Meshes available:
 
 == Bookinfo from Istio 
 
+[NOTE]
+If you want to remove the CR defined, just change the makefile target command to from deploy to remove. As an example: `make deploy-bookinfo-automatic-sidecar` can become `make remove-bookinfo-automatic-sidecar`. 
+
+If you want to use the openshift command just change from create to delete (eg: `oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml` will become `oc delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml`)
+
+On Kubernetes, in order to delete using the command you just need to change the create to delete command (eg: `kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml` will become `kubectl delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml`)
+
+
 === Automatic Injection of Istio sidecar
 
 After installing the <<Kiali Test Mesh Operator>>, you may install link:https://preliminary.istio.io/docs/examples/bookinfo/[Bookinfo] from Istio Sample  can be easily installed as part of the operator. You can choose to deploy with link:https://istio.io/docs/setup/kubernetes/sidecar-injection/#automatic-sidecar-injection[automatic injection of the sidecar] make target to deploy on openshift:
