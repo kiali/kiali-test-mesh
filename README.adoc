@@ -15,11 +15,11 @@ or you can use the following commands to deploy on openshift
 [source,shell]
 ----
 oc new-project kiali-test-mesh-operator
-oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml
-oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml
-oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml
-oc create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml
-oc create -f operator/kiali-test-mesh-operator/deploy/operator.yaml
+oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
+oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
+oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator
+oc create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
+oc create -f operator/kiali-test-mesh-operator/deploy/operator.yaml -n kiali-test-mesh-operator
 ----
 
 for kubernetes use the following commands;
@@ -27,11 +27,11 @@ for kubernetes use the following commands;
 [source,shell]
 ----
 kubectl create namespace kiali-test-mesh-operator
-kubectl create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml
-kubectl create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml
-kubectl create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml
-kubectl create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml
-kubectl create -f operator/kiali-test-mesh-operator/deploy/operator.yaml
+kubectl create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
+kubectl create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
+kubectl create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator
+kubectl create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
+kubectl create -f operator/kiali-test-mesh-operator/deploy/operator.yaml -n kiali-test-mesh-operator
 ----
 
 After installing the operator you can install the custom resource for each type of mesh that might want to try.
@@ -65,14 +65,14 @@ or with the following command for openshift
 
 [source,shell]
 ----
-oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml
+oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
 ----
 
 or with the following command for kubernetes
 
 [source,shell]
 ----
-kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml
+kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
 ----
 
 
@@ -99,14 +99,14 @@ or with the following command for openshift:
 
 [source,shell]
 ----
-oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml
+oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
 ----
 
 or with the following command for kubernetes:
 
 [source,shell]
 ----
-kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml
+kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
 ----
 
 == Kiali Complex Test Mesh
