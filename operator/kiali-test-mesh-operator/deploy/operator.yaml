@@ -17,7 +17,7 @@ spec:
       serviceAccountName: kiali-test-mesh-operator
       containers:
         - name: kiali-test-mesh-operator
-          image: gbaufake/kiali-test-mesh-operator:testing
+          image: kiali/kiali-test-mesh-operator:latest
           imagePullPolicy: "Always"
           env:
             - name: "WATCH_NAMESPACE"
