@@ -2,10 +2,6 @@
   include: ../common_tasks/install_istioctl.yml
   when: istio_manual_injection.enabled
   
-- name: Install Istioctl
-  include: install_istioctl.yml
-  when: istio_manual_injection.enabled
-
 - name: Remove any existing namespaces and setup new ones
   include: ../common_tasks/namespace.yml
   with_items: "{{ namespaces }}"
