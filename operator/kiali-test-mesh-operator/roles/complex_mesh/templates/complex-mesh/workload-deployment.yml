@@ -1,0 +1,27 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ item.name }}
+  namespace: {{ item.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: {{ item.project_name }}
+      build: {{ item.build_number }}
+  template:
+    metadata:
+{% if not istio_manual_injection.enabled %}
+      annotations:
+        sidecar.istio.io/inject: "{{ item.sidecar }}"
+{% endif %}
+      labels:
+        name: {{ item.project_name }}
+        build: {{ item.build_number }}
+    spec:
+      containers:
+        - name: kiali-{{ item.project_name }}
+          image: kiali/kiali-test-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8888

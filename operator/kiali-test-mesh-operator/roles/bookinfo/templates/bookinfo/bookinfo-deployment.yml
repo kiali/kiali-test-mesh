@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ item.name }}
+  namespace: {{ bookinfo.namespace }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+{% if not istio_manual_injection.enabled %}
+      annotations:
+        sidecar.istio.io/inject: "true"
+{% endif %}
+      labels:
+        app: {{ item.app }}
+        version: {{ item.version }}
+    spec:
+      containers:
+      - name: {{ item.app }}-container
+        image: {{ item.image }}:{{ bookinfo.version }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9080
+
+

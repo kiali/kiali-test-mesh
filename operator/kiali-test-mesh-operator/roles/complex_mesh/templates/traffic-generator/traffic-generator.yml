@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: kiali-traffic-generator
+  namespace: {{ item.namespace }}
+  labels:
+    app: kiali-traffic-generator
+    kiali-test: traffic-generator
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+{% if not istio_manual_injection.enabled %}
+      annotations:
+        sidecar.istio.io/inject: "{{ item.sidecar }}"
+{% endif %}
+      labels:
+        app: kiali-traffic-generator
+        kiali-test: traffic-generator
+    spec:
+      containers:
+      - image: kiali/kiali-test-mesh-traffic-generator:latest
+        name: kiali-traffic-generator
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DURATION
+          valueFrom:
+            configMapKeyRef:
+              name: traffic-generator-config
+              key: duration
+
+        - name: ROUTE
+          valueFrom:
+            configMapKeyRef:
+              name: traffic-generator-config
+              key: route
+
+        - name: RATE
+          valueFrom:
+            configMapKeyRef:
+              name: traffic-generator-config
+              key: rate

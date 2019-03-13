@@ -1,0 +1,24 @@
+- name: Deploy {{ item.name }}
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  when: not istio_manual_injection.enabled
+
+
+- name: Deploy {{ item.name }} when sidecar is not present
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  when: istio_manual_injection.enabled and item.sidecar == false
+
+
+- name: Inject Kubectl if manual injection is defined
+  shell: "echo \"{{ lookup('template', item.file) }}\" | istioctl kube-inject -f -"
+  register: istio_template
+  when: istio_manual_injection.enabled and item.sidecar == true
+
+- name: Deploy {{ item.name }} with manual injection
+  k8s:
+    state: present
+    definition: "{{ istio_template['stdout'] | regex_replace('---', '') }}"
+  when: istio_manual_injection.enabled and item.sidecar == true
