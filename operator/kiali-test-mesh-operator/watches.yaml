@@ -4,13 +4,13 @@
   kind: Bookinfo
   role: /opt/ansible/roles/bookinfo
   reconcilePeriod: 0
-  manageStatus: false
-  watchDependentResources: false
+  manageStatus: False
+  watchDependentResources: False
 
 - version: v1
   group: complexmesh.kiali.io
   kind: ComplexMesh
   role: /opt/ansible/roles/complex_mesh
   reconcilePeriod: 0
-  manageStatus: false
-  watchDependentResources: false
+  manageStatus: False
+  watchDependentResources: False
