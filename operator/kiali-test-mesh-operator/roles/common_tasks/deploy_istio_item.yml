@@ -1,11 +1,11 @@
-- name: Deploy {{ item.name }}
+- name: "Deploy {{ item.name }}"
   k8s:
     state: present
     definition: "{{ lookup('template', item.file) }}"
   when: not istio_manual_injection.enabled
 
 
-- name: Deploy {{ item.name }} when sidecar is not present
+- name: "Deploy {{ item.name }} when sidecar is not present"
   k8s:
     state: present
     definition: "{{ lookup('template', item.file) }}"
@@ -17,7 +17,7 @@
   register: istio_template
   when: istio_manual_injection.enabled and item.sidecar == true
 
-- name: Deploy {{ item.name }} with manual injection
+- name: "Deploy {{ item.name }} with manual injection"
   k8s:
     state: present
     definition: "{{ istio_template['stdout'] | regex_replace('---', '') }}"
