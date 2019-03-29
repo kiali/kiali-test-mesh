@@ -35,6 +35,10 @@
   with_items:
    - {file: 'templates/bookinfo/istio/bookinfo-gateway.yml'}
    - {file: 'templates/bookinfo/istio/bookinfo-vs.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-productpage-dr.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-reviews-dr.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-ratings-dr.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-details-dr.yml'}
 
 
 
