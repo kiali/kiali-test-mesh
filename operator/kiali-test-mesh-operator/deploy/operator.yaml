@@ -16,15 +16,34 @@ spec:
     spec:
       serviceAccountName: kiali-test-mesh-operator
       containers:
-        - name: kiali-test-mesh-operator
+        - name: ansible
+          command:
+          - /usr/local/bin/ao-logs
+          - /tmp/ansible-operator/runner
+          - stdout
           image: kiali/kiali-test-mesh-operator:latest
-          imagePullPolicy: "Always"
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+          - mountPath: /tmp/ansible-operator/runner
+            name: runner
+            readOnly: true
+        - name: operator
+          image: kiali/kiali-test-mesh-operator:latest
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+          - mountPath: /tmp/ansible-operator/runner
+            name: runner
           env:
-            - name: "WATCH_NAMESPACE"
-              value: 'kiali-test-mesh-operator'
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "kiali-test-mesh-operator"
+      volumes:
+        - name: runner
+          emptyDir: {}

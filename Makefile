@@ -6,7 +6,7 @@ NUM_APPS ?= 1
 NUM_NAMESPACES ?= 1
 PLAYBOOK=./ansible/deploy_scale_mesh.yml
 
-OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:latest
+OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:testing
 
 
 all:	build-service build-traffic-generator
