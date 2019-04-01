@@ -1,4 +1,4 @@
-- name: Deleting Namespace {{ item }}
+- name: "Deleting Namespace {{ item }}"
   k8s:
     api_version: v1
     kind: Namespace
@@ -6,7 +6,7 @@
     state: absent
   ignore_errors: true
 
-- name: Create Namespace {{ item }}
+- name: "Create Namespace {{ item }}"
   k8s:
     api_version: v1
     kind: Namespace
@@ -19,9 +19,9 @@
 
 
 
-- name: Update SCC policy to allow {{ item }} use anyuid
+- name: "Update SCC policy to allow {{ item }} use anyuid"
   command: "oc adm policy add-scc-to-user anyuid -z default -n {{ item }}"
 
-- name: Update SCC policy to allow {{ item }} use privileged
+- name: "Update SCC policy to allow {{ item }} use privileged"
   command: "oc adm policy add-scc-to-user privileged -z default -n {{ item }}"
 

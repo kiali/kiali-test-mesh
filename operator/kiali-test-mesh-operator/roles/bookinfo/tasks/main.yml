@@ -35,6 +35,10 @@
   with_items:
    - {file: 'templates/bookinfo/istio/bookinfo-gateway.yml'}
    - {file: 'templates/bookinfo/istio/bookinfo-vs.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-productpage-dr.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-reviews-dr.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-ratings-dr.yml'}
+   - {file: 'templates/bookinfo/istio/destination-rules/bookinfo-details-dr.yml'}
 
 
 
@@ -62,9 +66,8 @@
   include: ../common_tasks/deploy_istio_item.yml
   when: bookinfo.mongodb
   with_items:
-    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mongodb.yml', sidecar: true}
-    - {file: 'templates/bookinfo/mysql/deployment.yml', sidecar: true}
-    - {file: 'templates/bookinfo/mongodb/deployment.yml', sidecar: true}
+    - {name: 'ratings-mongodb', file: 'templates/bookinfo/bookinfo-ratings-v2-mongodb.yml', sidecar: true}
+    - {name: 'mongodb', file: 'templates/bookinfo/mongodb/deployment.yml', sidecar: true}
 
   
  
@@ -72,7 +75,8 @@
   include: ../common_tasks/deploy_istio_item.yml
   when: bookinfo.mysql
   with_items:
-    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mysql.yml', sidecar: true}
+    - {name: 'mysql', file: 'templates/bookinfo/mysql/deployment.yml', sidecar: true}
+    - {name: 'ratings-mysql', file: 'templates/bookinfo/bookinfo-ratings-v2-mysql.yml', sidecar: true}
   
 - name: Create the traffic generator
   include: ../common_tasks/deploy_traffic_generator.yml

@@ -6,7 +6,7 @@ NUM_APPS ?= 1
 NUM_NAMESPACES ?= 1
 PLAYBOOK=./ansible/deploy_scale_mesh.yml
 
-OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:latest
+OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:testing
 
 
 all:	build-service build-traffic-generator
@@ -48,11 +48,13 @@ openshift-deploy-kiali-test-breadth-sink:
 	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-breadth-sink"]}' -v
 
 
-operator-build:
+operator-build-image:
 	@echo Building operator
 	cd operator/kiali-test-mesh-operator && operator-sdk build ${OPERATOR_IMAGE}
-	docker push ${OPERATOR_IMAGE}
 
+operator-push-image:
+	@echo Building Push image
+	docker push ${OPERATOR_IMAGE}
 
 deploy-bookinfo-manual-sidecar:
 	@echo Deploy Bookinfo with Manual Injection of the sidecar on Openshift
