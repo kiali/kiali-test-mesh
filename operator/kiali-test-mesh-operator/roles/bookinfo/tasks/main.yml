@@ -66,9 +66,8 @@
   include: ../common_tasks/deploy_istio_item.yml
   when: bookinfo.mongodb
   with_items:
-    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mongodb.yml', sidecar: true}
-    - {file: 'templates/bookinfo/mysql/deployment.yml', sidecar: true}
-    - {file: 'templates/bookinfo/mongodb/deployment.yml', sidecar: true}
+    - {name: 'ratings-mongodb', file: 'templates/bookinfo/bookinfo-ratings-v2-mongodb.yml', sidecar: true}
+    - {name: 'mongodb', file: 'templates/bookinfo/mongodb/deployment.yml', sidecar: true}
 
   
  
@@ -76,7 +75,8 @@
   include: ../common_tasks/deploy_istio_item.yml
   when: bookinfo.mysql
   with_items:
-    - {file: 'templates/bookinfo/bookinfo-ratings-v2-mysql.yml', sidecar: true}
+    - {name: 'mysql', file: 'templates/bookinfo/mysql/deployment.yml', sidecar: true}
+    - {name: 'ratings-mysql', file: 'templates/bookinfo/bookinfo-ratings-v2-mysql.yml', sidecar: true}
   
 - name: Create the traffic generator
   include: ../common_tasks/deploy_traffic_generator.yml

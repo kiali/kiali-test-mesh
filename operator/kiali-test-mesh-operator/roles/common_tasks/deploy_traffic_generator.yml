@@ -15,7 +15,7 @@
   register: istio_template
   when: istio_manual_injection.enabled
 
-- name: "Deploy {{ item.name }} with manual injection"
+- name: "Deploy Traffic Generator with manual injection"
   k8s:
     state: present
     definition: "{{ istio_template['stdout'] | regex_replace('---', '') }}"
