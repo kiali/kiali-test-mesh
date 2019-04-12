@@ -8,7 +8,7 @@ bookinfo:
 
 istio_manual_injection:
   enabled: false
-  version: '1.1.1'
+  version: '1.1.2'
 
 
 
