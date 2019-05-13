@@ -22,14 +22,14 @@ spec:
           - /tmp/ansible-operator/runner
           - stdout
           image: kiali/kiali-test-mesh-operator:latest
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Always"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
             readOnly: true
         - name: operator
           image: kiali/kiali-test-mesh-operator:latest
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Always"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
