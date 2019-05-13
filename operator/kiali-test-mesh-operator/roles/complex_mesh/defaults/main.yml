@@ -1,9 +1,6 @@
 ---
 # defaults file for complex_mesh
-namespaces:
-- kiali-test-frontend
-- kiali-test-reviews
-- kiali-test-ratings
+
 
 complex_mesh:
   enabled: true
