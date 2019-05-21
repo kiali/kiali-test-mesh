@@ -2,11 +2,6 @@
   include: ../common_tasks/install_istioctl.yml
   when: istio_manual_injection.enabled
   
-- name: Remove any existing namespaces and setup new ones
-  include: ../common_tasks/namespace.yml
-  with_items: "{{ namespaces }}"
-
-  # Setup the kiali-test-frontend namespace
 - name: Create Services
   k8s:
     state: present

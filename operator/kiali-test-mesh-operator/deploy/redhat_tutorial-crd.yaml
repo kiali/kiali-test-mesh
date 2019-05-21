@@ -1,0 +1,21 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: redhattutorials.redhattutorial.kiali.io
+  namespace: kiali-test-mesh-operator
+spec:
+  group: redhattutorial.kiali.io
+  names:
+    kind: RedhatTutorial
+    listKind: RedhatTutorialList
+    plural: redhattutorials
+    singular: redhattutorial
+  scope: Namespaced
+  subresources:
+    status: {}
+  version: v1
+  versions:
+  - name: v1
+    served: true
+    storage: true

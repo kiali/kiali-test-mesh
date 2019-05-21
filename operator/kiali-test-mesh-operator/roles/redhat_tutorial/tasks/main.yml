@@ -1,0 +1,27 @@
+- name: Install Istioctl
+  include: ../common_tasks/install_istioctl.yml
+  when: istio_manual_injection.enabled
+
+- name: Create Services
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  with_items:
+    - { namespace: 'redhat-istio-tutorial', file: 'templates/customer/customer-service.yml'}
+    - { namespace: 'redhat-istio-tutorial', file: 'templates/customer/preference-service.yml'}
+    - { namespace: 'redhat-istio-tutorial', file: 'templates/customer/recommendation-service.yml'}
+
+
+
+- name: Create the Items
+  include: ../common_tasks/deploy_istio_item.yml
+  with_items:
+  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/customer/deployment-v1', sidecar: true }
+  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/customer/deployment-v2', sidecar: true }
+  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/preference/deployment-v1', sidecar: true }
+  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/preference/deployment-v2', sidecar: true }
+  
+- name: Create the traffic generator
+  include: ../common_tasks/deploy_traffic_generator.yml
+  with_items:
+   - { namespace: 'redhat-istio-tutorial', route: 'http://customer/', sidecar: traffic_generator.sidecar }

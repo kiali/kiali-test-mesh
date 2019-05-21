@@ -10,3 +10,9 @@
   kind: ComplexMesh
   role: /opt/ansible/roles/complex_mesh
   reconcilePeriod: 0
+
+- version: v1
+  group: redhattutorial.kiali.io
+  kind: RedHatTutorial
+  role: /opt/ansible/roles/redhat_tutorial
+  reconcilePeriod: 0
