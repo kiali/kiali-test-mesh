@@ -7,7 +7,7 @@ complex_mesh:
 
 istio_manual_injection:
   enabled: false
-  version: '1.1.0-rc.2'
+  version: '1.1.7'
 
 traffic_generator:
   sidecar: false
