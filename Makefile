@@ -102,6 +102,7 @@ remove-complex-mesh-automatic-sidecar:
 operator-deploy-openshift: operator-remove-openshift
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift
 	oc new-project kiali-test-mesh-operator
+	oc create -f operator/kiali-test-mesh-operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
 	oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator 
 	oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
 	oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator 
@@ -111,6 +112,7 @@ operator-deploy-openshift: operator-remove-openshift
 
 operator-remove-openshift:
 	@echo Remove Kiali Test Mesh Operator on Openshift
+	oc create -f operator/kiali-test-mesh-operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator
