@@ -59,11 +59,14 @@ operator-push-image:
 deploy-bookinfo-manual-sidecar:
 	@echo Deploy Bookinfo with Manual Injection of the sidecar on Openshift
 	oc create namespace bookinfo
+	oc adm policy add-scc-to-user privileged -z default -n bookinfo
 	oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator 
 
 deploy-bookinfo-automatic-sidecar:
 	@echo Deploy Bookinfo with Automatic Injection of the sidecar on Openshift
 	oc create namespace bookinfo
+	oc adm policy add-scc-to-user privileged -z default -n bookinfo
+	oc adm policy add-scc-to-user anyuid -z default -n bookinfo
 	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator 
 
 deploy-complex-mesh-manual-sidecar:
@@ -71,6 +74,13 @@ deploy-complex-mesh-manual-sidecar:
 	oc create namespace kiali-test-frontend
 	oc create namespace kiali-test-reviews
 	oc create namespace kiali-test-ratings
+
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
 	oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-mesh-operator
 
 deploy-complex-mesh-automatic-sidecar:
@@ -78,6 +88,13 @@ deploy-complex-mesh-automatic-sidecar:
 	oc create namespace kiali-test-frontend
 	oc create namespace kiali-test-reviews
 	oc create namespace kiali-test-ratings
+
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
+	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
 	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-mesh-operator
 
 
