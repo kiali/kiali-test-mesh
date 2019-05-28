@@ -1,4 +1,0 @@
-apiVersion: redhattutorial.kiali.io/v1
-kind: RedhatTutorial
-metadata:
-  name: redhat-tutorial-installation

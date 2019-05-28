@@ -1,0 +1,7 @@
+apiVersion: redhattutorial.kiali.io/v1
+kind: RedHatTutorial
+metadata:
+  name: example-redhattutorial
+spec:
+  # Add fields here
+  size: 3
