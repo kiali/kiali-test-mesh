@@ -2,7 +2,6 @@ apiVersion: redhattutorial.kiali.io/v1
 kind: RedhatTutorial
 metadata:
   name: redhat-tutorial-installation
-  namespace: kiali-test-mesh-operator
 spec:
   istio_manual_injection:
     enabled: true

@@ -2,7 +2,6 @@ apiVersion: complexmesh.kiali.io/v1
 kind: ComplexMesh
 metadata:
   name: complexmesh-installation
-  namespace: kiali-test-mesh-operator
 spec:
   istio_manual_injection:
     enabled: true
