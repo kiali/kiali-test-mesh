@@ -7,21 +7,24 @@
     state: present
     definition: "{{ lookup('template', item.file) }}"
   with_items:
-    - { namespace: 'redhat-istio-tutorial', file: 'templates/customer/customer-service.yml'}
-    - { namespace: 'redhat-istio-tutorial', file: 'templates/customer/preference-service.yml'}
-    - { namespace: 'redhat-istio-tutorial', file: 'templates/customer/recommendation-service.yml'}
+    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/customer-service.yml'}
+    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/preference-service.yml'}
+    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
 
 
 
 - name: Create the Items
   include: ../common_tasks/deploy_istio_item.yml
   with_items:
-  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/customer/deployment-v1', sidecar: true }
-  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/customer/deployment-v2', sidecar: true }
-  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/preference/deployment-v1', sidecar: true }
-  - { namespace: 'redhat-istio-tutorial', file: 'templates/redhat_tutorial/preference/deployment-v2', sidecar: true }
-  
+  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
+  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
+  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v2.yml', sidecar: true }
+  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v1.yml', sidecar: true }
+  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v2.yml', sidecar: true }
+  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v2-timeout.yml', sidecar: true }
+
+
 - name: Create the traffic generator
   include: ../common_tasks/deploy_traffic_generator.yml
   with_items:
-   - { namespace: 'redhat-istio-tutorial', route: 'http://customer/', sidecar: traffic_generator.sidecar }
+   - { namespace: '{{ redhat_tutorial.namespace }}', route: 'http://customer/', sidecar: traffic_generator.sidecar }

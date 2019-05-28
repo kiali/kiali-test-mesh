@@ -3,40 +3,31 @@ kind: Deployment
 metadata:
   labels:
     app: recommendation
-    version: v1
-  name: recommendation-v1
+    version: v2
+  name: recommendation-v2
   namespace: {{ item.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: recommendation
-      version: v1
+      version: v2
   template:
     metadata:
       labels:
         app: recommendation
-        version: v1
-      annotations:
+        version: v2
 {% if not istio_manual_injection.enabled %}
       annotations:
         sidecar.istio.io/inject: "{{ item.sidecar }}"
-{% endif %}
+{% endif %}    
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xmx256m
-        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v1
+          value: -Xmx80m
+        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 60
-          periodSeconds: 5
-          timeoutSeconds: 1
         name: recommendation
         ports:
         - containerPort: 8080
@@ -45,13 +36,26 @@ spec:
         - containerPort: 8778
           name: jolokia
           protocol: TCP
-        readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
+        resources:
+          requests: 
+            memory: "50Mi" 
+            cpu: "250m" # 1/4 core
+          limits:
+            memory: "120Mi"
+            cpu: "500m" 
+        livenessProbe:
+          httpGet:            
+            port: 8080
+            path: /health
           initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:            
+            port: 8080
+            path: /health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
         securityContext:
           privileged: false

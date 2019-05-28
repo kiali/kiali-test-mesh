@@ -8,17 +8,6 @@ PLAYBOOK=./ansible/deploy_scale_mesh.yml
 
 OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:latest
 
-
-all:	build-service build-traffic-generator
-
-build-service:
-	@echo About to build the Kiali Test Service
-	make -C test-service clean build docker-build
-
-build-traffic-generator:
-	@echo About to build the Kiali Test Traffic Generator
-	make -C traffic-generator clean docker-build
-
 openshift-deploy-kiali-test-depth:
 	@echo About to deploy Kiali Test Depth to OpenShift
 	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-depth"]}' -v
@@ -56,10 +45,24 @@ operator-push-image:
 	@echo Building Push image
 	docker push ${OPERATOR_IMAGE}
 
+deploy-redhatutorial-automatic-sidecar: remove-redhatutorial
+	@echo Deploy Red Hat Istio Tutorial with Automatic Injection of the sidecar on Openshift
+	oc create namespace redhat-istio-tutorial
+	oc adm policy add-scc-to-user privileged -z default -n redhat-istio-tutorial
+	oc adm policy add-scc-to-user anyuid -z default -n redhat-istio-tutorial
+	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
+
+remove-redhatutorial:
+	@echo Remove Red Hat Istio Tutorial with Automatic Injection of the sidecar on Openshift
+	oc delete --ignore-not-found=true -f  operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
+	oc delete --ignore-not-found=true namespace redhat-istio-tutorial
+
+
 deploy-bookinfo-manual-sidecar:
 	@echo Deploy Bookinfo with Manual Injection of the sidecar on Openshift
 	oc create namespace bookinfo
 	oc adm policy add-scc-to-user privileged -z default -n bookinfo
+	oc adm policy add-scc-to-user anyuid -z default -n bookinfo
 	oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator 
 
 deploy-bookinfo-automatic-sidecar:
@@ -124,15 +127,15 @@ operator-deploy-openshift: operator-remove-openshift
 	oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
 	oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator 
 	oc create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-	oc create -f operator/kiali-test-mesh-operator/deploy/operator.yaml -n kiali-test-mesh-operator 
+	cat operator/kiali-test-mesh-operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n kiali-test-mesh-operator 
 
 
 operator-remove-openshift:
 	@echo Remove Kiali Test Mesh Operator on Openshift
-	oc create -f operator/kiali-test-mesh-operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
+	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator
 	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/operator.yaml -n kiali-test-mesh-operator
+	cat operator/kiali-test-mesh-operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc delete --ignore-not-found=true -f - -n kiali-test-mesh-operator
 	oc delete namespace kiali-test-mesh-operator --ignore-not-found=true
