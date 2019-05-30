@@ -8,9 +8,7 @@ bookinfo:
 
 istio_manual_injection:
   enabled: false
-  version: '1.1.2'
-
-
+  version: '1.1.7'
 
 traffic_generator:
   sidecar: false
