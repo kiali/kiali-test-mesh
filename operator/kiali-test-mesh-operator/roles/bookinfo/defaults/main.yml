@@ -1,14 +1,12 @@
 ---
 # defaults file for bookinfo
 bookinfo:
-  version: 1.10.0
+  version: 1.14.0
   namespace: bookinfo
+  control_plane_namespace: istio-system
   mongodb: true
   mysql: true
 
 istio_manual_injection:
   enabled: false
   version: '1.1.7'
-
-traffic_generator:
-  sidecar: false

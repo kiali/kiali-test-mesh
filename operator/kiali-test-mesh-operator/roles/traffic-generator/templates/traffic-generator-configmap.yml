@@ -3,8 +3,6 @@ kind: ConfigMap
 metadata:
   name: traffic-generator-config
   namespace: {{ item.namespace }}
-  labels:
-    kiali-test: traffic-generator-config
 data:
   duration: "0s"
   route: {{ item.route }}
