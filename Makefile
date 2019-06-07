@@ -39,7 +39,7 @@ openshift-deploy-kiali-test-breadth-sink:
 
 operator-build-image:
 	@echo Building operator
-	cd operator/kiali-test-mesh-operator && operator-sdk build ${OPERATOR_IMAGE}
+	cd operator && operator-sdk build ${OPERATOR_IMAGE}
 
 operator-push-image:
 	@echo Building Push image
@@ -50,11 +50,11 @@ deploy-redhatutorial-automatic-sidecar: remove-redhatutorial
 	oc create namespace redhat-istio-tutorial
 	oc adm policy add-scc-to-user privileged -z default -n redhat-istio-tutorial
 	oc adm policy add-scc-to-user anyuid -z default -n redhat-istio-tutorial
-	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
+	oc create -f operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
 
 remove-redhatutorial:
 	@echo Remove Red Hat Istio Tutorial with Automatic Injection of the sidecar on Openshift
-	oc delete --ignore-not-found=true -f  operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
+	oc delete --ignore-not-found=true -f  operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
 	oc delete --ignore-not-found=true namespace redhat-istio-tutorial
 
 
@@ -63,14 +63,14 @@ deploy-bookinfo-manual-sidecar:
 	oc create namespace bookinfo
 	oc adm policy add-scc-to-user privileged -z default -n bookinfo
 	oc adm policy add-scc-to-user anyuid -z default -n bookinfo
-	oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n bookinfo 
+	oc create -f operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n bookinfo 
 
 deploy-bookinfo-automatic-sidecar:
 	@echo Deploy Bookinfo with Automatic Injection of the sidecar on Openshift
 	oc create namespace bookinfo
 	oc adm policy add-scc-to-user privileged -z default -n bookinfo
 	oc adm policy add-scc-to-user anyuid -z default -n bookinfo
-	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n bookinfo 
+	oc create -f operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n bookinfo 
 
 deploy-complex-mesh-manual-sidecar:
 	@echo Deploy Complex Mesh with Manual Injection of the sidecar on Openshift
@@ -84,7 +84,7 @@ deploy-complex-mesh-manual-sidecar:
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
-	oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
+	oc create -f operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
 
 deploy-complex-mesh-automatic-sidecar:
 	@echo Deploy Complex Mesh with Automatic Injection of the sidecar on Openshift
@@ -98,44 +98,44 @@ deploy-complex-mesh-automatic-sidecar:
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
-	oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
+	oc create -f operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
 
 
 remove-bookinfo-manual-sidecar:
 	@echo Remove Bookinfo with Manual Injection of the sidecar on Openshift
-	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n bookinfo
+	oc delete -f operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n bookinfo
 
 remove-bookinfo-automatic-sidecar:
 	@echo Remove Bookinfo with Automatic Injection of the sidecar on Openshift
-	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n bookinfo 
+	oc delete -f operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n bookinfo 
 
 remove-complex-mesh-manual-sidecar:
 	@echo Remove Complex Mesh with Manual Injection of the sidecar on Openshift
-	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend 
+	oc delete -f operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend 
 
 remove-complex-mesh-automatic-sidecar:
 	@echo Remove Complex Mesh with Automatic Injection of the sidecar on Openshift
-	oc delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
+	oc delete -f operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
 
 
 
 operator-deploy-openshift: operator-remove-openshift
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift
 	oc new-project kiali-test-mesh-operator
-	oc create -f operator/kiali-test-mesh-operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
-	oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator 
-	oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
-	oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator 
-	oc create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-	cat operator/kiali-test-mesh-operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n kiali-test-mesh-operator 
+	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
+	oc create -f operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator 
+	oc create -f operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
+	oc create -f operator/deploy/service_account.yaml -n kiali-test-mesh-operator 
+	oc create -f operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
+	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n kiali-test-mesh-operator 
 
 
 operator-remove-openshift:
 	@echo Remove Kiali Test Mesh Operator on Openshift
-	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
-	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
-	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
-	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator
-	oc delete --ignore-not-found=true -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-	cat operator/kiali-test-mesh-operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc delete --ignore-not-found=true -f - -n kiali-test-mesh-operator
+	oc delete --ignore-not-found=true -f operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
+	oc delete --ignore-not-found=true -f operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
+	oc delete --ignore-not-found=true -f operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
+	oc delete --ignore-not-found=true -f operator/deploy/service_account.yaml -n kiali-test-mesh-operator
+	oc delete --ignore-not-found=true -f operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
+	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc delete --ignore-not-found=true -f - -n kiali-test-mesh-operator
 	oc delete namespace kiali-test-mesh-operator --ignore-not-found=true
