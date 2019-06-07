@@ -1,4 +1,0 @@
-apiVersion: bookinfo.kiali.io/v1
-kind: Bookinfo
-metadata:
-  name: bookinfo-installation

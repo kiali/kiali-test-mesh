@@ -1,8 +1,0 @@
-apiVersion: bookinfo.kiali.io/v1
-kind: Bookinfo
-metadata:
-  name: bookinfo-installation
-spec:
-  istio_manual_injection:
-    enabled: true
-    version: '1.1.7'

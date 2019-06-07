@@ -1,4 +1,0 @@
-apiVersion: complexmesh.kiali.io/v1
-kind: ComplexMesh
-metadata:
-  name: complexmesh-installation

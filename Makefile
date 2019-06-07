@@ -1,125 +1,18 @@
-AVAILABLE_MESHES ?= '{"meshes": ["kiali-test-depth", "kiali-test-breadth", "kiali-test-circle", "kiali-test-circle-callback", "kiali-test-hourglass", "kiali-test-depth-sink", "kiali-test-breadth-sink"]}'
-DEPLOYMENT_TYPE ?= Deployment
-NUM_SERVICES ?= 1
-NUM_VERSIONS ?= 1
-NUM_APPS ?= 1
-NUM_NAMESPACES ?= 1
-PLAYBOOK=./ansible/deploy_scale_mesh.yml
+BOOKINFO_NAMESPACE ?= bookinfo3
+CONTROL_PLANE_NAMESPACE ?= istio-system
+REDHAT_TUTORIAL ?= redhat-istio-tutorial
+OPERATOR_IMAGE ?= gbaufake/kiali-test-mesh-operator:refactor
+MANUAL_INJECTION_SIDECAR ?= false
 
-OPERATOR_IMAGE ?= gbaufake/kiali-test-mesh-operator:route-test
-
-openshift-deploy-kiali-test-depth:
-	@echo About to deploy Kiali Test Depth to OpenShift
-	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-depth"]}' -v
-
-openshift-deploy-kiali-test-breadth:
-	@echo About to deploy Kiali Test breadth to OpenShift
-	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-breadth"]}' -v
-
-openshift-deploy-kiali-test-circle:
-	@echo About to deploy Kiali Test Circle to OpenShift
-	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-circle"]}' -v
-
-openshift-deploy-kiali-test-circle-callback:
-	@echo About to deploy Kiali Test Circle Callback to OpenShift
-	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-circle-callback"]}' -v
-
-openshift-deploy-kiali-test-hourglass:
-	@echo About to deploy Kiali Test Hourglass to OpenShift
-	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-hourglass"]}' -v
-
-openshift-deploy-kiali-test-depth-sink:
-	@echo About to deploy Kiali Test Depth Sink to OpenShift
-	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-depth-sink"]}' -v
-
-openshift-deploy-kiali-test-breadth-sink:
-	@echo About to deploy Kiali Test Breadth Sink to OpenShift
-	ansible-playbook ${PLAYBOOK} -e deployment_type=${DEPLOYMENT_TYPE} -e number_of_apps=${NUM_APPS} -e number_of_services=${NUM_SERVICES} -e number_of_versions=${NUM_VERSIONS} -e number_of_namespaces=${NUM_NAMESPACES} -e '{"meshes": ["kiali-test-breadth-sink"]}' -v
-
-
-operator-build-image:
+build-operator-image:
 	@echo Building operator
 	cd operator && operator-sdk build ${OPERATOR_IMAGE}
 
-operator-push-image:
+push-operator-image:
 	@echo Building Push image
 	docker push ${OPERATOR_IMAGE}
 
-deploy-redhatutorial-automatic-sidecar: remove-redhatutorial
-	@echo Deploy Red Hat Istio Tutorial with Automatic Injection of the sidecar on Openshift
-	oc create namespace redhat-istio-tutorial
-	oc adm policy add-scc-to-user privileged -z default -n redhat-istio-tutorial
-	oc adm policy add-scc-to-user anyuid -z default -n redhat-istio-tutorial
-	oc create -f operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
-
-remove-redhatutorial:
-	@echo Remove Red Hat Istio Tutorial with Automatic Injection of the sidecar on Openshift
-	oc delete --ignore-not-found=true -f  operator/deploy/cr/automatic-sidecar/redhat_tutorial-cr.yaml -n kiali-test-mesh-operator 
-	oc delete --ignore-not-found=true namespace redhat-istio-tutorial
-
-
-deploy-bookinfo-manual-sidecar:
-	@echo Deploy Bookinfo with Manual Injection of the sidecar on Openshift
-	oc create namespace bookinfo
-	oc adm policy add-scc-to-user privileged -z default -n bookinfo
-	oc adm policy add-scc-to-user anyuid -z default -n bookinfo
-	oc create -f operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n bookinfo 
-
-deploy-bookinfo-automatic-sidecar:
-	@echo Deploy Bookinfo with Automatic Injection of the sidecar on Openshift
-	oc create namespace bookinfo
-	oc adm policy add-scc-to-user privileged -z default -n bookinfo
-	oc adm policy add-scc-to-user anyuid -z default -n bookinfo
-	oc create -f operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n bookinfo 
-
-deploy-complex-mesh-manual-sidecar:
-	@echo Deploy Complex Mesh with Manual Injection of the sidecar on Openshift
-	oc create namespace kiali-test-frontend
-	oc create namespace kiali-test-reviews
-	oc create namespace kiali-test-ratings
-
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
-	oc create -f operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
-
-deploy-complex-mesh-automatic-sidecar:
-	@echo Deploy Complex Mesh with Automatic Injection of the sidecar on Openshift
-	oc create namespace kiali-test-frontend
-	oc create namespace kiali-test-reviews
-	oc create namespace kiali-test-ratings
-
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
-	oc create -f operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
-
-
-remove-bookinfo-manual-sidecar:
-	@echo Remove Bookinfo with Manual Injection of the sidecar on Openshift
-	oc delete -f operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n bookinfo
-
-remove-bookinfo-automatic-sidecar:
-	@echo Remove Bookinfo with Automatic Injection of the sidecar on Openshift
-	oc delete -f operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n bookinfo 
-
-remove-complex-mesh-manual-sidecar:
-	@echo Remove Complex Mesh with Manual Injection of the sidecar on Openshift
-	oc delete -f operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend 
-
-remove-complex-mesh-automatic-sidecar:
-	@echo Remove Complex Mesh with Automatic Injection of the sidecar on Openshift
-	oc delete -f operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
-
-
-
-operator-deploy-openshift: operator-remove-openshift
+deploy-operator: remove-operator
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift
 	oc new-project kiali-test-mesh-operator
 	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
@@ -130,7 +23,7 @@ operator-deploy-openshift: operator-remove-openshift
 	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n kiali-test-mesh-operator 
 
 
-operator-remove-openshift:
+remove-operator:
 	@echo Remove Kiali Test Mesh Operator on Openshift
 	oc delete --ignore-not-found=true -f operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
 	oc delete --ignore-not-found=true -f operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
@@ -139,3 +32,59 @@ operator-remove-openshift:
 	oc delete --ignore-not-found=true -f operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
 	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc delete --ignore-not-found=true -f - -n kiali-test-mesh-operator
 	oc delete namespace kiali-test-mesh-operator --ignore-not-found=true
+
+
+deploy-redhatutorial: remove-redhatutorial
+	@echo Deploy Red Hat Istio Tutorial with Automatic Injection of the sidecar on Openshift
+	oc create namespace ${REDHAT_TUTORIAL}
+	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL}
+	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL}
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL=${REDHAT_TUTORIAL} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc apply -f - -n kiali-test-mesh-operator 
+
+remove-redhatutorial:
+	@echo Remove Red Hat Istio Tutorial with Automatic Injection of the sidecar on Openshift
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL=${REDHAT_TUTORIAL} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc delete -f - -n kiali-test-mesh-operator --ignore-not-found=true 
+	oc delete --ignore-not-found=true namespace ${REDHAT_TUTORIAL}
+
+
+
+deploy-bookinfo: remove-bookinfo
+	@echo Deploy Bookinfo with Automatic Injection of the sidecar on Openshift
+	oc create namespace ${BOOKINFO_NAMESPACE}
+	oc adm policy add-scc-to-user privileged -z default -n ${BOOKINFO_NAMESPACE}
+	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
+
+# deploy-complex-mesh-manual-sidecar:
+# 	@echo Deploy Complex Mesh with Manual Injection of the sidecar on Openshift
+# 	oc create namespace kiali-test-frontend
+# 	oc create namespace kiali-test-reviews
+# 	oc create namespace kiali-test-ratings
+
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
+# 	oc create -f operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
+
+# deploy-complex-mesh-automatic-sidecar:
+# 	@echo Deploy Complex Mesh with Automatic Injection of the sidecar on Openshift
+# 	oc create namespace kiali-test-frontend
+# 	oc create namespace kiali-test-reviews
+# 	oc create namespace kiali-test-ratings
+
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
+# 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings
+# 	oc create -f operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml -n kiali-test-frontend
+
+
+remove-bookinfo:
+	@echo Remove Bookinfo on Openshift
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
+	oc delete --ignore-not-found=true namespace ${BOOKINFO_NAMESPACE}

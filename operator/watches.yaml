@@ -4,15 +4,18 @@
   kind: Bookinfo
   role: /opt/ansible/roles/bookinfo
   reconcilePeriod: 0
+  manageStatus: false
 
 - version: v1
   group: complexmesh.kiali.io
   kind: ComplexMesh
   role: /opt/ansible/roles/complex_mesh
   reconcilePeriod: 0
+  manageStatus: false
 
 - version: v1
   group: redhattutorial.kiali.io
   kind: RedHatTutorial
   role: /opt/ansible/roles/redhat_tutorial
   reconcilePeriod: 0
+  manageStatus: false
