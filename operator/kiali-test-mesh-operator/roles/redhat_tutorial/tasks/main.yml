@@ -16,15 +16,40 @@
 - name: Create the Items
   include: ../common_tasks/deploy_istio_item.yml
   with_items:
-  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
-  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
-  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v2.yml', sidecar: true }
-  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v1.yml', sidecar: true }
-  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v2.yml', sidecar: true }
-  - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v2-timeout.yml', sidecar: true }
+  - { name: 'customer-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
+  - { name: 'preference-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
+  - { name: 'preference-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v2.yml', sidecar: true }
+  - { name: 'recommendation-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v1.yml', sidecar: true }
+  - { name: 'recommendation-v2', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v2.yml', sidecar: true }
 
-
-- name: Create the traffic generator
-  include: ../common_tasks/deploy_traffic_generator.yml
+- name: Create Openshift Route
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
   with_items:
-   - { namespace: '{{ redhat_tutorial.namespace }}', route: 'http://customer/', sidecar: traffic_generator.sidecar }
+   - {file: 'templates/istio/customer-route.yml'}
+  register: route
+
+- name: Deploy Customer Istio Gateway
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  with_items:
+   - {file: 'templates/istio/customer-gateway.yml'}
+   - {file: 'templates/istio/customer-vs.yml'}
+
+
+- name: Deploy Tutorial Destination Rules
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item.file) }}"
+  with_items:
+   - {file: 'templates/istio/customer-dr.yml'}
+   - {file: 'templates/istio/preference-dr.yml'}
+   - {file: 'templates/istio/recommendation-dr.yml'}
+  
+- name: Create the traffic generator
+  include_role: 
+    name: traffic-generator
+  with_items:
+   - { namespace: '{{ redhat_tutorial.namespace }}', route: "http://{{ route.results[0]['result']['spec']['host'] }}"}
