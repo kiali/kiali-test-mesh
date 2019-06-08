@@ -1,7 +1,9 @@
+KIALI_TEST_MESH_OPERATOR_NAMESPACE ?= kiali-test-mesh-operator
 BOOKINFO_NAMESPACE ?= bookinfo
 CONTROL_PLANE_NAMESPACE ?= istio-system
+REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
 
-REDHAT_TUTORIAL ?= redhat-istio-tutorial
+
 OPERATOR_IMAGE ?= gbaufake/kiali-test-mesh-operator:refactor-traffic-generator
 
 SECRET_PATH ?= operator/deply/secret.yaml
@@ -21,24 +23,25 @@ push-operator-image:
 
 deploy-operator: remove-operator
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift
-	oc new-project kiali-test-mesh-operator
-	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
-	oc create -f operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator 
-	oc create -f operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
-	oc create -f operator/deploy/service_account.yaml -n kiali-test-mesh-operator 
-	oc create -f operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n kiali-test-mesh-operator 
+	oc create namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc label namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} kiali-test-mesh-operator=owned
+	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
+	oc create -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
+	oc create -f operator/deploy/complex_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc create -f operator/deploy/service_account.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
+	oc create -f operator/deploy/role_binding.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 
 
 remove-operator:
 	@echo Remove Kiali Test Mesh Operator on Openshift
-	oc delete --ignore-not-found=true -f operator/deploy/redhat_tutorial-crd.yaml -n kiali-test-mesh-operator 
-	oc delete --ignore-not-found=true -f operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
-	oc delete --ignore-not-found=true -f operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
-	oc delete --ignore-not-found=true -f operator/deploy/service_account.yaml -n kiali-test-mesh-operator
-	oc delete --ignore-not-found=true -f operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc delete --ignore-not-found=true -f - -n kiali-test-mesh-operator
-	oc delete namespace kiali-test-mesh-operator --ignore-not-found=true
+	oc delete --ignore-not-found=true -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
+	oc delete --ignore-not-found=true -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc delete --ignore-not-found=true -f operator/deploy/complex_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc delete --ignore-not-found=true -f operator/deploy/service_account.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc delete --ignore-not-found=true -f operator/deploy/role_binding.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc delete --ignore-not-found=true -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc delete namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} --ignore-not-found=true
 
 
 deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace add-redhat-istio-tutorial-control-plane cr-redhat-istio-tutorial

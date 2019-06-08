@@ -66,17 +66,9 @@ istio_manual_injection:
 make deploy-bookinfo-manual-sidecar
 ----
 
-or with the following command for openshift:
-
-[source,shell]
-----
-oc create namespace bookinfo
-oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
-----
-
 
 == Kiali Complex Test Mesh
-After installing the <<Kiali Test Mesh Operator>>, you may install Kiali Complex Mesh which is a different type of mesh than the others. This mesh does not take any parameters and is not configurable.
+After installing the <<Kiali Test Mesh Operator>>, you may install Kiali Complex Mesh which is a different type of mesh than the others.
 
 This mesh includes mixing different configuration options. It spans multiple namespaces, uses deployments and replicasets, and apps and workloads. It is meant as a testing mesh to see how Kiali handles more complex scenarios.
 
