@@ -2,8 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: traffic-generator-config
-  namespace: {{ item.namespace }}
+  namespace: {{ namespace }}
 data:
-  duration: "0s"
-  route: {{ item.route }}
-  rate: "1"
+  duration: "{{ duration }}"
+  route: {{ route }}
+  rate: "{{ rate }}"

@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: kiali-traffic-generator
-  namespace: {{ item.namespace }}
+  namespace: {{ namespace }}
   labels:
     app: kiali-traffic-generator
     version: v1
@@ -14,7 +14,7 @@ spec:
     metadata:
 {% if not istio_manual_injection.enabled %}
       annotations:
-        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/inject: "{{ sidecar }}"
 {% endif %}
       labels:
         app: kiali-traffic-generator

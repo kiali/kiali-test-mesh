@@ -87,9 +87,15 @@
    - {file: 'templates/istio/bookinfo-reviews-dr.yml'}
    - {file: 'templates/istio/bookinfo-ratings-dr.yml'}
    - {file: 'templates/istio/bookinfo-details-dr.yml'}  
-  
+
+- name: Set Full Route for Traffic Generator
+  set_fact:
+    full_route: "http://{{ route.results[0]['result']['spec']['host'] }}/productpage"
+
 - name: Create the traffic generator
   include_role: 
     name: traffic-generator
-  with_items:
-   - { namespace: '{{ bookinfo.namespace }}', route: "http://{{ route.results[0]['result']['spec']['host'] }}/productpage"}
+  public: true
+  vars:
+    namespace: "{{ bookinfo.namespace }}"
+    route: "{{ full_route }} "

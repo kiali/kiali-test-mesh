@@ -48,8 +48,14 @@
    - {file: 'templates/istio/preference-dr.yml'}
    - {file: 'templates/istio/recommendation-dr.yml'}
   
+- name: Set Full Route for Traffic Generator
+  set_fact:
+    full_route: "http://{{ route.results[0]['result']['spec']['host'] }}"
+
 - name: Create the traffic generator
   include_role: 
     name: traffic-generator
-  with_items:
-   - { namespace: '{{ redhat_tutorial.namespace }}', route: "http://{{ route.results[0]['result']['spec']['host'] }}"}
+  public: true
+  vars:
+    namespace: "{{ redhat_tutorial.namespace }}"
+    route: "{{ full_route }}"

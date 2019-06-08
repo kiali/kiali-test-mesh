@@ -6,7 +6,7 @@ toc::[]
 
 = Introduction
 
-Kiali Traffic Generator is a component which generate the traffic for visualization of Kiali Test Meshes on Kiali Service Graph.
+Kiali Traffic Generator is a component which generate the traffic for visualization of Kiali Test Meshes.
 
 It uses https://github.com/tsenart/vegeta[Vegeta], a lightweight golang traffic generator.
 

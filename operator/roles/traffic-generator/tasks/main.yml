@@ -1,10 +1,10 @@
-- name: "Deploy Traffic Generator Configmap in {{ item.namespace }}"
+- name: "Deploy Traffic Generator Configmap in {{ namespace }}"
   k8s:
    state: present
    definition: "{{ lookup('template', 'templates/traffic-generator-configmap.yml') }}"
 
 
-- name: "Deploy Traffic Generator in {{ item.namespace }} with Automatic Injection"
+- name: "Deploy Traffic Generator in {{ namespace }} with Automatic Injection"
   k8s:
    state: present
    definition: "{{ lookup('template', 'templates/traffic-generator.yml') }}"

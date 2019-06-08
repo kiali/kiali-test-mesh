@@ -58,15 +58,3 @@ To build the 'Kiali Test Service' docker image you will need to just run the 'do
 ----
 make docker-build
 ----
-
-
-=== Manual Deployment of the Service using OpenShift Templates
-
-If you wish to manually handle and configure your own service mesh, we have a template which will deploy a replica set with a single service to make things easy.
-
-To deploy a service with the name 'myService' you will need to run the following commands:
-
-[source,shell]
-----
-oc process -f ./deploy/openshift/test-app-template.yaml -p SERVICE_NAME=myService | istioctl kube-inject -f - | oc apply -f -
-----
