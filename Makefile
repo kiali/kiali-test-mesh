@@ -8,6 +8,7 @@ OPERATOR_IMAGE ?= gbaufake/kiali-test-mesh-operator:refactor-traffic-generator
 
 SECRET_PATH ?= operator/deploy/secret.yaml
 SECRET_NAME ?= pull_secret
+KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 
 MANUAL_INJECTION_SIDECAR ?= false
 MULTI_TENANCY ?= true
@@ -24,7 +25,7 @@ push-operator-image:
 deploy-operator: remove-operator
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift
 	oc create namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
-	oc label namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} kiali-test-mesh-operator=owned
+	oc label namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
 	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/complex_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
@@ -69,7 +70,7 @@ endif
 
 create-redhat-istio-tutorial-namespace:
 	oc create namespace ${REDHAT_TUTORIAL_NAMESPACE}
-	oc label namespace ${REDHAT_TUTORIAL_NAMESPACE} kiali-test-mesh-operator=owned
+	oc label namespace ${REDHAT_TUTORIAL_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
 	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
 	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
 
@@ -96,7 +97,7 @@ endif
 
 create-bookinfo-namespace:
 	oc create namespace ${BOOKINFO_NAMESPACE}
-	oc label namespace ${BOOKINFO_NAMESPACE} kiali-test-mesh-operator=owned
+	oc label namespace ${BOOKINFO_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
 	oc adm policy add-scc-to-user privileged -z default -n ${BOOKINFO_NAMESPACE}
 	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
 
