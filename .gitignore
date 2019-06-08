@@ -4,3 +4,4 @@ _output
 # Swap files
 .*.sw*
 .vscode/
+operator/deploy/secret.yaml

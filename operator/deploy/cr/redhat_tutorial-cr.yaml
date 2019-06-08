@@ -4,7 +4,7 @@ metadata:
   name: redhattutorial-installation
 spec:
   redhat_tutorial:
-    namespace: ${REDHAT_TUTORIAL}
+    namespace: ${REDHAT_TUTORIAL_NAMESPACE}
     control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
 
   istio_manual_injection:

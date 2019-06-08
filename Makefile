@@ -1,9 +1,15 @@
 BOOKINFO_NAMESPACE ?= bookinfo
 CONTROL_PLANE_NAMESPACE ?= istio-system
-MULTI_TENANCY ?= true
+
 REDHAT_TUTORIAL ?= redhat-istio-tutorial
 OPERATOR_IMAGE ?= gbaufake/kiali-test-mesh-operator:refactor-traffic-generator
+
+SECRET_PATH ?= operator/deply/secret.yaml
+SECRET_NAME ?= pull_secret
+
 MANUAL_INJECTION_SIDECAR ?= false
+MULTI_TENANCY ?= true
+ENABLE_SECRET ?= true
 
 build-operator-image:
 	@echo Building operator
@@ -40,36 +46,58 @@ deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-isti
 
 cr-redhat-istio-tutorial:
 	@echo Create Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL=${REDHAT_TUTORIAL} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc apply -f - -n kiali-test-mesh-operator 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc apply -f - -n kiali-test-mesh-operator 
 
 
-add-redhat-istio-tutorial-control-plane:
+add-redhat-istio-tutorial-to-control-plane:
 ifeq ($(MULTI_TENANCY),true)
-	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": /spec/members/0, "value":"${REDHAT_TUTORIAL}"}]'
+	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": /spec/members/0, "value":"${REDHAT_TUTORIAL_NAMESPACE}"}]'
+endif
+
+quay-secret-redhat-istio-tutorial:
+ifeq ($(ENABLE_SECRET), true)
+	oc apply -f ${SECRET_PATH} -n ${REDHAT_TUTORIAL_NAMESPACE}
+	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
+	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
+	oc secrets link deployer ${SECRET_NAME} --for=pull -n ${REDHAT_TUTORIAL_NAMESPACE}
+	oc secrets link deployer ${SECRET_NAME} --for=pull -n ${REDHAT_TUTORIAL_NAMESPACE}
+	oc secrets link default ${SECRET_NAME} --for=pull -n ${REDHAT_TUTORIAL_NAMESPACE}
 endif
 
 create-redhat-istio-tutorial-namespace:
-	oc create namespace ${REDHAT_TUTORIAL}
-	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL}
-	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL}
+	oc create namespace ${REDHAT_TUTORIAL_NAMESPACE}
+	oc label namespace ${REDHAT_TUTORIAL_NAMESPACE} kiali-test-mesh-operator=owned
+	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
+	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
 
 remove-redhat-istio-tutorial-cr:
 	@echo Remove Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL=${REDHAT_TUTORIAL} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc delete -f - -n kiali-test-mesh-operator --ignore-not-found=true 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc delete -f - -n kiali-test-mesh-operator --ignore-not-found=true 
 
 remove-redhat-istio-tutorial-namespace:
 	@echo Remove Red Hat Istio Tutorial Namespace
-	oc delete --ignore-not-found=true namespace ${REDHAT_TUTORIAL}
+	oc delete --ignore-not-found=true namespace ${REDHAT_TUTORIAL_NAMESPACE}
 
-deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace secret-workaround-redhat-istio-tutorial add-redhat-istio-tutorial-control-plane
-	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"redhat_tutorial": {"namespace": "${REDHAT_TUTORIAL}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}}' -v
+deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace quay-secret-redhat-istio-tutorial add-redhat-istio-tutorial-control-plane
+	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"redhat_tutorial": {"namespace": "${REDHAT_TUTORIAL_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}}' -v
+
+quay-secret-bookinfo:
+ifeq ($(ENABLE_SECRET), true)
+	oc apply -f ${SECRET_PATH} -n ${BOOKINFO_NAMESPACE}
+	oc adm policy add-scc-to-user privileged -z default -n ${BOOKINFO_NAMESPACE}
+	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
+	oc secrets link deployer ${SECRET_NAME} --for=pull -n ${BOOKINFO_NAMESPACE}
+	oc secrets link deployer ${SECRET_NAME} --for=pull -n ${BOOKINFO_NAMESPACE}
+	oc secrets link default ${SECRET_NAME} --for=pull -n ${BOOKINFO_NAMESPACE}
+endif
 
 create-bookinfo-namespace:
 	oc create namespace ${BOOKINFO_NAMESPACE}
+	oc label namespace ${BOOKINFO_NAMESPACE} kiali-test-mesh-operator=owned
 	oc adm policy add-scc-to-user privileged -z default -n ${BOOKINFO_NAMESPACE}
 	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
 
-add-bookinfo-control-plane:
+add-bookinfo-to-control-plane:
 ifeq ($(MULTI_TENANCY),true) 
 	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": /spec/members/0, "value":"${BOOKINFO_NAMESPACE}"}]'
 endif
@@ -85,9 +113,9 @@ remove-bookinfo-cr:
 	@echo Remove Bookinfo CR on Openshift
 	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
 
-deploy-bookinfo: remove-bookinfo-cr remove-bookinfo-namespace create-bookinfo-namespace secret-workaround-bookinfo add-bookinfo-control-plane cr-bookinfo
+deploy-bookinfo: remove-bookinfo-cr remove-bookinfo-namespace create-bookinfo-namespace quay-secret-bookinfo add-bookinfo-to-control-plane cr-bookinfo
 
-deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace secret-workaround-bookinfo add-bookinfo-control-plane
+deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace quay-secret-bookinfo add-bookinfo-control-plane
 	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": "true", "mysql": "true", "version": "1.14.0"}}' -v
 
 
