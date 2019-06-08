@@ -6,7 +6,7 @@ REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
 
 OPERATOR_IMAGE ?= gbaufake/kiali-test-mesh-operator:refactor-traffic-generator
 
-SECRET_PATH ?= operator/deply/secret.yaml
+SECRET_PATH ?= operator/deploy/secret.yaml
 SECRET_NAME ?= pull_secret
 
 MANUAL_INJECTION_SIDECAR ?= false
