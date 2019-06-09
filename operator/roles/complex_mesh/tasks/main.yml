@@ -5,24 +5,12 @@
 - name: Create Services
   k8s:
     state: present
-    definition:
-      apiVersion: v1
-      kind: Service
-      metadata:
-          name: "{{ item.name }}"
-          namespace: "{{ item.namespace }}"
-      spec:
-        selector:
-          name: "{{ item.pod_name_label }}"
-        ports:
-        - name: http
-          port: 80
-          targetPort: 8888
+    definition: "{{ lookup('template', item.file) }}"  
   with_items:
-   - { namespace: 'kiali-test-frontend', name: 'productpage', pod_name_label: 'productpage' }
-   - { namespace: 'kiali-test-frontend', name: 'details', pod_name_label: 'details' }
-   - { namespace: 'kiali-test-reviews', name: 'reviews', pod_name_label: 'reviews' }
-   - { namespace: 'kiali-test-ratings', name: 'ratings', pod_name_label: 'ratings' }
+   - { namespace: 'kiali-test-frontend', file: 'templates/complex-mesh/service.yml', name: 'productpage', label: 'productpage' }
+   - { namespace: 'kiali-test-frontend', file: 'templates/complex-mesh/service.yml', name: 'details', label: 'details' }
+   - { namespace: 'kiali-test-reviews',  file: 'templates/complex-mesh/service.yml', name: 'reviews', label: 'reviews' }
+   - { namespace: 'kiali-test-ratings',  file: 'templates/complex-mesh/service.yml', name: 'ratings', label: 'ratings' }
 
 - name: Create DR and Virtual Service
   k8s:
@@ -31,7 +19,9 @@
   with_items:
     - { namespace: 'kiali-test-frontend', file: 'templates/complex-mesh/destinationrule-template.yml', name: 'detailsdr', host: 'details', subset_name: 'v1', subset_version: 'v1' }
     - { namespace: 'kiali-test-frontend', file: 'templates/complex-mesh/virtualservice-template.yml', name: 'detailsvs', host: 'kiali.io', destination_host: 'details', destination_subset: 'v1' }
-    
+    - { namespace: 'kiali-test-reviews', file: 'templates/complex-mesh/destinationrule-reviews.yml', name: 'reviewsdr', destination_host: 'reviews'}
+    - { namespace: 'kiali-test-reviews', file: 'templates/complex-mesh/destinationrule-ratings.yml', name: 'ratingsdr', destination_host: 'ratings'}
+
 
 - name: Create the Items
   include: ../common_tasks/deploy_istio_item.yml
@@ -49,6 +39,9 @@
   - { namespace: 'kiali-test-ratings', file: 'templates/complex-mesh/app-daemonset.yml', name: 'ratingsv6', app: 'ratings', version: 'v6', sidecar: true }
 
 - name: Create the traffic generator
-  include: ../common_tasks/deploy_traffic_generator.yml
-  with_items:
-   - { namespace: 'kiali-test-frontend', route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local', sidecar: traffic_generator.sidecar }
+  include_role: 
+    name: traffic-generator
+  public: true
+  vars:
+    namespace: 'kiali-test-frontend'
+    route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local'
