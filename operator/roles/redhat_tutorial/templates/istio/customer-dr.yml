@@ -1,0 +1,11 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: customer
+  namespace: {{ redhat_tutorial.namespace }}
+spec:
+  host: customer
+  subsets:
+  - name: v1
+    labels:
+      version: v1

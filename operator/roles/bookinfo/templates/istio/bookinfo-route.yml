@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ bookinfo.namespace }}
+  namespace: {{ bookinfo.control_plane_namespace }}
+spec:
+  path: /
+  to:
+    kind: Service
+    name: istio-ingressgateway
+    weight: 100
+  port:
+    targetPort: http2

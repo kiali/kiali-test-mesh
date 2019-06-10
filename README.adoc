@@ -1,44 +1,19 @@
 = Kiali Test Mesh Operator
 
-Kiali provides an operator which will install different types of examples mesh which allow you to see different features of kiali.
+Kiali Test Mesmh provides an operator which will install different types of examples mesh which allow you to see different features of kiali.
 
 In order to Deploy the Operator you can use following make target (on root folder of this repository)
 
 [source,shell]
 ----
-make operator-deploy-openshift
-----
-
-or you can use the following commands to deploy on openshift
-
-
-[source,shell]
-----
-oc new-project kiali-test-mesh-operator
-oc create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
-oc create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
-oc create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator
-oc create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-oc create -f operator/kiali-test-mesh-operator/deploy/operator.yaml -n kiali-test-mesh-operator
-----
-
-for kubernetes use the following commands;
-
-[source,shell]
-----
-kubectl create namespace kiali-test-mesh-operator
-kubectl create -f operator/kiali-test-mesh-operator/deploy/bookinfo-crd.yaml -n kiali-test-mesh-operator
-kubectl create -f operator/kiali-test-mesh-operator/deploy/complex_mesh-crd.yaml -n kiali-test-mesh-operator
-kubectl create -f operator/kiali-test-mesh-operator/deploy/service_account.yaml -n kiali-test-mesh-operator
-kubectl create -f operator/kiali-test-mesh-operator/deploy/role_binding.yaml -n kiali-test-mesh-operator
-kubectl create -f operator/kiali-test-mesh-operator/deploy/operator.yaml -n kiali-test-mesh-operator
+make deploy-operator
 ----
 
 After installing the operator you can install the custom resource for each type of mesh that might want to try.
 
 Meshes available:
 
-- Bookinfo from Istio
+- link:https://preliminary.istio.io/docs/examples/bookinfo/[Bookinfo]
 - Kiali Complex Mesh
 
 
@@ -48,8 +23,6 @@ Meshes available:
 If you want to remove the CR defined, just change the makefile target command to from deploy to remove. As an example: `make deploy-bookinfo-automatic-sidecar` can become `make remove-bookinfo-automatic-sidecar`. 
 
 If you want to use the openshift command just change from create to delete (eg: `oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml` will become `oc delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml`)
-
-On Kubernetes, in order to delete using the command you just need to change the create to delete command (eg: `kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml` will become `kubectl delete -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml`)
 
 
 === Automatic Injection of Istio sidecar
@@ -68,19 +41,11 @@ or with the following command for openshift
 oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
 ----
 
-or with the following command for kubernetes
-
-[source,shell]
-----
-kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
-----
-
 == Pulling Proxy Init from a Private Registry
 
 If you are pulling Istio from a private registry, you will need to add a secret in order to start your mesh. Openshift does provide the option by linking a secret to a service account using the command `oc secrets link robot my-pull-secret --for=pull` where my-pull-secret is a secret for your pirvate registry.
 Make sure your namespace and secret is linked
 
-For Kubernetes, you can manually edit the deployments files as explained link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#define-container-environment-variables-using-secret-data[here]
 
 === Manual Injection of the Istio sidecar
 In order to deploy with link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar] you can use the make target to deploy on openshift
@@ -92,7 +57,7 @@ Check the version which of `istioctl` which will be download on cr. You can chan
 ```
 istio_manual_injection:
     enabled: true
-    version: '1.1.0-snapshot.6' # version when you enable the manual inject via istioctl (it will download from Istio Release)
+    version: '1.1.8 # version when you enable the manual inject via istioctl (it will download from Istio Release)
 ```
 
 
@@ -101,24 +66,9 @@ istio_manual_injection:
 make deploy-bookinfo-manual-sidecar
 ----
 
-or with the following command for openshift:
-
-[source,shell]
-----
-oc create namespace bookinfo
-oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
-----
-
-or with the following command for kubernetes:
-
-[source,shell]
-----
-kubectl create namespace bookinfo
-kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/bookinfo-cr.yaml -n kiali-test-mesh-operator
-----
 
 == Kiali Complex Test Mesh
-After installing the <<Kiali Test Mesh Operator>>, you may install Kiali Complex Mesh which is a different type of mesh than the others. This mesh does not take any parameters and is not configurable.
+After installing the <<Kiali Test Mesh Operator>>, you may install Kiali Complex Mesh which is a different type of mesh than the others.
 
 This mesh includes mixing different configuration options. It spans multiple namespaces, uses deployments and replicasets, and apps and workloads. It is meant as a testing mesh to see how Kiali handles more complex scenarios.
 
@@ -132,60 +82,3 @@ deploy-complex-mesh-automatic-sidecar
 ----
 
 or with the following command for openshift
-
-[source,shell]
-----
-oc create namespace kiali-test-frontend
-oc create namespace kiali-test-reviews
-oc create namespace kiali-test-ratings
-oc create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml
-----
-
-or with the following command for kubernetes
-
-[source,shell]
-----
-kubectl create namespace kiali-test-frontend
-kubectl create namespace kiali-test-reviews
-kubectl create namespace kiali-test-ratings
-kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/automatic-sidecar/complex_mesh-cr.yaml
-----
-
-=== Manual Injection of the Istio sidecar
-In order to deploy with link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar] you can use the make target to deploy on openshift
-
-[NOTE]
-Check the version which of `istioctl` which will be download on cr. You can changed by change by change the following content of the cr
-
-
-```
-istio_manual_injection:
-    enabled: true
-    version: '1.1.0-snapshot.6' # version when you enable the manual inject via istioctl (it will download from Istio Release)
-```
-
-
-[source,shell]
-----
-deploy-complex-mesh-manual-sidecar
-----
-
-or with the following command for openshift:
-
-[source,shell]
-----
-oc create namespace kiali-test-frontend
-oc create namespace kiali-test-reviews
-oc create namespace kiali-test-ratings
-oc create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml
-----
-
-or with the following command for kubernetes:
-
-[source,shell]
-----
-kubectl create namespace kiali-test-frontend
-kubectl create namespace kiali-test-reviews
-kubectl create namespace kiali-test-ratings
-kubectl create -f operator/kiali-test-mesh-operator/deploy/cr/manual-sidecar/complex_mesh-cr.yaml
-----
