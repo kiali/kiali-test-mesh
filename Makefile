@@ -16,7 +16,7 @@ build-operator-image:
 	cd operator && operator-sdk build ${OPERATOR_IMAGE}
 
 push-operator-image:
-	@echo Building Push image
+	@echo Push Operator image
 	docker push ${OPERATOR_IMAGE}
 
 deploy-operator: remove-operator
@@ -69,7 +69,7 @@ create-bookinfo-namespace:
 	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
 
 deploy-cr-bookinfo:
-	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
 
 remove-bookinfo-namespace:
 	@echo Remove Bookinfo Namespace
@@ -77,7 +77,7 @@ remove-bookinfo-namespace:
 
 remove-bookinfo-cr:
 	@echo Remove Bookinfo CR on Openshift
-	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}  envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
 
 quay-secret-bookinfo:
 ifeq ($(ENABLE_SECRET), true)
