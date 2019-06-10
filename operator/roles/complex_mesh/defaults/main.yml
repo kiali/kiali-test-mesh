@@ -1,5 +1,5 @@
 ---
-# defaults file for complex_meshxe
+# defaults file for complex_mesh
 istio_manual_injection:
   enabled: false
   version: '1.1.8'
