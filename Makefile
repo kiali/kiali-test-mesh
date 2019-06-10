@@ -7,8 +7,8 @@ SECRET_PATH ?= operator/deploy/secret.yaml
 SECRET_NAME ?= pull-secret
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 MANUAL_INJECTION_SIDECAR ?= false
-ENABLE_SECRET ?= true
-ENABLE_MULTI_TENANT ?= true
+ENABLE_SECRET ?= false
+ENABLE_MULTI_TENANT ?= false
 
 build-operator-image:
 	@echo Building operator
