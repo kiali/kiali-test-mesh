@@ -7,6 +7,7 @@ SECRET_PATH ?= operator/deploy/secret.yaml
 SECRET_NAME ?= pull-secret
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 MANUAL_INJECTION_SIDECAR ?= false
+MANUAL_INJECTION_SIDECAR_ISTIO_VERSION ?= "1.1.8"
 ENABLE_SECRET ?= false
 ENABLE_MULTI_TENANT ?= false
 
@@ -43,7 +44,7 @@ remove-operator:
 
 deploy-cr-redhat-istio-tutorial:
 	@echo Create Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc apply -f - -n kiali-test-mesh-operator 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n kiali-test-mesh-operator 
 
 create-redhat-istio-tutorial-namespace:
 	oc create namespace ${REDHAT_TUTORIAL_NAMESPACE}
@@ -53,7 +54,7 @@ create-redhat-istio-tutorial-namespace:
 
 remove-redhat-istio-tutorial-cr:
 	@echo Remove Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc delete -f - -n kiali-test-mesh-operator --ignore-not-found=true 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc delete -f - -n kiali-test-mesh-operator --ignore-not-found=true 
 
 remove-redhat-istio-tutorial-namespace:
 	@echo Remove Red Hat Istio Tutorial Namespace
@@ -141,10 +142,10 @@ remove-complex-mesh-namespace:
 
 
 deploy-cr-complex-mesh: 
-	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc apply -f - -n kiali-test-frontend 
+	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n kiali-test-frontend 
 
 remove-cr-complex-mesh-cr: 
-	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} envsubst | oc delete -f - -n kiali-test-frontend
+	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc delete -f - -n kiali-test-frontend
 
 
 test2: add-bookinfo-control-plane add-complex-mesh-control-plane add-redhat-istio-tutorial-control-plane

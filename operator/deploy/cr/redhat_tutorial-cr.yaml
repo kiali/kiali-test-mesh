@@ -9,4 +9,4 @@ spec:
 
   istio_manual_injection:
     enabled: ${MANUAL_INJECTION_SIDECAR}
-    version: '1.1.8'
+    version: ${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}
