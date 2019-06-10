@@ -1,0 +1,16 @@
+apiVersion: scalemesh.kiali.io/v1
+kind: ScaleMesh
+metadata:
+  name: scalemesh-installation
+spec:
+  istio_manual_injection:
+    enabled: ${MANUAL_INJECTION_SIDECAR}
+    version: ${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}
+
+  scale_mesh:
+    control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
+    number_services: ${SCALE_MESH_NUMBER_SERVICES}
+    number_namespaces: ${SCALE_MESH_NUMBER_NAMESPACES}
+    type_of_mesh: ${SCALE_MESH_TYPE_OF_MESH}
+
+

@@ -1,0 +1,34 @@
+- name: Install Istioctl
+  include: ../common_tasks/install_istioctl.yml
+  when: istio_manual_injection.enabled
+
+- name: Generate Versions Array
+  set_fact: versions="{{versions}} + ['v{{ item }}']"
+  with_sequence: start=1 end={{scale_mesh.number_of_versions}} format=%d
+
+- name: Generate Services Array
+  set_fact: services="{{services}} + ['{{ item }}']"
+  with_sequence: start=1 end={{scale_mesh.number_of_services}} format=%d
+
+- name: Generate Apps Array
+  set_fact: apps="{{apps}} + ['{{ item }}']"
+  with_sequence: start=1 end={{scale_mesh.number_of_apps}} format=%d
+
+- name: Create Service and Namespace Dict
+  set_fact:
+  args:
+    service:
+      name: "service-{{ item.0 }}"
+      namespace: "{{item.1}}-{{ (item.0 | int) % (scale_mesh.number_of_namespaces | int) }}"
+      fqdn: "service-{{ item.0 }}.{{item.1}}-{{ (item.0 | int) % (scale_mesh.number_of_namespaces | int) }}.svc.cluster.local"
+      app: "app{{ (item.0 | int) % (scale_mesh.number_of_apps | int) }}"
+      pod_name_label: "app{{ (item.0 | int) % (scale_mesh.number_of_apps | int) }}"
+  when: "random == false"
+  with_nested:
+    - "{{ services }}"
+    - "{{ scale_mesh.type_of_mesh }}"
+  register: all_services
+
+- name: Create All Services List
+  set_fact:
+    all_services: "{{all_services.results | map(attribute='ansible_facts.service') | list  }}"

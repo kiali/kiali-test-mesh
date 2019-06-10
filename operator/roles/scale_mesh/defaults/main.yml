@@ -1,0 +1,17 @@
+---
+# defaults file for scale_mesh
+istio_manual_injection:
+  enabled: false
+  version: '1.1.8'
+
+scale_mesh:
+  control_plane_namespace: istio-system
+  number_services: 6
+  number_namespaces: 1
+  type_of_mesh: kiali-test-depth
+
+versions: []
+services: []
+apps: []
+even_services: []
+namespaces: []

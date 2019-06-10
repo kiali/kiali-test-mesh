@@ -1,0 +1,81 @@
+- name: Instal Kiali Test Mesh
+  hosts: localhost
+  vars:
+    kiali_test_mesh:
+      - kiali-test-depth
+      - kiali-test-breadth
+      - kiali-test-circle
+      - kiali-test-circle-callback
+      - kiali-test-hourglass
+      - kiali-test-depth-sink
+      - kiali-test-breadth-sink
+    random: false
+
+  tasks:
+    - name: Initialize Variables
+      set_fact:
+        versions: []
+        services: []
+        apps: []
+        even_services: []
+        namespaces: []
+        kiali_test_depth_route: ""
+        kiali_test_depth_namespace: ""
+        kiali_test_breadth_route: ""
+        kiali_test_breadth_namespace: ""
+        kiali_test_circle_route: ""
+        kiali_test_circle_namespace: ""
+        kiali_test_circle_callback_route: ""
+        kiali_test_circle_callback_namespace: ""
+        kiali_test_depth_sink_route: ""
+        kiali_test_depth_sink_namespace: ""
+        kiali_test_breadth_sink_route: ""
+        kiali_test_breadth_sink_namespace: ""
+        kiali_test_hourglass_route: ""
+        kiali_test_hourglass_namespace: ""
+
+    - name: 'check if number_of_namespaces is greater than number_of_services'
+      fail: msg="Please make sure the number_of_services are greater than or equal to number_of_namespaces"
+      when: "number_of_services >= number_of_namespaces "
+
+    - name: Generate Versions Array
+      set_fact: versions="{{versions}} + ['v{{ item }}']"
+      with_sequence: start=1 end={{number_of_versions}} format=%d
+
+    - name: Generate Services Array
+      set_fact:
+        services="{{services}} + ['{{ item }}']"
+      with_sequence: start=1 end={{number_of_services}} format=%d
+
+    - name: Generate Apps Array
+      set_fact:
+        apps="{{apps}} + ['{{ item }}']"
+      with_sequence: start=1 end={{number_of_apps}} format=%d
+
+    - name: Create Service and Namespace Dict
+      set_fact:
+      args:
+        service:
+          name: "service-{{ item.0 }}"
+          namespace: "{{item.1}}-{{ (item.0 | int) % (number_of_namespaces | int) }}"
+          fqdn: "service-{{ item.0 }}.{{item.1}}-{{ (item.0 | int) % (number_of_namespaces | int) }}.svc.cluster.local"
+          app: "app{{ (item.0 | int) % (number_of_apps | int) }}"
+          pod_name_label: "app{{ (item.0 | int) % (number_of_apps | int) }}"
+      when: "random == false"
+      with_nested:
+        - "{{ services }}"
+        - "{{ kiali_test_mesh | intersect(meshes) }}"
+      register: all_services
+
+    - name: Create All Services List
+      set_fact:
+        all_services: "{{all_services.results | map(attribute='ansible_facts.service') | list  }}"
+
+    - import_tasks: tasks/routes.yml
+
+    - name: Configure the namespaces
+      include: tasks/namespace.yml
+      with_items:
+      - "{{ all_services | map(attribute='namespace') | list | unique  }}"
+
+    - import_tasks: tasks/scale_mesh.yml
