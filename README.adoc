@@ -36,23 +36,39 @@ make deploy-bookinfo
 available options:
 
 - `BOOKINFO_NAMESPACE` can be set to deploy namespace (default: `bookinfo`)
-- `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
 
 [NOTE]
 Automatic Injection is supported way to inject with multi-tenancy.
 
+- `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
 
 - `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
 
 
-so possible scenario:
-
-- Deploy bookinfo with istioctl 1.1.8 on bookinfo2 as namespace
+so possible scenario command:
 
 [source,shell]
 ----
 make deploy-bookinfo BOOKINFO_NAMESPACE=bookinfo2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8
 ----
+
+
+=== Remove Bookinfo
+
+You can run the following command to remove Bookinfo:
+
+[source,shell]
+----
+make remove-bookinfo-cr
+----
+
+The command above will remove the Bookinfo installation but not namespace itself. In order to remove the namespace itself you will need to run the folowing command (make sure you have the `BOOKINFO_NAMESPACE` set correctly):
+
+[source,shell]
+----
+make remove-bookinfo-namespace BOOKINFO_NAMESPACE=bookinfo
+----
+
 
 
 == Red Hat Istio Tutorial
@@ -68,6 +84,42 @@ After installing the <<Kiali Test Mesh Operator>>. Run the following command to 
 make deploy-redhat-istio-tutorial
 ----
 
+available options:
+
+- `REDHAT_TUTORIAL_NAMESPACE` can be set to deploy namespace (default: `redhat-istio-tutorial`)
+
+[NOTE]
+Automatic Injection is supported way to inject with multi-tenancy.
+
+- `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
+
+- `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
+
+
+so possible scenario command:
+
+[source,shell]
+----
+make deploy-redhat-istio-tutorial REDHAT_TUTORIAL_NAMESPACE=redhat-istio-tutorial2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8
+----
+
+
+=== Remove Red Hat Istio Tutorial
+
+You can run the following command to remove Red Hat Istio Tutorial:
+
+[source,shell]
+----
+make remove-redhat-istio-tutorial-cr 
+----
+
+The command above will remove the Red Hat Istio Tutorial installation but not namespace itself. In order to remove the namespace itself you will need to run the folowing command (make sure you have the `REDHAT_TUTORIAL_NAMESPACE` set correctly)
+
+[source,shell]
+----
+make remove-complex-mesh-namespace REDHAT_TUTORIAL_NAMESPACE=redhat-istito-tutorial
+----
+
 
 == Kiali Complex Test Mesh
 After installing the <<Kiali Test Mesh Operator>>, you may install Kiali Complex Mesh which is a different type of mesh than the others.
@@ -81,6 +133,22 @@ This mesh includes mixing different configuration options. It spans multiple nam
 [source,shell]
 ----
 deploy-complex-mesh
+----
+
+=== Remove Kiali Complex Mesh
+
+You can run the following command to remove Kiali Complex Mesh:
+
+[source,shell]
+----
+make remove-complex-mesh-cr
+----
+
+The command above will remove the Kiali Complex Mesh installation but not namespace itself. In order to remove the namespace itself you will need to run the folowing command:
+
+[source,shell]
+----
+make remove-complex-mesh-namespace
 ----
 
 
@@ -102,9 +170,8 @@ You can deploy the meshes with multi-tenancy by by setting `ENABLE_MULTI_TENANT=
 
 When `ENABLE_MULTI_TENANT=true` is set to true, it tries to find a link:https://github.com/Maistra/istio-operator/blob/maistra-0.11/deploy/examples/maistra_v1_servicemeshmemberroll_cr.yaml[Service Mesh Member Roll] named `default` and add that namespace of a mesh on into it.
 
-You need to set `CONTROL_PLANE_NAMESPACE` (default: `istio-system`) to deploy on different control plane namespace
+You need to set `CONTROL_PLANE_NAMESPACE` (default: `istio-system`) to deploy on different control plane namespace. 
 
-
-- examples:
+Example:
 
 `make deploy-bookinfo ENABLE_MULTI_TENANT=true BOOKINFO_NAMESPACE=bookinfo3 CONTROL_PLANE_NAMESPACE=istio-system2` 
