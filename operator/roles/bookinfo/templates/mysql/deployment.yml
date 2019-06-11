@@ -27,3 +27,4 @@ spec:
               secretKeyRef:
                 name: mysql-credentials
                 key: rootpasswd
+        args: ["--default-authentication-plugin","mysql_native_password"]

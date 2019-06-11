@@ -30,7 +30,6 @@ deploy-operator: remove-operator
 	oc create -f operator/deploy/role_binding.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 
-
 remove-operator:
 	@echo Remove Kiali Test Mesh Operator on Openshift
 	oc delete --ignore-not-found=true -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
@@ -144,11 +143,8 @@ remove-complex-mesh-namespace:
 deploy-cr-complex-mesh: 
 	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n kiali-test-frontend 
 
-remove-cr-complex-mesh-cr: 
-	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc delete -f - -n kiali-test-frontend
-
-
-test2: add-bookinfo-control-plane add-complex-mesh-control-plane add-redhat-istio-tutorial-control-plane
+remove-complex-mesh-cr: 
+	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc delete -f - -n kiali-test-frontend --ignore-not-found=true
 
 add-bookinfo-control-plane: 
 ifeq ($(ENABLE_MULTI_TENANT),true) 
