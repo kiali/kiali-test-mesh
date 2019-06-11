@@ -24,7 +24,6 @@ Meshes available:
 
 image::images/bookinfo.png[]
 
-
 link:https://preliminary.istio.io/docs/examples/bookinfo/[Bookinfo] is the "Hello World" example of Istio Resources.
 
 After installing the <<Kiali Test Mesh Operator>>. Run the following command to deploy bookinfo mesh:
@@ -40,7 +39,7 @@ available options:
 - `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
 
 [NOTE]
-Automatic Injection is 
+Automatic Injection is supported way to inject with multi-tenancy.
 
 
 - `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
