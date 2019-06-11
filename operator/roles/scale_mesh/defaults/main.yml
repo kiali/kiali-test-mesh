@@ -7,8 +7,10 @@ istio_manual_injection:
 scale_mesh:
   control_plane_namespace: istio-system
   number_services: 6
-  number_namespaces: 1
-  type_of_mesh: kiali-test-depth
+  number_versions: 2
+  number_apps: 6
+  number_namespaces: 2
+  mesh_type: kiali-test-depth
 
 versions: []
 services: []

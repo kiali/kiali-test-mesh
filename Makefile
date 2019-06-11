@@ -12,8 +12,8 @@ SECRET_NAME ?= pull-secret
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 MANUAL_INJECTION_SIDECAR ?= false
 MANUAL_INJECTION_SIDECAR_ISTIO_VERSION ?= "1.1.8"
-ENABLE_SECRET ?= false
-ENABLE_MULTI_TENANT ?= false
+ENABLE_SECRET ?= true
+ENABLE_MULTI_TENANT ?= true
 
 build-operator-image:
 	@echo Building operator
@@ -182,7 +182,7 @@ deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace cr
 	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"redhat_tutorial": {"namespace": "${REDHAT_TUTORIAL_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}}' -v
 
 deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace quay-secret-bookinfo add-bookinfo-control-plane
-	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": "true", "mysql": "true", "version": "1.14.0"}}' -v
+	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": false, "mysql": true, "version": "1.14.0"}}' -v
 
 deploy-complex-playbook:
 	ansible-playbook operator/complex_mesh.yml  -v
