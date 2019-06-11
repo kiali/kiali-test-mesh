@@ -79,6 +79,7 @@ make remove-bookinfo-namespace BOOKINFO_NAMESPACE=bookinfo
 ----
 
 
+image::images/redhat-istio-tutorial.png[]
 
 == Red Hat Istio Tutorial
 
@@ -129,9 +130,14 @@ The command above will remove the Red Hat Istio Tutorial installation but not na
 make remove-redhat-istio-tutorial-namespace REDHAT_TUTORIAL_NAMESPACE=redhat-istito-tutorial
 ----
 
+It will remove the bookinfo installation cr. If you want to delete namespace use the following command 
+
+[source,shell]
+----
+make remove-bookinfo-namespace
+----
 
 == Kiali Complex Test Mesh
-After installing the <<Kiali Test Mesh Operator>>, you may install Kiali Complex Mesh which is a different type of mesh than the others.
 
 
 Kiali Complex Mesh is a mesh created by Kiali team for testing purposes.
