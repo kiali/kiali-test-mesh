@@ -4,6 +4,7 @@
   kind: Bookinfo
   role: /opt/ansible/roles/bookinfo
   reconcilePeriod: 0
+  watchDependentResources: False
   manageStatus: false
 
 - version: v1
@@ -11,6 +12,7 @@
   kind: ComplexMesh
   role: /opt/ansible/roles/complex_mesh
   reconcilePeriod: 0
+  watchDependentResources: False
   manageStatus: false
 
 - version: v1
@@ -18,4 +20,5 @@
   kind: RedHatTutorial
   role: /opt/ansible/roles/redhat_tutorial
   reconcilePeriod: 0
+  watchDependentResources: False
   manageStatus: false
