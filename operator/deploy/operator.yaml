@@ -27,6 +27,9 @@ spec:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
             readOnly: true
+          env:
+            - name: ANSIBLE_VERBOSITY
+              value: "2"
         - name: operator
           image: ${IMAGE}
           imagePullPolicy: "Always"
