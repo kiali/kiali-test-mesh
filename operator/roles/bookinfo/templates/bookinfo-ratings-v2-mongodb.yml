@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: ratings
-        image: istio/examples-bookinfo-ratings-v2:{{ bookinfo.version }}
+        image: {{ bookinfo.hub }}/examples-bookinfo-ratings-v2:{{ bookinfo.version }}
         imagePullPolicy: IfNotPresent
         env:
           - name: MONGO_DB_URL

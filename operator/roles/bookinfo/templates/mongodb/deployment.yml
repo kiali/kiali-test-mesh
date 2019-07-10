@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mongodb
-        image: istio/examples-bookinfo-mongodb:{{ bookinfo.version }}
+        image: {{ bookinfo.hub }}/examples-bookinfo-mongodb:{{ bookinfo.version }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 27017
