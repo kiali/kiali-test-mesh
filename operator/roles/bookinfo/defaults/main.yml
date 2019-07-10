@@ -1,7 +1,7 @@
 ---
 # defaults file for bookinfo
 bookinfo:
-  version: 1.14.0
+  version: 1.15.0
   namespace: bookinfo
   control_plane_namespace: istio-system
   mongodb: true
