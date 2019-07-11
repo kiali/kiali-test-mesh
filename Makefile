@@ -25,7 +25,7 @@ push-operator-image:
 
 deploy-operator: remove-operator
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift
-	oc create namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc new-project ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	oc label namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
 	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
@@ -50,7 +50,7 @@ deploy-cr-redhat-istio-tutorial:
 	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n kiali-test-mesh-operator 
 
 create-redhat-istio-tutorial-namespace:
-	oc create namespace ${REDHAT_TUTORIAL_NAMESPACE}
+	oc new-project ${REDHAT_TUTORIAL_NAMESPACE}
 	oc label namespace ${REDHAT_TUTORIAL_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
 	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
 	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
@@ -124,15 +124,15 @@ endif
 
 create-complex-mesh-namespace:
 	@echo Create Complex Mesh Namespaces
-	oc create namespace kiali-test-frontend 
+	oc new-project kiali-test-frontend
 	oc label namespace  kiali-test-frontend ${KIALI_TEST_MESH_LABEL}
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend 
 	oc adm policy add-scc-to-user privileged -z default -n kiali-test-frontend
-	oc create namespace kiali-test-reviews 
+	oc new-project kiali-test-reviews
 	oc label namespace  kiali-test-reviews ${KIALI_TEST_MESH_LABEL}
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews 
 	oc adm policy add-scc-to-user privileged -z default -n kiali-test-reviews
-	oc create namespace kiali-test-ratings 
+	oc new-project kiali-test-ratings
 	oc label namespace  kiali-test-ratings ${KIALI_TEST_MESH_LABEL}
 	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings 
 	oc adm policy add-scc-to-user privileged -z default -n kiali-test-ratings
