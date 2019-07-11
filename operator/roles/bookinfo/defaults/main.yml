@@ -1,10 +1,11 @@
 ---
 # defaults file for bookinfo
 bookinfo:
-  version: 1.15.0
+  version: 0.12.0
   namespace: bookinfo
   control_plane_namespace: istio-system
   mongodb: true
+  hub: docker.io/maistra
   mysql: true
 
 istio_manual_injection:

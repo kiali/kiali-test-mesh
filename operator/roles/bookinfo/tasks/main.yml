@@ -17,12 +17,12 @@
 - name: Install Bookinfo Static Assets
   include: ../common_tasks/deploy_istio_item.yml
   with_items:
-   - {name: 'details-v1', app: 'details', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-details-v1', sidecar: true}
-   - {name: 'ratings-v1', app: 'ratings', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-ratings-v1', sidecar: true}
-   - {name: 'reviews-v1', app: 'reviews', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-reviews-v1', sidecar: true}
-   - {name: 'reviews-v2', app: 'reviews', version: 'v2', file: 'templates/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-reviews-v2', sidecar: true}
-   - {name: 'reviews-v3', app: 'reviews', version: 'v3', file: 'templates/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-reviews-v3', sidecar: true}
-   - {name: 'productpage-v1', app: 'productpage', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: 'istio/examples-bookinfo-productpage-v1', sidecar: true}
+   - {name: 'details-v1', app: 'details', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: "{{ bookinfo.hub }}/examples-bookinfo-details-v1", sidecar: true}
+   - {name: 'ratings-v1', app: 'ratings', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: "{{ bookinfo.hub }}/examples-bookinfo-ratings-v1", sidecar: true}
+   - {name: 'reviews-v1', app: 'reviews', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: "{{ bookinfo.hub }}/examples-bookinfo-reviews-v1", sidecar: true}
+   - {name: 'reviews-v2', app: 'reviews', version: 'v2', file: 'templates/bookinfo-deployment.yml', image: "{{ bookinfo.hub }}/examples-bookinfo-reviews-v2", sidecar: true}
+   - {name: 'reviews-v3', app: 'reviews', version: 'v3', file: 'templates/bookinfo-deployment.yml', image: "{{ bookinfo.hub }}/examples-bookinfo-reviews-v3", sidecar: true}
+   - {name: 'productpage-v1', app: 'productpage', version: 'v1', file: 'templates/bookinfo-deployment.yml', image: "{{ bookinfo.hub }}/examples-bookinfo-productpage-v1", sidecar: true}
 
 - name: Deploy MongoDB
   k8s:
