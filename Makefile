@@ -1,5 +1,9 @@
 KIALI_TEST_MESH_OPERATOR_NAMESPACE ?= kiali-test-mesh-operator
 BOOKINFO_NAMESPACE ?= bookinfo
+BOOKINFO_HUB ?= docker.io/istio
+BOOKINFO_VERSION ?= 1.15.0
+BOOKINFO_MYSQL ?= true
+BOOKINFO_MONGODB ?= true
 CONTROL_PLANE_NAMESPACE ?= istio-system
 REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
 OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:latest
@@ -62,13 +66,14 @@ remove-redhat-istio-tutorial-namespace:
 
 
 create-bookinfo-namespace:
-	oc create namespace ${BOOKINFO_NAMESPACE}
+	oc new-project ${BOOKINFO_NAMESPACE}
 	oc label namespace ${BOOKINFO_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
 	oc adm policy add-scc-to-user privileged -z default -n ${BOOKINFO_NAMESPACE}
 	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
 
 deploy-cr-bookinfo:
-	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} BOOKINFO_HUB=${BOOKINFO_HUB} BOOKINFO_VERSION=${BOOKINFO_VERSION} BOOKINFO_MONGODB=${BOOKINFO_MONGODB} BOOKINFO_MYSQL=${BOOKINFO_MYSQL}
+ envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
 
 remove-bookinfo-namespace:
 	@echo Remove Bookinfo Namespace

@@ -45,11 +45,19 @@ Automatic Injection is supported way to inject with multi-tenancy.
 - `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
 
 
+- `BOOKINFO_HUB` can be set to deploy bookinfo from Istio or Maistra (default: `docker.io/istio`, alternatively you can use `docker.io/maistra`)
+
+- `BOOINFO_VERSION` can be set to deploy a specific version of Bookinfo from Istio or Maistra (default: `1.15.0`)
+
+- `BOOKINFO_MYSQL` can be set to deploy ratings-v2-mysql and MySQL DB (default: `true`)
+
+- `BOOKINFO_MONGODB` can be set to deploy ratings-v2-mongodb and MongoDB (default: `true`)
+
 so possible scenario command:
 
 [source,shell]
 ----
-make deploy-bookinfo BOOKINFO_NAMESPACE=bookinfo2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8
+make deploy-bookinfo BOOKINFO_NAMESPACE=bookinfo2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8 BOOKINFO_HUB=docker.io/istio BOOKINFO_VERSION=1.15.0 BOOKINFO_MYSQL=true BOOKINFO_MONGODB=true
 ----
 
 
