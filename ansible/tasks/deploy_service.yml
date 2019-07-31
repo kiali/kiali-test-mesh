@@ -1,2 +1,0 @@
-- name: Deploy Kiali Test Meshes Services
-  shell: "oc process -f templates/service-template.yml -p SERVICE_NAME={{ item.name }} -p POD_NAME_LABEL={{ item.pod_name_label }} | oc  apply -n {{ item.namespace }} -f -"
