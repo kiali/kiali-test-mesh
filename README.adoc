@@ -1,3 +1,4 @@
+
 = Kiali Test Mesh Operator
 
 Kiali Test Mesh provides an operator which will install different types of examples mesh which allow you to see different features of kiali.
@@ -47,7 +48,7 @@ Automatic Injection is supported way to inject with multi-tenancy.
 
 - `BOOKINFO_HUB` can be set to deploy bookinfo from Istio or Maistra (default: `docker.io/istio`, alternatively you can use `docker.io/maistra`)
 
-- `BOOINFO_VERSION` can be set to deploy a specific version of Bookinfo from Istio or Maistra (default: `1.15.0`)
+- `BOOKINFO_VERSION` can be set to deploy a specific version of Bookinfo from Istio or Maistra (default: `1.15.0`)
 
 - `BOOKINFO_MYSQL` can be set to deploy ratings-v2-mysql and MySQL DB (default: `true`)
 
@@ -125,7 +126,7 @@ The command above will remove the Red Hat Istio Tutorial installation but not na
 
 [source,shell]
 ----
-make remove-complex-mesh-namespace REDHAT_TUTORIAL_NAMESPACE=redhat-istito-tutorial
+make remove-redhat-istio-tutorial-namespace REDHAT_TUTORIAL_NAMESPACE=redhat-istito-tutorial
 ----
 
 
@@ -171,12 +172,12 @@ You can use the variables `SECRET_PATH` `SECRET_NAME` to specify where a secret 
 
 == Multitenancy
 
-If you have maistra set with multi-tenancy, you should have a link:https://github.com/Maistra/istio-operator/blob/maistra-0.11/deploy/examples/maistra_v1_servicemeshmemberroll_cr.yaml[Service Mesh Member Roll] per control plane namespace.
+If you have maistra set with multi-tenancy, you should have a link:https://github.com/Maistra/istio-operator/blob/maistra-0.12/deploy/examples/maistra_v1_servicemeshmemberroll_cr.yaml[Service Mesh Member Roll] per control plane namespace.
 
-You can deploy the meshes with multi-tenancy by by setting `ENABLE_MULTI_TENANT=true` which is default to false.
+You can deploy the meshes with multi-tenancy by setting `ENABLE_MULTI_TENANT=true` which is default to false.
 
 
-When `ENABLE_MULTI_TENANT=true` is set to true, it tries to find a link:https://github.com/Maistra/istio-operator/blob/maistra-0.11/deploy/examples/maistra_v1_servicemeshmemberroll_cr.yaml[Service Mesh Member Roll] named `default` and add that namespace of a mesh on into it.
+When `ENABLE_MULTI_TENANT` is set to true, it tries to find a link:https://github.com/Maistra/istio-operator/blob/maistra-0.12/deploy/examples/maistra_v1_servicemeshmemberroll_cr.yaml[Service Mesh Member Roll] named `default` and add that namespace of a mesh on into it.
 
 You need to set `CONTROL_PLANE_NAMESPACE` (default: `istio-system`) to deploy on different control plane namespace. 
 
