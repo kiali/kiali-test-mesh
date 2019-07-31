@@ -29,14 +29,6 @@ spec:
           value: -Xmx256m
         image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 20
-          periodSeconds: 5
-          timeoutSeconds: 10
         name: recommendation
         ports:
         - containerPort: 8080
@@ -48,13 +40,5 @@ spec:
         - containerPort: 9779
           name: prometheus
           protocol: TCP
-        readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 10
         securityContext:
           privileged: false
