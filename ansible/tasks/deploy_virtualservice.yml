@@ -1,2 +1,0 @@
-- name: Deploy Kiali Test Meshes VirtualService
-  shell: "cat templates/virtualservice-template.yml | VIRTUAL_SERVICE_NAME=detailsvs VIRTUAL_SERVICE_HOST=kiali.io DESTINATION_HOST=details DESTINATION_SUBSET=v1 envsubst | oc create -f -"
