@@ -17,10 +17,8 @@ spec:
       labels:
         app: customer
         version: v1
-{% if not istio_manual_injection.enabled %}
       annotations:
         sidecar.istio.io/inject: "{{ item.sidecar }}"
-{% endif %}
     spec:
       containers:
       - env:

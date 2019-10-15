@@ -12,10 +12,8 @@ spec:
       version: {{ item.version }}
   template:
     metadata:
-{% if not istio_manual_injection.enabled %}
       annotations:
         sidecar.istio.io/inject: "true"
-{% endif %}
       labels:
         name: {{ item.app }}
         app: {{ item.app }}

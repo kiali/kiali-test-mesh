@@ -1,7 +1,3 @@
-- name: Install Istioctl
-  include: ../common_tasks/install_istioctl.yml
-  when: istio_manual_injection.enabled
-
 - name: Create Services
   k8s:
     state: present

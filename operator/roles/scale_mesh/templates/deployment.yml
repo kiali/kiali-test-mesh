@@ -11,10 +11,8 @@ spec:
       version: workload{{ item.0.name | regex_replace('service') }}-{{ item.1 }}
   template:
     metadata:
-{% if not istio_manual_injection.enabled %}
       annotations:
         sidecar.istio.io/inject: "true"
-{% endif %}
       labels:
         app: {{ item.0.app }} 
         version:  workload{{ item.0.name | regex_replace('service') }}-{{ item.1 }}

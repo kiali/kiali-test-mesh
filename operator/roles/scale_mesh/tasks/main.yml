@@ -1,7 +1,3 @@
-- name: Install Istioctl
-  include: ../common_tasks/install_istioctl.yml
-  when: istio_manual_injection.enabled
-
 - name: Generate Versions Array
   set_fact: versions="{{versions}} + ['v{{ item }}']"
   with_sequence: start=1 end={{scale_mesh.number_versions}} format=%d

@@ -6,7 +6,3 @@ spec:
   redhat_tutorial:
     namespace: ${REDHAT_TUTORIAL_NAMESPACE}
     control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
-
-  istio_manual_injection:
-    enabled: ${MANUAL_INJECTION_SIDECAR}
-    version: ${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}

@@ -8,8 +8,6 @@ CONTROL_PLANE_NAMESPACE ?= istio-system
 REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
 OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:latest
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
-MANUAL_INJECTION_SIDECAR ?= false
-MANUAL_INJECTION_SIDECAR_ISTIO_VERSION ?= "1.1.8"
 ENABLE_MULTI_TENANT ?= true
 
 build-operator-image:
@@ -46,7 +44,7 @@ remove-operator:
 
 deploy-cr-redhat-istio-tutorial:
 	@echo Create Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n kiali-test-mesh-operator 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n kiali-test-mesh-operator 
 
 create-redhat-istio-tutorial-namespace:
 	oc new-project ${REDHAT_TUTORIAL_NAMESPACE}
@@ -56,7 +54,7 @@ create-redhat-istio-tutorial-namespace:
 
 remove-redhat-istio-tutorial-cr:
 	@echo Remove Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc delete -f - -n kiali-test-mesh-operator --ignore-not-found=true 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc delete -f - -n kiali-test-mesh-operator --ignore-not-found=true 
 
 remove-redhat-istio-tutorial-namespace:
 	@echo Remove Red Hat Istio Tutorial Namespace
@@ -71,7 +69,7 @@ create-bookinfo-namespace:
 	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
 
 deploy-cr-bookinfo:
-	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} BOOKINFO_HUB=${BOOKINFO_HUB} BOOKINFO_VERSION=${BOOKINFO_VERSION} BOOKINFO_MONGODB=${BOOKINFO_MONGODB} BOOKINFO_MYSQL=${BOOKINFO_MYSQL} envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
 
 remove-bookinfo-namespace:
 	@echo Remove Bookinfo Namespace
@@ -79,7 +77,7 @@ remove-bookinfo-namespace:
 
 remove-bookinfo-cr:
 	@echo Remove Bookinfo CR on Openshift
-	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}  envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}   envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
 
 create-complex-mesh-namespace:
 	@echo Create Complex Mesh Namespaces
@@ -105,10 +103,10 @@ remove-complex-mesh-namespace:
 
 
 deploy-cr-complex-mesh: 
-	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc apply -f - -n kiali-test-frontend 
+	cat operator/deploy/cr/complex_mesh-cr.yaml |  envsubst | oc apply -f - -n kiali-test-frontend 
 
 remove-complex-mesh-cr: 
-	cat operator/deploy/cr/complex_mesh-cr.yaml | MANUAL_INJECTION_SIDECAR=${MANUAL_INJECTION_SIDECAR} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION} envsubst | oc delete -f - -n kiali-test-frontend --ignore-not-found=true
+	cat operator/deploy/cr/complex_mesh-cr.yaml |  envsubst | oc delete -f - -n kiali-test-frontend --ignore-not-found=true
 
 add-bookinfo-control-plane: 
 ifeq ($(ENABLE_MULTI_TENANT),true) 

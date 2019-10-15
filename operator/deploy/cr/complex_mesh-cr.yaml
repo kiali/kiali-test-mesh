@@ -2,7 +2,3 @@ apiVersion: complexmesh.kiali.io/v1
 kind: ComplexMesh
 metadata:
   name: complexmesh-installation
-spec:
-  istio_manual_injection:
-    enabled: ${MANUAL_INJECTION_SIDECAR}
-    Version: ${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}
