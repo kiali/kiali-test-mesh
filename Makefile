@@ -7,12 +7,9 @@ BOOKINFO_MONGODB ?= true
 CONTROL_PLANE_NAMESPACE ?= istio-system
 REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
 OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:latest
-SECRET_PATH ?= operator/deploy/secret.yaml
-SECRET_NAME ?= pull-secret
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 MANUAL_INJECTION_SIDECAR ?= false
 MANUAL_INJECTION_SIDECAR_ISTIO_VERSION ?= "1.1.8"
-ENABLE_SECRET ?= true
 ENABLE_MULTI_TENANT ?= true
 
 build-operator-image:
@@ -84,45 +81,6 @@ remove-bookinfo-cr:
 	@echo Remove Bookinfo CR on Openshift
 	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}  envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
 
-quay-secret-bookinfo:
-ifeq ($(ENABLE_SECRET), true)
-	oc apply -f ${SECRET_PATH} -n ${BOOKINFO_NAMESPACE}
-	oc adm policy add-scc-to-user privileged -z default -n ${BOOKINFO_NAMESPACE}
-	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
-	oc secrets link deployer ${SECRET_NAME} --for=pull -n ${BOOKINFO_NAMESPACE}
-	oc secrets link default ${SECRET_NAME} --for=pull -n ${BOOKINFO_NAMESPACE}
-endif
-
-quay-secret-complex-mesh:
-ifeq ($(ENABLE_SECRET), true)
-	oc apply -f ${SECRET_PATH} -n kiali-test-frontend 
-	oc adm policy add-scc-to-user privileged -z default -n kiali-test-frontend 
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend 
-	oc secrets link deployer ${SECRET_NAME} --for=pull -n kiali-test-frontend 
-	oc secrets link default ${SECRET_NAME} --for=pull -n kiali-test-frontend 
-
-	oc apply -f ${SECRET_PATH} -n kiali-test-reviews 
-	oc adm policy add-scc-to-user privileged -z default -n kiali-test-reviews 
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews 
-	oc secrets link deployer ${SECRET_NAME} --for=pull -n kiali-test-reviews 
-	oc secrets link default ${SECRET_NAME} --for=pull -n kiali-test-reviews 
-
-	oc apply -f ${SECRET_PATH} -n kiali-test-ratings 
-	oc adm policy add-scc-to-user privileged -z default -n kiali-test-ratings 
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings 
-	oc secrets link deployer ${SECRET_NAME} --for=pull -n kiali-test-ratings 
-	oc secrets link default ${SECRET_NAME} --for=pull -n kiali-test-ratings 
-endif
-
-quay-secret-redhat-istio-tutorial:
-ifeq ($(ENABLE_SECRET), true)
-	oc apply -f ${SECRET_PATH} -n ${REDHAT_TUTORIAL_NAMESPACE}
-	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
-	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
-	oc secrets link deployer ${SECRET_NAME} --for=pull -n ${REDHAT_TUTORIAL_NAMESPACE}
-	oc secrets link default ${SECRET_NAME} --for=pull -n ${REDHAT_TUTORIAL_NAMESPACE}
-endif
-
 create-complex-mesh-namespace:
 	@echo Create Complex Mesh Namespaces
 	oc new-project kiali-test-frontend
@@ -169,7 +127,7 @@ ifeq ($(ENABLE_MULTI_TENANT), true)
 	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": "/spec/members/0", "value":"${REDHAT_TUTORIAL_NAMESPACE}"}]'
 endif
 
-deploy-bookinfo: remove-bookinfo-cr remove-bookinfo-namespace create-bookinfo-namespace quay-secret-bookinfo add-bookinfo-control-plane deploy-cr-bookinfo
+deploy-bookinfo: remove-bookinfo-cr remove-bookinfo-namespace create-bookinfo-namespace add-bookinfo-control-plane deploy-cr-bookinfo
 	@echo Deployed Bookinfo
 
 deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace add-redhat-istio-tutorial-control-plane deploy-cr-redhat-istio-tutorial
@@ -178,10 +136,10 @@ deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-isti
 deploy-complex-mesh: remove-complex-mesh-cr remove-complex-mesh-namespace create-complex-mesh-namespace add-complex-mesh-control-plane deploy-cr-complex-mesh
 	@echo Deployed Complex Mesh
 
-deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace quay-secret-redhat-istio-tutorial 
+deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace 
 	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"redhat_tutorial": {"namespace": "${REDHAT_TUTORIAL_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}}' -v
 
-deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace quay-secret-bookinfo add-bookinfo-control-plane
+deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace add-bookinfo-control-plane
 	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": false, "mysql": true, "version": "1.14.0"}}' -v
 
 deploy-complex-playbook:
