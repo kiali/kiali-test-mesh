@@ -51,7 +51,6 @@
 - name: Create the traffic generator
   include_role: 
     name: traffic-generator
-  public: true
   vars:
     namespace: "{{ redhat_tutorial.namespace }}"
     route: "{{ full_route }}"
