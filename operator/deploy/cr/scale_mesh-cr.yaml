@@ -6,7 +6,9 @@ spec:
   scale_mesh:
     control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
     number_services: ${SCALE_MESH_NUMBER_SERVICES}
+    number_apps: ${SCALE_MESH_NUMBER_APPS}
     number_namespaces: ${SCALE_MESH_NUMBER_NAMESPACES}
-    type_of_mesh: ${SCALE_MESH_TYPE_OF_MESH}
+    number_versions: ${SCALE_MESH_NUMBER_VERSIONS}
+    mesh_type: ${SCALE_MESH_TYPE_OF_MESH}
 
 

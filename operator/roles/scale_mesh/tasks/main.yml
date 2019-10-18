@@ -79,10 +79,9 @@
   - "{{ versions }}"
 
 
-  - name: Create the traffic generator
-    include_role: 
-      name: traffic-generator
-    public: true
-    vars:
-      namespace: "{{ all_services | map(attribute='namespace') | list | unique | first }}"
-      route: "{{ route }}"
+- name: Create the traffic generator
+  include_role: 
+    name: traffic-generator
+  vars:
+    namespace: "{{ all_services | map(attribute='namespace') | list | unique | first }}"
+    route: "{{ route }}"

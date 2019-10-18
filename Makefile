@@ -6,9 +6,15 @@ BOOKINFO_MYSQL ?= true
 BOOKINFO_MONGODB ?= true
 CONTROL_PLANE_NAMESPACE ?= istio-system
 REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
-OPERATOR_IMAGE ?= kiali/kiali-test-mesh-operator:latest
+OPERATOR_IMAGE ?= quay.io/kiali/kiali-test-mesh-operator:testing
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 ENABLE_MULTI_TENANT ?= true
+
+SCALE_MESH_NUMBER_SERVICES ?=6
+SCALE_MESH_NUMBER_APPS ?=6
+SCALE_MESH_NUMBER_VERSIONS ?=2
+SCALE_MESH_NUMBER_NAMESPACES ?=1
+SCALE_MESH_TYPE_OF_MESH ?= kiali-test-circle
 
 build-operator-image:
 	@echo Building operator
@@ -32,7 +38,7 @@ deploy-operator: remove-operator
 
 remove-operator:
 	@echo Remove Kiali Test Mesh Operator on Openshift
-	oc delete --ignore-not-found -f operator/deploy/scale_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
+	oc delete --ignore-not-found=true -f operator/deploy/scale_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc delete --ignore-not-found=true -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc delete --ignore-not-found=true -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	oc delete --ignore-not-found=true -f operator/deploy/complex_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
@@ -101,6 +107,16 @@ remove-complex-mesh-namespace:
 	oc delete namespace --ignore-not-found kiali-test-ratings
 	oc delete namespace --ignore-not-found kiali-test-reviews
 
+
+deploy-scale-mesh: 
+	oc create namespace scale-mesh-namespace
+	oc label namespace scale-mesh-namespace ${KIALI_TEST_MESH_LABEL}
+	oc adm policy add-scc-to-user privileged -z default -n scale-mesh-namespace
+	oc adm policy add-scc-to-user anyuid -z default -n scale-mesh-namespace
+	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE_OF_MESH=${SCALE_MESH_TYPE_OF_MESH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc apply -f - -n scale-mesh-namespace 
+
+remove-scale-mesh:
+	oc delete namespace scale-mesh-namespace
 
 deploy-cr-complex-mesh: 
 	cat operator/deploy/cr/complex_mesh-cr.yaml |  envsubst | oc apply -f - -n kiali-test-frontend 
