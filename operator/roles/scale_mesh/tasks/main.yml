@@ -63,6 +63,13 @@
   with_items:
   - "{{ all_services | map(attribute='namespace') | list | unique  }}"
 
+- name: Add Namespaces to Service Mesh Member Roll
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/smmr.yml') }}"
+  with_items:
+  - "{{ all_services | map(attribute='namespace') | list | unique  }}"
+
 - name: Deploy Kiali Test Meshes Services
   k8s:
     state: present
