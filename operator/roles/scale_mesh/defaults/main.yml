@@ -8,6 +8,7 @@ scale_mesh:
   number_namespaces: 2
   mesh_type: kiali-test-depth
 
+full_route: ""
 versions: []
 services: []
 apps: []
