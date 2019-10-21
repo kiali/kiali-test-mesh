@@ -28,6 +28,8 @@ deploy-operator: remove-operator
 	@echo Deploy Kiali Tesh Mesh Operator on Openshift
 	oc new-project ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	oc label namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
+	oc adm policy add-scc-to-user privileged -z default -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	oc adm policy add-scc-to-user anyuid -z default -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	oc create -f operator/deploy/scale_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
@@ -109,11 +111,7 @@ remove-complex-mesh-namespace:
 
 
 deploy-scale-mesh: 
-	oc create namespace scale-mesh-namespace
-	oc label namespace scale-mesh-namespace ${KIALI_TEST_MESH_LABEL}
-	oc adm policy add-scc-to-user privileged -z default -n scale-mesh-namespace
-	oc adm policy add-scc-to-user anyuid -z default -n scale-mesh-namespace
-	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE_OF_MESH=${SCALE_MESH_TYPE_OF_MESH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc apply -f - -n scale-mesh-namespace 
+	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE_OF_MESH=${SCALE_MESH_TYPE_OF_MESH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc apply -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 
 remove-scale-mesh:
 	oc delete namespace scale-mesh-namespace
