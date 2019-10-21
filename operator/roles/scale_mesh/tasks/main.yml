@@ -67,6 +67,7 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'templates/smmr.yml') }}"
+  ignore_errors: yes
   with_items:
   - "{{ all_services | map(attribute='namespace') | list | unique  }}"
 
