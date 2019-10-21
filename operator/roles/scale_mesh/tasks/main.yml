@@ -38,7 +38,7 @@
 
 - name: Create Hourglass Route
   include_tasks: hourglass-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-circle-callback'"
+  when: "scale_mesh.mesh_type == 'kiali-test-hourglass'"
 
 - name: Create Circle Route
   include_tasks: circle-route.yml
