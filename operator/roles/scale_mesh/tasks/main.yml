@@ -91,4 +91,4 @@
     name: traffic-generator
   vars:
     namespace: "{{ all_services | map(attribute='namespace') | list | unique | first }}"
-    route: "{{ route }}"
+    route: "{{ full_route }}"

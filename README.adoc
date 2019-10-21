@@ -181,3 +181,34 @@ You need to set `CONTROL_PLANE_NAMESPACE` (default: `istio-system`) to deploy on
 Example:
 
 `make deploy-bookinfo ENABLE_MULTI_TENANT=true BOOKINFO_NAMESPACE=bookinfo3 CONTROL_PLANE_NAMESPACE=istio-system2` 
+
+
+== Scale Mesh
+The scale mesh is type of a mesh that can be used for perfomance and scalability testing.
+
+Variables to control the size, type and scale of the mesh
+
+`SCALE_MESH_NUMBER_SERVICES` is number of services that are going to be created
+
+`SCALE_MESH_NUMBER_APPS` is number of apps that going to be created (number of the boxes on the graph) - usually we match the number of the apps to number of services.
+
+`SCALE_MESH_NUMBER_VERSIONS` is number of versions that are created per app
+
+
+`SCALE_MESH_NUMBER_NAMESPACES` is number of namespaces are going to be created
+
+`SCALE_MESH_TYPE_OF_MESH` is the type of mesh that going to be used.
+
+The following are the types of scale meshes you can deploy.
+
+* kiali-test-depth
+* kiali-test-breadth
+* kiali-test-circle
+* kiali-test-circle-callback
+* kiali-test-hourglass
+* kiali-test-depth-sink
+* kiali-test-breadth-sink
+
+
+Example of the command:
+`SCALE_MESH_NUMBER_SERVICES=6 SCALE_MESH_NUMBER_APPS=6 SCALE_MESH_NUMBER_VERSIONS=2 SCALE_MESH_NUMBER_NAMESPACES=1 SCALE_MESH_TYPE_OF_MESH=kiali-test-circle make-deploy-scale-mesh`
