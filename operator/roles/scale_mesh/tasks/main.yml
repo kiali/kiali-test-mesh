@@ -1,0 +1,102 @@
+- name: Generate Versions Array
+  set_fact: versions="{{versions}} + ['v{{ item }}']"
+  with_sequence: start=1 end={{scale_mesh.number_versions}} format=%d
+
+- name: Generate Services Array
+  set_fact: services="{{services}} + ['{{ item }}']"
+  with_sequence: start=1 end={{scale_mesh.number_services}} format=%d
+
+- name: Generate Apps Array
+  set_fact: apps="{{apps}} + ['{{ item }}']"
+  with_sequence: start=1 end={{scale_mesh.number_apps}} format=%d
+
+- name: Create Service and Namespace Dict
+  set_fact:
+  args:
+    service:
+      name: "service-{{ item.0 }}"
+      namespace: "{{item.1}}-{{ (item.0 | int) % (scale_mesh.number_namespaces | int) }}"
+      fqdn: "service-{{ item.0 }}.{{item.1}}-{{ (item.0 | int) % (scale_mesh.number_namespaces | int) }}.svc.cluster.local"
+      app: "app{{ (item.0 | int) % (scale_mesh.number_apps | int) }}"
+  with_nested:
+    - "{{ services }}"
+    - "{{ scale_mesh.mesh_type }}"
+  register: all_services
+
+- name: Create All Services List
+  set_fact:
+    all_services: "{{all_services.results | map(attribute='ansible_facts.service') | list  }}"
+
+
+- name: Create Depth Route
+  include_tasks: depth-route.yml
+  when: "scale_mesh.mesh_type == 'kiali-test-depth'"
+
+- name: Create Circle Callback Route
+  include_tasks: circle-callback-route.yml
+  when: "scale_mesh.mesh_type == 'kiali-test-circle-callback'"
+
+- name: Create Hourglass Route
+  include_tasks: hourglass-route.yml
+  when: "scale_mesh.mesh_type == 'kiali-test-hourglass'"
+
+- name: Create Circle Route
+  include_tasks: circle-route.yml
+  when: "scale_mesh.mesh_type == 'kiali-test-circle'"
+
+- name: Create Breadth Sink Route
+  include_tasks: breadth-sink-route.yml
+  when: "scale_mesh.mesh_type == 'kiali-test-breadth-sink'"
+
+- name: Create Breadth Route
+  include_tasks: breadth-route.yml
+  when: "scale_mesh.mesh_type == 'kiali-test-breadth'"
+
+- name: Create Depth Sink Route
+  include_tasks: depth-sink-route.yml
+  when: "scale_mesh.mesh_type == 'kiali-test-depth-sink'"
+
+
+- name: Get Namespaces
+  set_fact:
+    namespaces: "{{ all_services | map(attribute='namespace') | list | unique }}"
+
+- name: Configure the namespaces
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/namespace.yml') }}"
+  with_items:
+  - "{{ namespaces  }}"
+
+- name: Get Service Mesh Member Roll Definitions
+  set_fact:
+    smmr_definition: "{{ lookup('template', 'templates/smmr.yml') }}"
+
+- name: Add Namespaces to Service Mesh Member Roll
+  k8s:
+    state: present
+    definition:  "{{ smmr_definition }}"
+  ignore_errors: yes
+
+- name: Deploy Kiali Test Meshes Services
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/service.yml') }}"
+  with_items:
+    - "{{ all_services }}"
+
+- name: Deploy Kiali Test Pods
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/deployment.yml') }}"
+  with_nested:
+  - "{{ all_services }}"
+  - "{{ versions }}"
+
+
+- name: Create the traffic generator
+  include_role: 
+    name: traffic-generator
+  vars:
+    namespace: "{{ all_services | map(attribute='namespace') | list | unique | first }}"
+    route: "{{ full_route }}"

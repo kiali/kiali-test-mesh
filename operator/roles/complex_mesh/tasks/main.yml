@@ -1,7 +1,3 @@
-- name: Install Istioctl
-  include: ../common_tasks/install_istioctl.yml
-  when: istio_manual_injection.enabled
-  
 - name: Create Services
   k8s:
     state: present
@@ -41,7 +37,6 @@
 - name: Create the traffic generator
   include_role: 
     name: traffic-generator
-  public: true
   vars:
     namespace: 'kiali-test-frontend'
     route: 'http://productpage/route?path=details;http://productpage/route?path=reviews.kiali-test-reviews.svc.cluster.local,ratings.kiali-test-ratings.svc.cluster.local'

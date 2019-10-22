@@ -1,0 +1,16 @@
+---
+# defaults file for scale_mesh
+scale_mesh:
+  control_plane_namespace: istio-system
+  number_services: 6
+  number_versions: 2
+  number_apps: 6
+  number_namespaces: 2
+  mesh_type: kiali-test-depth
+
+full_route: ""
+versions: []
+services: []
+apps: []
+even_services: []
+namespaces: []

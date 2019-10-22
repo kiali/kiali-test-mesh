@@ -7,10 +7,8 @@ spec:
   replicas: 1
   template:
     metadata:
-{% if not istio_manual_injection.enabled %}
       annotations:
         sidecar.istio.io/inject: "true"
-{% endif %}
       labels:
         app: ratings
         version: v2-mysql

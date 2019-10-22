@@ -4,13 +4,9 @@ metadata:
   name: bookinfo-installation
 spec:
   bookinfo:
-    version: ${BOOKINFO_VERSION}
+    version: 1.15.0
     namespace: ${BOOKINFO_NAMESPACE}
     hub: ${BOOKINFO_HUB}
     control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
-    mongodb: ${BOOKINFO_MONGODB}
-    mysql: ${BOOKINFO_MYSQL}
-  
-  istio_manual_injection:
-    enabled: ${MANUAL_INJECTION_SIDECAR}
-    version: ${MANUAL_INJECTION_SIDECAR_ISTIO_VERSION}
+    mongodb: true
+    mysql: true
