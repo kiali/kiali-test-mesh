@@ -56,20 +56,27 @@
   include_tasks: depth-sink-route.yml
   when: "scale_mesh.mesh_type == 'kiali-test-depth-sink'"
 
+
+- name: Get Namespaces
+  set_fact:
+    namespaces: "{{ all_services | map(attribute='namespace') | list | unique }}"
+
 - name: Configure the namespaces
   k8s:
     state: present
     definition: "{{ lookup('template', 'templates/namespace.yml') }}"
   with_items:
-  - "{{ all_services | map(attribute='namespace') | list | unique  }}"
+  - "{{ namespaces  }}"
+
+- name: Get Service Mesh Member Roll Definitions
+  set_fact:
+    smmr_definition: "{{ lookup('template', 'templates/smmr.yml') }}"
 
 - name: Add Namespaces to Service Mesh Member Roll
   k8s:
     state: present
-    definition: "{{ lookup('template', 'templates/smmr.yml') }}"
+    definition:  "{{ smmr_definition }}"
   ignore_errors: yes
-  with_items:
-  - "{{ all_services | map(attribute='namespace') | list | unique  }}"
 
 - name: Deploy Kiali Test Meshes Services
   k8s:
