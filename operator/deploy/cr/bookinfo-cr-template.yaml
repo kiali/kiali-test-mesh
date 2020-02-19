@@ -23,9 +23,9 @@ parameters:
   value: "bookinfo"
 
 
-- description: BOOKINFO_CONTROL_PLANE_NAMESPACE is for describe which CONTROL_PLANE_NAMESPACE bookinfo will install
-  displayName: BOOKINFO_CONTROL_PLANE_NAMESPACE
-  name: BOOKINFO_CONTROL_PLANE_NAMESPACE
+- description: CONTROL_PLANE_NAMESPACE is for describe which CONTROL_PLANE_NAMESPACE bookinfo will install
+  displayName: CONTROL_PLANE_NAMESPACE
+  name: CONTROL_PLANE_NAMESPACE
   required: true
   value: "istio-system"
 
