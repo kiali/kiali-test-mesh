@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: kiali-test-mesh-operator-template
+  namespace: kiali-test-mesh-operator
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: kiali-test-mesh-operator
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        name: kiali-test-mesh-operator
+    template:
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: "false"
+        labels:
+          name: kiali-test-mesh-operator
+      spec:
+        serviceAccountName: kiali-test-mesh-operator
+        containers:
+          - name: ansible
+            command:
+            - /usr/local/bin/ao-logs
+            - /tmp/ansible-operator/runner
+            - stdout
+            image: ${IMAGE}
+            imagePullPolicy: "Always"
+            volumeMounts:
+            - mountPath: /tmp/ansible-operator/runner
+              name: runner
+              readOnly: true
+            env:
+              - name: ANSIBLE_VERBOSITY
+                value: "2"
+          - name: operator
+            image: ${IMAGE}
+            imagePullPolicy: "Always"
+            volumeMounts:
+            - mountPath: /tmp/ansible-operator/runner
+              name: runner
+            env:
+              - name: WATCH_NAMESPACE
+                value: ""
+              - name: POD_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: OPERATOR_NAME
+                value: "kiali-test-mesh-operator"
+        volumes:
+          - name: runner
+            emptyDir: {}
+parameters:
+- description: IMAGE for Kiali test mesh operator
+  displayName: IMAGE
+  name: IMAGE
+  required: true
+  value: "quay.io/kiali/kiali-test-mesh-operator:latest"
