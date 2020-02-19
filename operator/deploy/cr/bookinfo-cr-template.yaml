@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: bookinfo-cr-template
+objects:
+- apiVersion: bookinfo.kiali.io/v1
+  kind: Bookinfo
+  metadata:
+    name: bookinfo-installation
+  spec:
+    bookinfo:
+      version: ${BOOKINFO_VERSION}
+      namespace: ${BOOKINFO_NAMESPACE}
+      hub: ${BOOKINFO_HUB}
+      control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
+      mongodb: ${BOOKINFO_MONGODB}
+      mysql: ${BOOKINFO_MYSQL}
+parameters:
+- description: BOOKINFO_NAMESPACE is for describe which namespace bookinfo will install
+  displayName: BOOKINFO_NAMESPACE
+  name: BOOKINFO_NAMESPACE
+  required: true
+  value: "bookinfo"
+
+
+- description: BOOKINFO_CONTROL_PLANE_NAMESPACE is for describe which CONTROL_PLANE_NAMESPACE bookinfo will install
+  displayName: BOOKINFO_CONTROL_PLANE_NAMESPACE
+  name: BOOKINFO_CONTROL_PLANE_NAMESPACE
+  required: true
+  value: "istio-system"
+
+- description: BOOKINFO_VERSION is for describe which version of Bookinfo will be installed
+  displayName: BOOKINFO_VERSION
+  name: BOOKINFO_VERSION
+  required: true
+  value: "0.12.0"
+
+
+- description: BOOKINFO_HUB is for describe which HUB of Bookinfo will be installed (it can be docker.io/maistra or docker.io/istio)
+  displayName: BOOKINFO_HUB
+  name: BOOKINFO_HUB
+  required: true
+  value: "docker.io/maistra"
+
+
+- description: BOOKINFO_MYSQL is for describe if MYSQL will be enabled or not
+  displayName: BOOKINFO_MYSQL
+  name: BOOKINFO_MYSQL
+  required: true
+  value: "false"
+
+- description: BOOKINFO_MONGODB is for describe if MONGODB will be enabled or not
+  displayName: BOOKINFO_MONGODB
+  name: BOOKINFO_MONGODB
+  required: true
+  value: "true"
