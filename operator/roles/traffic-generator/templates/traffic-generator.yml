@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: kiali-traffic-generator
@@ -7,10 +7,6 @@ metadata:
     app: kiali-traffic-generator
     version: v1
 spec:
-  selector:
-    matchLabels:
-      app: kiali-traffic-generator
-      version: v1
   replicas: 1
   strategy:
     type: Recreate
