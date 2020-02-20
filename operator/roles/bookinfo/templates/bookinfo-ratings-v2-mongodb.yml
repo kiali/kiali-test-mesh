@@ -5,6 +5,10 @@ metadata:
   namespace: {{ bookinfo.namespace }}
 spec:
   replicas: 1
+   selector:
+    matchLabels:
+      app: ratings
+      version: v2-mongodb
   template:
     metadata:
       annotations:

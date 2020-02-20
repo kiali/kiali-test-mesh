@@ -5,6 +5,10 @@ metadata:
   namespace: {{ bookinfo.namespace }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: mysqldb
+      version: v1
   template:
     metadata:
       annotations:
