@@ -148,14 +148,11 @@ deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-isti
 deploy-complex-mesh: remove-complex-mesh-cr remove-complex-mesh-namespace create-complex-mesh-namespace add-complex-mesh-control-plane deploy-cr-complex-mesh
 	@echo Deployed Complex Mesh
 
-deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace  add-redhat-istio-tutorial-control-plane
+deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace 
 	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"redhat_tutorial": {"namespace": "${REDHAT_TUTORIAL_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}}' -v
 
-deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace add-bookinfo-control-plane add-bookinfo-control-plane
-	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "hub": "docker.io/istio", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": false, "mysql": true, "version": "1.14.0"}}' -v
+deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace add-bookinfo-control-plane
+	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": false, "mysql": true, "version": "1.14.0"}}' -v
 
-deploy-complex-playbook: remove-complex-mesh-namespace create-complex-mesh-namespace add-complex-mesh-control-plane
+deploy-complex-playbook:
 	ansible-playbook operator/complex_mesh.yml  -v
-
-deploy-scale-playbook:
-	ansible-playbook operator/scale_mesh.yml  -v
