@@ -1,5 +1,5 @@
 kind: ReplicaSet
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: {{ item.name }}
   namespace: {{ item.namespace }}

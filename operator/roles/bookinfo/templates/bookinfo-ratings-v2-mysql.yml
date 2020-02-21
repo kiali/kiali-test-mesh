@@ -1,10 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ratings-v2-mysql
   namespace: {{ bookinfo.namespace }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: ratings
+      version: v2-mysql
   template:
     metadata:
       annotations:
