@@ -7,6 +7,10 @@ metadata:
     kiali-test: traffic-generator
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: kiali-traffic-generator
+      kiali-test: traffic-generator
   strategy:
     type: Recreate
   template:
