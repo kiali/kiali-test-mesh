@@ -77,7 +77,7 @@ create-bookinfo-namespace:
 	oc adm policy add-scc-to-user anyuid -z default -n ${BOOKINFO_NAMESPACE}
 
 deploy-cr-bookinfo:
-	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
+	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} BOOKINFO_HUB=${BOOKINFO_HUB}  envsubst | oc apply -f - -n ${BOOKINFO_NAMESPACE} 
 
 remove-bookinfo-namespace:
 	@echo Remove Bookinfo Namespace
