@@ -8,14 +8,6 @@
   manageStatus: false
 
 - version: v1
-  group: complexmesh.kiali.io
-  kind: ComplexMesh
-  role: /opt/ansible/roles/complex_mesh
-  reconcilePeriod: 0
-  watchDependentResources: False
-  manageStatus: false
-
-- version: v1
   group: scalemesh.kiali.io
   kind: ScaleMesh
   role: /opt/ansible/roles/scale_mesh

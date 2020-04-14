@@ -33,7 +33,6 @@ deploy-operator: remove-operator
 	oc create -f operator/deploy/scale_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
-	oc create -f operator/deploy/complex_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	oc create -f operator/deploy/service_account.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc create -f operator/deploy/role_binding.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc create -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
@@ -43,7 +42,6 @@ remove-operator:
 	oc delete --ignore-not-found=true -f operator/deploy/scale_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc delete --ignore-not-found=true -f operator/deploy/redhat_tutorial-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} 
 	oc delete --ignore-not-found=true -f operator/deploy/bookinfo-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
-	oc delete --ignore-not-found=true -f operator/deploy/complex_mesh-crd.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	oc delete --ignore-not-found=true -f operator/deploy/service_account.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	oc delete --ignore-not-found=true -f operator/deploy/role_binding.yaml -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 	cat operator/deploy/operator.yaml | IMAGE=${OPERATOR_IMAGE} envsubst | oc delete --ignore-not-found=true -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
@@ -87,51 +85,15 @@ remove-bookinfo-cr:
 	@echo Remove Bookinfo CR on Openshift
 	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}   envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
 
-create-complex-mesh-namespace:
-	@echo Create Complex Mesh Namespaces
-	oc new-project kiali-test-frontend
-	oc label namespace  kiali-test-frontend ${KIALI_TEST_MESH_LABEL}
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-frontend 
-	oc adm policy add-scc-to-user privileged -z default -n kiali-test-frontend
-	oc new-project kiali-test-reviews
-	oc label namespace  kiali-test-reviews ${KIALI_TEST_MESH_LABEL}
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-reviews 
-	oc adm policy add-scc-to-user privileged -z default -n kiali-test-reviews
-	oc new-project kiali-test-ratings
-	oc label namespace  kiali-test-ratings ${KIALI_TEST_MESH_LABEL}
-	oc adm policy add-scc-to-user anyuid -z default -n kiali-test-ratings 
-	oc adm policy add-scc-to-user privileged -z default -n kiali-test-ratings
-
-		
-remove-complex-mesh-namespace:
-	@echo Remove Complex Namespaces
-	oc delete namespace --ignore-not-found kiali-test-frontend
-	oc delete namespace --ignore-not-found kiali-test-ratings
-	oc delete namespace --ignore-not-found kiali-test-reviews
-
-
 deploy-scale-mesh: 
 	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE_OF_MESH=${SCALE_MESH_TYPE_OF_MESH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc apply -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 
 remove-scale-mesh:
 	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE_OF_MESH=${SCALE_MESH_TYPE_OF_MESH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc delete -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 
-deploy-cr-complex-mesh: 
-	cat operator/deploy/cr/complex_mesh-cr.yaml |  envsubst | oc apply -f - -n kiali-test-frontend 
-
-remove-complex-mesh-cr: 
-	cat operator/deploy/cr/complex_mesh-cr.yaml |  envsubst | oc delete -f - -n kiali-test-frontend --ignore-not-found=true
-
 add-bookinfo-control-plane: 
 ifeq ($(ENABLE_MULTI_TENANT),true) 
 	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": "/spec/members/0", "value":"${BOOKINFO_NAMESPACE}"}]'
-endif
-
-add-complex-mesh-control-plane:
-ifeq ($(ENABLE_MULTI_TENANT), true) 
-	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": "/spec/members/0", "value": "kiali-test-frontend"}]'
-	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": "/spec/members/0", "value": "kiali-test-reviews"}]'
-	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": "/spec/members/0", "value": "kiali-test-ratings"}]'
 endif
 
 add-redhat-istio-tutorial-control-plane:
@@ -145,14 +107,12 @@ deploy-bookinfo: remove-bookinfo-cr remove-bookinfo-namespace create-bookinfo-na
 deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace add-redhat-istio-tutorial-control-plane deploy-cr-redhat-istio-tutorial
 	@echo Deployed Red Hat Istio Tutorial
 
-deploy-complex-mesh: remove-complex-mesh-cr remove-complex-mesh-namespace create-complex-mesh-namespace add-complex-mesh-control-plane deploy-cr-complex-mesh
-	@echo Deployed Complex Mesh
+
+deploy-scale-mesh-playbook: 
+	ansible-playbook operator/scale_mesh.yml
 
 deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace 
 	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"redhat_tutorial": {"namespace": "${REDHAT_TUTORIAL_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}}' -v
 
 deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace add-bookinfo-control-plane
 	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": false, "mysql": true, "version": "1.14.0"}}' -v
-
-deploy-complex-playbook:
-	ansible-playbook operator/complex_mesh.yml  -v
