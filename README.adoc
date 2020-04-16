@@ -171,14 +171,14 @@ Variables to control the size, type and scale of the mesh
 
 The following are the types of scale meshes you can deploy.
 
-* kiali-test-depth
-* kiali-test-breadth
-* kiali-test-circle
-* kiali-test-circle-callback
-* kiali-test-hourglass
-* kiali-test-depth-sink
-* kiali-test-breadth-sink
+* mesh-depth
+* mesh-breadth
+* mesh-circle
+* mesh-circle-callback
+* mesh-hourglass
+* mesh-depth-sink
+* mesh-breadth-sink
 
 
 Example of the command:
-`SCALE_MESH_NUMBER_SERVICES=6 SCALE_MESH_NUMBER_APPS=6 SCALE_MESH_NUMBER_VERSIONS=2 SCALE_MESH_NUMBER_NAMESPACES=1 SCALE_MESH_TYPE_OF_MESH=kiali-test-circle make-deploy-scale-mesh`
+`SCALE_MESH_NUMBER_SERVICES=6 SCALE_MESH_NUMBER_APPS=6 SCALE_MESH_NUMBER_VERSIONS=2 SCALE_MESH_NUMBER_NAMESPACES=1 SCALE_MESH_TYPE_OF_MESH=mesh-circle make-deploy-scale-mesh`

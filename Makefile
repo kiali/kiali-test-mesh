@@ -5,8 +5,9 @@ BOOKINFO_VERSION ?= 1.15.0
 BOOKINFO_MYSQL ?= true
 BOOKINFO_MONGODB ?= true
 CONTROL_PLANE_NAMESPACE ?= istio-system
+CONTROL_PLANE_NAME=basic-install
 REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
-OPERATOR_IMAGE ?= quay.io/kiali/kiali-test-mesh-operator:latest
+OPERATOR_IMAGE ?= quay.io/kiali/kiali-test-mesh-operator:testing
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 ENABLE_MULTI_TENANT ?= true
 
@@ -14,7 +15,7 @@ SCALE_MESH_NUMBER_SERVICES ?=6
 SCALE_MESH_NUMBER_APPS ?=6
 SCALE_MESH_NUMBER_VERSIONS ?=2
 SCALE_MESH_NUMBER_NAMESPACES ?=1
-SCALE_MESH_TYPE_OF_MESH ?= kiali-test-circle
+SCALE_MESH_TYPE ?= mesh-circle
 
 build-operator-image:
 	@echo Building operator
@@ -86,10 +87,16 @@ remove-bookinfo-cr:
 	cat operator/deploy/cr/bookinfo-cr.yaml | BOOKINFO_NAMESPACE=${BOOKINFO_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}   envsubst | oc delete -f - -n ${BOOKINFO_NAMESPACE}  --ignore-not-found=true
 
 deploy-scale-mesh: 
-	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE_OF_MESH=${SCALE_MESH_TYPE_OF_MESH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc apply -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} CONTROL_PLANE_NAME=${CONTROL_PLANE_NAME} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE=${SCALE_MESH_TYPEH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc apply -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 
 remove-scale-mesh:
-	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE_OF_MESH=${SCALE_MESH_TYPE_OF_MESH} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc delete -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} CONTROL_PLANE_NAME=${CONTROL_PLANE_NAME} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE=${SCALE_MESH_TYPE} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc delete -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
+
+deploy-scale-mesh-with-playbook: 
+	ansible-playbook operator/scale_mesh.yml -e '{"control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "control_plane_name": "${CONTROL_PLANE_NAME}", "number_services": "${SCALE_MESH_NUMBER_SERVICES}", "number_apps": "${SCALE_MESH_NUMBER_APPS}", "number_versions": "${SCALE_MESH_NUMBER_VERSIONS}", "number_namespaces": "${SCALE_MESH_NUMBER_NAMESPACES}", "mesh_type": "${SCALE_MESH_TYPE}" }' -v
+
+remove-scale-mesh-with-playbook: 
+	ansible-playbook operator/scale_mesh.yml -e '{"control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "control_plane_name": "${CONTROL_PLANE_NAME}", "number_services": "${SCALE_MESH_NUMBER_SERVICES}", "number_apps": "${SCALE_MESH_NUMBER_APPS}", "number_versions": "${SCALE_MESH_NUMBER_VERSIONS}", "number_namespaces": "${SCALE_MESH_NUMBER_NAMESPACES}", "mesh_type": "${SCALE_MESH_TYPE}", "state": "absent" }' -v
 
 add-bookinfo-control-plane: 
 ifeq ($(ENABLE_MULTI_TENANT),true) 
@@ -106,10 +113,6 @@ deploy-bookinfo: remove-bookinfo-cr remove-bookinfo-namespace create-bookinfo-na
 
 deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace add-redhat-istio-tutorial-control-plane deploy-cr-redhat-istio-tutorial
 	@echo Deployed Red Hat Istio Tutorial
-
-
-deploy-scale-mesh-playbook: 
-	ansible-playbook operator/scale_mesh.yml
 
 deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace 
 	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"redhat_tutorial": {"namespace": "${REDHAT_TUTORIAL_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}}' -v
