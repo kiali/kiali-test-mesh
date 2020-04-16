@@ -5,9 +5,8 @@ BOOKINFO_VERSION ?= 1.15.0
 BOOKINFO_MYSQL ?= true
 BOOKINFO_MONGODB ?= true
 CONTROL_PLANE_NAMESPACE ?= istio-system
-CONTROL_PLANE_NAME=basic-install
 REDHAT_TUTORIAL_NAMESPACE ?= redhat-istio-tutorial
-OPERATOR_IMAGE ?= quay.io/kiali/kiali-test-mesh-operator:testing
+OPERATOR_IMAGE ?= quay.io/kiali/kiali-test-mesh-operator:latest
 KIALI_TEST_MESH_LABEL ?= kiali-test-mesh-operator=owned
 ENABLE_MULTI_TENANT ?= true
 
