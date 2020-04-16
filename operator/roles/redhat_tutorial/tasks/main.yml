@@ -3,20 +3,20 @@
     state: present
     definition: "{{ lookup('template', item.file) }}"
   with_items:
-    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/customer-service.yml'}
-    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/preference-service.yml'}
-    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
+    - { namespace: '{{ meta.namespace }}', file: 'templates/customer/customer-service.yml'}
+    - { namespace: '{{ meta.namespace }}', file: 'templates/preference/preference-service.yml'}
+    - { namespace: '{{ meta.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
 
 
 
 - name: Create the Items
   include: ../common_tasks/deploy_istio_item.yml
   with_items:
-  - { name: 'customer-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
-  - { name: 'preference-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
-  - { name: 'preference-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v2.yml', sidecar: true }
-  - { name: 'recommendation-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v1.yml', sidecar: true }
-  - { name: 'recommendation-v2', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v2.yml', sidecar: true }
+  - { name: 'customer-v1', namespace: '{{ meta.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
+  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
+  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v2.yml', sidecar: true }
+  - { name: 'recommendation-v1', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v1.yml', sidecar: true }
+  - { name: 'recommendation-v2', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v2.yml', sidecar: true }
 
 - name: Create Openshift Route
   k8s:
@@ -52,5 +52,5 @@
   include_role: 
     name: traffic-generator
   vars:
-    namespace: "{{ redhat_tutorial.namespace }}"
+    namespace: "{{ meta.namespace }}"
     route: "{{ full_route }}"
