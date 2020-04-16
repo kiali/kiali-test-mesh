@@ -92,12 +92,6 @@ deploy-scale-mesh:
 remove-scale-mesh:
 	cat operator/deploy/cr/scale_mesh-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE} CONTROL_PLANE_NAME=${CONTROL_PLANE_NAME} SCALE_MESH_NUMBER_SERVICES=${SCALE_MESH_NUMBER_SERVICES} SCALE_MESH_NUMBER_VERSIONS=${SCALE_MESH_NUMBER_VERSIONS} SCALE_MESH_NUMBER_NAMESPACES=${SCALE_MESH_NUMBER_NAMESPACES} SCALE_MESH_TYPE=${SCALE_MESH_TYPE} SCALE_MESH_NUMBER_APPS=${SCALE_MESH_NUMBER_APPS} envsubst | oc delete -f - -n ${KIALI_TEST_MESH_OPERATOR_NAMESPACE}
 
-deploy-scale-mesh-with-playbook: 
-	ansible-playbook operator/scale_mesh.yml -e '{"control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "control_plane_name": "${CONTROL_PLANE_NAME}", "number_services": "${SCALE_MESH_NUMBER_SERVICES}", "number_apps": "${SCALE_MESH_NUMBER_APPS}", "number_versions": "${SCALE_MESH_NUMBER_VERSIONS}", "number_namespaces": "${SCALE_MESH_NUMBER_NAMESPACES}", "mesh_type": "${SCALE_MESH_TYPE}" }' -v
-
-remove-scale-mesh-with-playbook: 
-	ansible-playbook operator/scale_mesh.yml -e '{"control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "control_plane_name": "${CONTROL_PLANE_NAME}", "number_services": "${SCALE_MESH_NUMBER_SERVICES}", "number_apps": "${SCALE_MESH_NUMBER_APPS}", "number_versions": "${SCALE_MESH_NUMBER_VERSIONS}", "number_namespaces": "${SCALE_MESH_NUMBER_NAMESPACES}", "mesh_type": "${SCALE_MESH_TYPE}", "state": "absent" }' -v
-
 add-bookinfo-control-plane: 
 ifeq ($(ENABLE_MULTI_TENANT),true) 
 	oc patch servicemeshmemberroll default -n ${CONTROL_PLANE_NAMESPACE} --type='json' -p='[{"op": "add", "path": "/spec/members/0", "value":"${BOOKINFO_NAMESPACE}"}]'
