@@ -1,7 +1,7 @@
 
   # Generate Even Array in order to make it simple to Hourglass
   - name: Generate Hourglass Even Elements Array
-    set_fact: even_services="{{even_services}} + ['service-{{ item }}.kiali-test-hourglass-{{ (item.0 | int) % (scale_mesh.number_namespaces | int) }}.svc.cluster.local']"
+    set_fact: even_services="{{even_services}} + ['service-{{ item }}.mesh-hourglass-{{ (item.0 | int) % (scale_mesh.number_namespaces | int) }}.svc.cluster.local']"
     when: "(item | int) %2 == 1"
     with_sequence: start=1 end={{ scale_mesh.number_services }} format=%d
 
@@ -9,18 +9,18 @@
   # if the mesh is odd number so we subtract one to make it even
   - name: Hourglass Mesh if length is Odd
     vars:
-      fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-hourglass') | list}}"
+      fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'mesh-hourglass') | list}}"
     set_fact:
       full_route: "http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | difference([fqdn_services_hourglass[-1]]) | join(',') }};http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | intersect(even_services) | join(',') }}"
-      namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-hourglass') | list | first }}"
+      namespace: "{{all_services | map(attribute='namespace') | select('search', 'mesh-hourglass') | list | first }}"
     when: (fqdn_services_hourglass | length % 2 == 0)
 
 
   - name: Hourglass Mesh if length is Even
     vars:
-      fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'kiali-test-hourglass') | list}}"
+      fqdn_services_hourglass: "{{all_services | map(attribute='fqdn') | select('search', 'mesh-hourglass') | list}}"
     set_fact:
       full_route: "http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | join(',') }};http://{{fqdn_services_hourglass[0]}}/route?path={{  fqdn_services_hourglass | intersect(even_services) | join(',') }}"
-      namespace: "{{all_services | map(attribute='namespace') | select('search', 'kiali-test-hourglass') | list | first }}"
+      namespace: "{{all_services | map(attribute='namespace') | select('search', 'mesh-hourglass') | list | first }}"
     when: (fqdn_services_hourglass | length % 2 == 1)
 

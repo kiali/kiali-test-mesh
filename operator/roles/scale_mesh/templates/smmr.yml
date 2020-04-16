@@ -1,8 +1,0 @@
-apiVersion: maistra.io/v1
-kind: ServiceMeshMemberRoll
-metadata:
-  name: default
-  namespace: istio-system
-spec:
-  members:
-    {{ namespaces | to_nice_yaml(indent=4) | trim | indent(4) }}
