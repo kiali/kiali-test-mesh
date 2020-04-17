@@ -1,8 +1,8 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: {{ redhat_tutorial.namespace }}-gateway
-  namespace: {{ redhat_tutorial.namespace }}
+  name: {{ meta.namespace }}-gateway
+  namespace: {{ meta.namespace }}
 spec:
   selector:
     istio: ingressgateway

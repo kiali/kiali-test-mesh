@@ -1,16 +1,22 @@
-- name: Create Services
+- name: Add Service Mesh Member to namespaces
   k8s:
-    state: present
+    state: "{{ state }}"
+    definition: "{{ lookup('template', 'templates/istio/smm.yml') }}"
+  ignore_errors: true  
+
+- name: "Create {{ item.name }} Service "
+  k8s:
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
-    - { namespace: '{{ meta.namespace }}', file: 'templates/customer/customer-service.yml'}
-    - { namespace: '{{ meta.namespace }}', file: 'templates/preference/preference-service.yml'}
-    - { namespace: '{{ meta.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
+    - { name: "Customer", namespace: '{{ meta.namespace }}', file: 'templates/customer/customer-service.yml'}
+    - { name: "Preference", namespace: '{{ meta.namespace }}', file: 'templates/preference/preference-service.yml'}
+    - { name: "Recommendation", namespace: '{{ meta.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
 
-
-
-- name: Create the Items
-  include: ../common_tasks/deploy_istio_item.yml
+- name: "Create {{ item.name }}"
+  k8s:
+    state: "{{ state }}"
+    definition: "{{ lookup('template', item.file) }}"
   with_items:
   - { name: 'customer-v1', namespace: '{{ meta.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
   - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
@@ -20,7 +26,7 @@
 
 - name: Create Openshift Route
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
    - {file: 'templates/istio/customer-route.yml'}
@@ -28,16 +34,15 @@
 
 - name: Deploy Customer Istio Gateway
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
    - {file: 'templates/istio/customer-gateway.yml'}
    - {file: 'templates/istio/customer-vs.yml'}
 
-
 - name: Deploy Tutorial Destination Rules
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
    - {file: 'templates/istio/customer-dr.yml'}
@@ -48,9 +53,14 @@
   set_fact:
     full_route: "http://{{ route.results[0]['result']['spec']['host'] }}"
 
+- name: Get State for Traffic Generator
+  set_fact:
+    state_traffic_generator: "{{ state }}"
+
 - name: Create the traffic generator
   include_role: 
     name: traffic-generator
   vars:
     namespace: "{{ meta.namespace }}"
     route: "{{ full_route }}"
+    state: "{{ state_traffic_generator }}"

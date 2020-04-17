@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: customer
-  namespace: {{ redhat_tutorial.namespace }}
+  namespace: {{ meta.namespace }}
 spec:
   host: customer
   subsets:
