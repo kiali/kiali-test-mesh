@@ -1,26 +1,26 @@
 - name: Generate Versions Array
   set_fact: versions="{{versions}} + ['v{{ item }}']"
-  with_sequence: start=1 end={{scale_mesh.number_versions}} format=%d
+  with_sequence: start=1 end={{number_versions}} format=%d
 
 - name: Generate Services Array
   set_fact: services="{{services}} + ['{{ item }}']"
-  with_sequence: start=1 end={{scale_mesh.number_services}} format=%d
+  with_sequence: start=1 end={{number_services}} format=%d
 
 - name: Generate Apps Array
   set_fact: apps="{{apps}} + ['{{ item }}']"
-  with_sequence: start=1 end={{scale_mesh.number_apps}} format=%d
+  with_sequence: start=1 end={{number_apps}} format=%d
 
 - name: Create Service and Namespace Dict
   set_fact:
   args:
     service:
       name: "service-{{ item.0 }}"
-      namespace: "{{item.1}}-{{ (item.0 | int) % (scale_mesh.number_namespaces | int) }}"
-      fqdn: "service-{{ item.0 }}.{{item.1}}-{{ (item.0 | int) % (scale_mesh.number_namespaces | int) }}.svc.cluster.local"
-      app: "app{{ (item.0 | int) % (scale_mesh.number_apps | int) }}"
+      namespace: "{{item.1}}-{{ (item.0 | int) % (number_namespaces | int) }}"
+      fqdn: "service-{{ item.0 }}.{{item.1}}-{{ (item.0 | int) % (number_namespaces | int) }}.svc.cluster.local"
+      app: "app{{ (item.0 | int) % (number_apps | int) }}"
   with_nested:
     - "{{ services }}"
-    - "{{ scale_mesh.mesh_type }}"
+    - "{{ mesh_type }}"
   register: all_services
 
 - name: Create All Services List
@@ -30,64 +30,64 @@
 
 - name: Create Depth Route
   include_tasks: depth-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-depth'"
+  when: "mesh_type == 'mesh-depth'"
 
 - name: Create Circle Callback Route
   include_tasks: circle-callback-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-circle-callback'"
+  when: "mesh_type == 'mesh-circle-callback'"
 
 - name: Create Hourglass Route
   include_tasks: hourglass-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-hourglass'"
+  when: "mesh_type == 'mesh-hourglass'"
 
 - name: Create Circle Route
   include_tasks: circle-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-circle'"
+  when: "mesh_type == 'mesh-circle'"
 
 - name: Create Breadth Sink Route
   include_tasks: breadth-sink-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-breadth-sink'"
+  when: "mesh_type == 'mesh-breadth-sink'"
 
 - name: Create Breadth Route
   include_tasks: breadth-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-breadth'"
+  when: "mesh_type == 'mesh-breadth'"
 
 - name: Create Depth Sink Route
   include_tasks: depth-sink-route.yml
-  when: "scale_mesh.mesh_type == 'kiali-test-depth-sink'"
+  when: "mesh_type == 'mesh-depth-sink'"
 
 
 - name: Get Namespaces
   set_fact:
     namespaces: "{{ all_services | map(attribute='namespace') | list | unique }}"
+    state_traffic_generator: "{{ state }}"
 
 - name: Configure the namespaces
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', 'templates/namespace.yml') }}"
   with_items:
   - "{{ namespaces  }}"
 
-- name: Get Service Mesh Member Roll Definitions
-  set_fact:
-    smmr_definition: "{{ lookup('template', 'templates/smmr.yml') }}"
 
-- name: Add Namespaces to Service Mesh Member Roll
+- name: Add Service Mesh Member to namespaces
   k8s:
-    state: present
-    definition:  "{{ smmr_definition }}"
+    state: "{{ state }}"
+    definition: "{{ lookup('template', 'templates/smm.yml') }}"
+  with_items:
+  - "{{ namespaces }}"
   ignore_errors: yes
 
-- name: Deploy Kiali Test Meshes Services
+- name: Deploy Test Meshes Services
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', 'templates/service.yml') }}"
   with_items:
     - "{{ all_services }}"
 
-- name: Deploy Kiali Test Pods
+- name: Deploy Test Pods
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', 'templates/deployment.yml') }}"
   with_nested:
   - "{{ all_services }}"
@@ -100,3 +100,4 @@
   vars:
     namespace: "{{ all_services | map(attribute='namespace') | list | unique | first }}"
     route: "{{ full_route }}"
+    state: "{{ state_traffic_generator }}"

@@ -3,12 +3,12 @@ kind: ScaleMesh
 metadata:
   name: scalemesh-installation
 spec:
-  scale_mesh:
-    control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
-    number_services: ${SCALE_MESH_NUMBER_SERVICES}
-    number_apps: ${SCALE_MESH_NUMBER_APPS}
-    number_namespaces: ${SCALE_MESH_NUMBER_NAMESPACES}
-    number_versions: ${SCALE_MESH_NUMBER_VERSIONS}
-    mesh_type: ${SCALE_MESH_TYPE_OF_MESH}
+  control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
+  control_plane_name: ${CONTROL_PLANE_NAME}
+  number_services: ${SCALE_MESH_NUMBER_SERVICES}
+  number_apps: ${SCALE_MESH_NUMBER_APPS}
+  number_namespaces: ${SCALE_MESH_NUMBER_NAMESPACES}
+  number_versions: ${SCALE_MESH_NUMBER_VERSIONS}
+  mesh_type: ${SCALE_MESH_TYPE}
 
 

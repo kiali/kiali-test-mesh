@@ -4,20 +4,19 @@
   kind: Bookinfo
   role: /opt/ansible/roles/bookinfo
   reconcilePeriod: 0
-  watchDependentResources: False
-  manageStatus: false
 
 - version: v1
   group: scalemesh.kiali.io
   kind: ScaleMesh
   role: /opt/ansible/roles/scale_mesh
-  reconcilePeriod: 0
-  manageStatus: false
+  finalizer:
+    name: finalizer.scalemesh.kiali.io
+    vars:
+      state: absent
+    reconcilePeriod: 0
 
 - version: v1
   group: redhattutorial.kiali.io
   kind: RedHatTutorial
   role: /opt/ansible/roles/redhat_tutorial
   reconcilePeriod: 0
-  watchDependentResources: False
-  manageStatus: false

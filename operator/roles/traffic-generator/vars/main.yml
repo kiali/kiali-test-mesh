@@ -1,2 +1,3 @@
 ---
 # vars file for traffic-generator
+state: present
