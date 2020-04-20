@@ -37,14 +37,6 @@ available options:
 
 - `BOOKINFO_NAMESPACE` can be set to deploy namespace (default: `bookinfo`)
 
-[NOTE]
-Automatic Injection is supported way to inject with multi-tenancy.
-
-- `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
-
-- `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
-
-
 - `BOOKINFO_HUB` can be set to deploy bookinfo from Istio or Maistra (default: `docker.io/istio`, alternatively you can use `docker.io/maistra`)
 
 - `BOOKINFO_VERSION` can be set to deploy a specific version of Bookinfo from Istio or Maistra (default: `1.15.0`)
@@ -57,7 +49,7 @@ so possible scenario command:
 
 [source,shell]
 ----
-make deploy-bookinfo BOOKINFO_NAMESPACE=bookinfo2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8 BOOKINFO_HUB=docker.io/istio BOOKINFO_VERSION=1.15.0 BOOKINFO_MYSQL=true BOOKINFO_MONGODB=true
+make deploy-bookinfo BOOKINFO_NAMESPACE=bookinfo2 BOOKINFO_HUB=docker.io/istio BOOKINFO_VERSION=1.15.0 BOOKINFO_MYSQL=true BOOKINFO_MONGODB=true
 ----
 
 
@@ -97,19 +89,12 @@ available options:
 
 - `REDHAT_TUTORIAL_NAMESPACE` can be set to deploy namespace (default: `redhat-istio-tutorial`)
 
-[NOTE]
-Automatic Injection is supported way to inject with multi-tenancy.
-
-- `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
-
-- `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
-
 
 so possible scenario command:
 
 [source,shell]
 ----
-make deploy-redhat-istio-tutorial REDHAT_TUTORIAL_NAMESPACE=redhat-istio-tutorial2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8
+make deploy-redhat-istio-tutorial REDHAT_TUTORIAL_NAMESPACE=redhat-istio-tutorial2
 ----
 
 

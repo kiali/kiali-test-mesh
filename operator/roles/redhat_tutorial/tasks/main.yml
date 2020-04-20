@@ -13,16 +13,16 @@
     - { name: "Preference", namespace: '{{ meta.namespace }}', file: 'templates/preference/preference-service.yml'}
     - { name: "Recommendation", namespace: '{{ meta.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
 
-- name: "Create {{ item.name }}"
+- name: Create {{ item.name }}
   k8s:
     state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
-  - { name: 'customer-v1', namespace: '{{ meta.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
-  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
-  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v2.yml', sidecar: true }
-  - { name: 'recommendation-v1', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v1.yml', sidecar: true }
-  - { name: 'recommendation-v2', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v2.yml', sidecar: true }
+  - { name: 'customer-v1', namespace: '{{ meta.namespace }}', file: 'templates/customer/deployment-v1.yml'}
+  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v1.yml'}
+  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v2.yml'}
+  - { name: 'recommendation-v1', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v1.yml'}
+  - { name: 'recommendation-v2', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v2.yml'}
 
 - name: Create Openshift Route
   k8s:

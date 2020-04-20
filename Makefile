@@ -51,7 +51,7 @@ remove-operator:
 
 deploy-cr-redhat-istio-tutorial:
 	@echo Create Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n kiali-test-mesh-operator 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n ${REDHAT_TUTORIAL_NAMESPACE} 
 
 create-redhat-istio-tutorial-namespace:
 	oc new-project ${REDHAT_TUTORIAL_NAMESPACE}
@@ -103,9 +103,6 @@ deploy-bookinfo: remove-bookinfo-cr remove-bookinfo-namespace create-bookinfo-na
 
 deploy-redhat-istio-tutorial: remove-redhat-istio-tutorial-cr remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace deploy-cr-redhat-istio-tutorial
 	@echo Deployed Red Hat Istio Tutorial
-
-deploy-redhat-istio-tutorial-playbook: remove-redhat-istio-tutorial-namespace create-redhat-istio-tutorial-namespace 
-	ansible-playbook operator/redhat_istio_tutorial.yml -e '{"control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}"}' -v
 
 deploy-bookinfo-playbook: remove-bookinfo-namespace create-bookinfo-namespace add-bookinfo-control-plane
 	ansible-playbook operator/bookinfo.yml -e '{"bookinfo": {"namespace": "${BOOKINFO_NAMESPACE}", "control_plane_namespace": "${CONTROL_PLANE_NAMESPACE}", "mongodb": false, "mysql": true, "version": "1.14.0"}}' -v
