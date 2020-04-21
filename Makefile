@@ -48,16 +48,13 @@ remove-operator:
 	oc delete namespace ${KIALI_TEST_MESH_OPERATOR_NAMESPACE} --ignore-not-found=true
 
 
-
 deploy-cr-redhat-istio-tutorial:
 	@echo Create Red Hat Istio Tutorial CR
-	cat operator/deploy/cr/redhat_tutorial-cr.yaml | REDHAT_TUTORIAL_NAMESPACE=${REDHAT_TUTORIAL_NAMESPACE} CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n ${REDHAT_TUTORIAL_NAMESPACE} 
+	cat operator/deploy/cr/redhat_tutorial-cr.yaml | CONTROL_PLANE_NAMESPACE=${CONTROL_PLANE_NAMESPACE}  envsubst | oc apply -f - -n ${REDHAT_TUTORIAL_NAMESPACE} 
 
 create-redhat-istio-tutorial-namespace:
 	oc new-project ${REDHAT_TUTORIAL_NAMESPACE}
 	oc label namespace ${REDHAT_TUTORIAL_NAMESPACE} ${KIALI_TEST_MESH_LABEL}
-	oc adm policy add-scc-to-user privileged -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
-	oc adm policy add-scc-to-user anyuid -z default -n ${REDHAT_TUTORIAL_NAMESPACE}
 
 remove-redhat-istio-tutorial-cr:
 	@echo Remove Red Hat Istio Tutorial CR
@@ -66,7 +63,6 @@ remove-redhat-istio-tutorial-cr:
 remove-redhat-istio-tutorial-namespace:
 	@echo Remove Red Hat Istio Tutorial Namespace
 	oc delete --ignore-not-found=true namespace ${REDHAT_TUTORIAL_NAMESPACE}
-
 
 
 create-bookinfo-namespace:

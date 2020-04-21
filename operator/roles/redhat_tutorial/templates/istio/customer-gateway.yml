@@ -12,4 +12,9 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - "{{ route.results[0]['result']['spec']['host'] }}"
+{% if state == "present" %}    
+     - "{{ route.results[0]['result']['spec']['host'] }}"
+{% endif %}
+{% if state == "absent" %}
+    - "example.com"
+{% endif %}

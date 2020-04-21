@@ -1,10 +1,10 @@
-- name: Add Service Mesh Member to namespaces
+- name: Service Mesh Member
   k8s:
     state: "{{ state }}"
     definition: "{{ lookup('template', 'templates/istio/smm.yml') }}"
   ignore_errors: true  
 
-- name: "Create {{ item.name }} Service "
+- name: Services
   k8s:
     state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
@@ -13,7 +13,7 @@
     - { name: "Preference", namespace: '{{ meta.namespace }}', file: 'templates/preference/preference-service.yml'}
     - { name: "Recommendation", namespace: '{{ meta.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
 
-- name: Create {{ item.name }}
+- name: Deployments
   k8s:
     state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
@@ -24,7 +24,7 @@
   - { name: 'recommendation-v1', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v1.yml'}
   - { name: 'recommendation-v2', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v2.yml'}
 
-- name: Create Openshift Route
+- name: Openshift Route
   k8s:
     state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
@@ -32,7 +32,7 @@
    - {file: 'templates/istio/customer-route.yml'}
   register: route
 
-- name: Deploy Customer Istio Gateway
+- name: Customer Istio Gateway
   k8s:
     state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
@@ -40,7 +40,7 @@
    - {file: 'templates/istio/customer-gateway.yml'}
    - {file: 'templates/istio/customer-vs.yml'}
 
-- name: Deploy Tutorial Destination Rules
+- name: Tutorial Destination Rules
   k8s:
     state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
@@ -49,15 +49,21 @@
    - {file: 'templates/istio/preference-dr.yml'}
    - {file: 'templates/istio/recommendation-dr.yml'}
   
-- name: Set Full Route for Traffic Generator
+- name: Set Full Route for Traffic Generator for Present
   set_fact:
     full_route: "http://{{ route.results[0]['result']['spec']['host'] }}"
+  when: state == "present"
+
+- name: Set Full Route for Traffic Generator for Absent
+  set_fact:
+    full_route: ""
+  when: state == "absent"
 
 - name: Get State for Traffic Generator
   set_fact:
     state_traffic_generator: "{{ state }}"
 
-- name: Create the traffic generator
+- name: Traffic Generator
   include_role: 
     name: traffic-generator
   vars:
