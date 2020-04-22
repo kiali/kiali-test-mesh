@@ -3,6 +3,4 @@ kind: RedHatTutorial
 metadata:
   name: redhattutorial-installation
 spec:
-  redhat_tutorial:
-    namespace: ${REDHAT_TUTORIAL_NAMESPACE}
-    control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}
+  control_plane_namespace: ${CONTROL_PLANE_NAMESPACE}

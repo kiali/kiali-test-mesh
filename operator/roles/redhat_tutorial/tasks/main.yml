@@ -1,56 +1,72 @@
-- name: Create Services
+- name: Service Mesh Member
   k8s:
-    state: present
+    state: "{{ state }}"
+    definition: "{{ lookup('template', 'templates/istio/smm.yml') }}"
+  ignore_errors: true  
+
+- name: Services
+  k8s:
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
-    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/customer-service.yml'}
-    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/preference-service.yml'}
-    - { namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
+    - { name: "Customer", namespace: '{{ meta.namespace }}', file: 'templates/customer/customer-service.yml'}
+    - { name: "Preference", namespace: '{{ meta.namespace }}', file: 'templates/preference/preference-service.yml'}
+    - { name: "Recommendation", namespace: '{{ meta.namespace }}', file: 'templates/recommendation/recommendation-service.yml'}
 
-
-
-- name: Create the Items
-  include: ../common_tasks/deploy_istio_item.yml
-  with_items:
-  - { name: 'customer-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/customer/deployment-v1.yml', sidecar: true }
-  - { name: 'preference-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v1.yml', sidecar: true }
-  - { name: 'preference-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/preference/deployment-v2.yml', sidecar: true }
-  - { name: 'recommendation-v1', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v1.yml', sidecar: true }
-  - { name: 'recommendation-v2', namespace: '{{ redhat_tutorial.namespace }}', file: 'templates/recommendation/deployment-v2.yml', sidecar: true }
-
-- name: Create Openshift Route
+- name: Deployments
   k8s:
-    state: present
+    state: "{{ state }}"
+    definition: "{{ lookup('template', item.file) }}"
+  with_items:
+  - { name: 'customer-v1', namespace: '{{ meta.namespace }}', file: 'templates/customer/deployment-v1.yml'}
+  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v1.yml'}
+  - { name: 'preference-v1', namespace: '{{ meta.namespace }}', file: 'templates/preference/deployment-v2.yml'}
+  - { name: 'recommendation-v1', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v1.yml'}
+  - { name: 'recommendation-v2', namespace: '{{ meta.namespace }}', file: 'templates/recommendation/deployment-v2.yml'}
+
+- name: Openshift Route
+  k8s:
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
    - {file: 'templates/istio/customer-route.yml'}
   register: route
 
-- name: Deploy Customer Istio Gateway
+- name: Customer Istio Gateway
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
    - {file: 'templates/istio/customer-gateway.yml'}
    - {file: 'templates/istio/customer-vs.yml'}
 
-
-- name: Deploy Tutorial Destination Rules
+- name: Tutorial Destination Rules
   k8s:
-    state: present
+    state: "{{ state }}"
     definition: "{{ lookup('template', item.file) }}"
   with_items:
    - {file: 'templates/istio/customer-dr.yml'}
    - {file: 'templates/istio/preference-dr.yml'}
    - {file: 'templates/istio/recommendation-dr.yml'}
   
-- name: Set Full Route for Traffic Generator
+- name: Set Full Route for Traffic Generator for Present
   set_fact:
     full_route: "http://{{ route.results[0]['result']['spec']['host'] }}"
+  when: state == "present"
 
-- name: Create the traffic generator
+- name: Set Full Route for Traffic Generator for Absent
+  set_fact:
+    full_route: ""
+  when: state == "absent"
+
+- name: Get State for Traffic Generator
+  set_fact:
+    state_traffic_generator: "{{ state }}"
+
+- name: Traffic Generator
   include_role: 
     name: traffic-generator
   vars:
-    namespace: "{{ redhat_tutorial.namespace }}"
+    namespace: "{{ meta.namespace }}"
     route: "{{ full_route }}"
+    state: "{{ state_traffic_generator }}"

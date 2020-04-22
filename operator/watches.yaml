@@ -19,4 +19,9 @@
   group: redhattutorial.kiali.io
   kind: RedHatTutorial
   role: /opt/ansible/roles/redhat_tutorial
+  finalizer:
+    name: finalizer.redhattutorial.kiali.io
+    vars:
+      state: absent
+    reconcilePeriod: 0
   reconcilePeriod: 0

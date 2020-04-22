@@ -3,7 +3,7 @@
 
 Kiali Test Mesh provides an operator which will install different types of examples mesh which allow you to see different features of kiali.
 
-It needs Istio to be installed. It is recommended to be used the link:https://github.com/Maistra/istio-operator#maistra-istio-operator][Maistra Operator] to install it.
+It is needes link:https://maistra.io/docs/installation/operator-installation/][Maistra Operator] to install it.
 
 In order to deploy the Operator you can use following make target (on root folder of this repository)
 
@@ -18,6 +18,9 @@ Meshes available:
 
 - link:https://preliminary.istio.io/docs/examples/bookinfo/[Bookinfo]
 - link:https://github.com/redhat-developer-demos/istio-tutorial[Red Hat Istio Tutorial Microservices]
+
+
+or use the OLM option.
 
 
 == Bookinfo
@@ -37,14 +40,6 @@ available options:
 
 - `BOOKINFO_NAMESPACE` can be set to deploy namespace (default: `bookinfo`)
 
-[NOTE]
-Automatic Injection is supported way to inject with multi-tenancy.
-
-- `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
-
-- `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
-
-
 - `BOOKINFO_HUB` can be set to deploy bookinfo from Istio or Maistra (default: `docker.io/istio`, alternatively you can use `docker.io/maistra`)
 
 - `BOOKINFO_VERSION` can be set to deploy a specific version of Bookinfo from Istio or Maistra (default: `1.15.0`)
@@ -57,7 +52,7 @@ so possible scenario command:
 
 [source,shell]
 ----
-make deploy-bookinfo BOOKINFO_NAMESPACE=bookinfo2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8 BOOKINFO_HUB=docker.io/istio BOOKINFO_VERSION=1.15.0 BOOKINFO_MYSQL=true BOOKINFO_MONGODB=true
+make deploy-bookinfo BOOKINFO_NAMESPACE=bookinfo2 BOOKINFO_HUB=docker.io/istio BOOKINFO_VERSION=1.15.0 BOOKINFO_MYSQL=true BOOKINFO_MONGODB=true
 ----
 
 
@@ -97,19 +92,12 @@ available options:
 
 - `REDHAT_TUTORIAL_NAMESPACE` can be set to deploy namespace (default: `redhat-istio-tutorial`)
 
-[NOTE]
-Automatic Injection is supported way to inject with multi-tenancy.
-
-- `MANUAL_INJECTION_SIDECAR` can be set to true or false (default: `false`, which means it will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection#automatic-sidecar-injection[automatic injection of the sidecar] of the sidecar and true will use link:https://preliminary.istio.io/docs/setup/kubernetes/additional-setup/sidecar-injection/#manual-sidecar-injection[manual injection of sidecar])
-
-- `MANUAL_INJECTION_SIDECAR_ISTIO_VERSION` can be set to use a specific version of istioctl (default: `1.1.8`)
-
 
 so possible scenario command:
 
 [source,shell]
 ----
-make deploy-redhat-istio-tutorial REDHAT_TUTORIAL_NAMESPACE=redhat-istio-tutorial2 MANUAL_INJECTION_SIDECAR=true MANUAL_INJECTION_SIDECAR_ISTIO_VERSION=1.1.8
+make deploy-redhat-istio-tutorial REDHAT_TUTORIAL_NAMESPACE=redhat-istio-tutorial2
 ----
 
 
@@ -135,22 +123,6 @@ It will remove the bookinfo installation cr. If you want to delete namespace use
 ----
 make remove-bookinfo-namespace
 ----
-
-
-== Multitenancy
-
-If you have maistra set with multi-tenancy, you should have a link:https://github.com/Maistra/istio-operator/blob/maistra-0.12/deploy/examples/maistra_v1_servicemeshmemberroll_cr.yaml[Service Mesh Member Roll] per control plane namespace.
-
-You can deploy the meshes with multi-tenancy by setting `ENABLE_MULTI_TENANT=true` which is default to false.
-
-
-When `ENABLE_MULTI_TENANT` is set to true, it tries to find a link:https://github.com/Maistra/istio-operator/blob/maistra-0.12/deploy/examples/maistra_v1_servicemeshmemberroll_cr.yaml[Service Mesh Member Roll] named `default` and add that namespace of a mesh on into it.
-
-You need to set `CONTROL_PLANE_NAMESPACE` (default: `istio-system`) to deploy on different control plane namespace. 
-
-Example:
-
-`make deploy-bookinfo ENABLE_MULTI_TENANT=true BOOKINFO_NAMESPACE=bookinfo3 CONTROL_PLANE_NAMESPACE=istio-system2` 
 
 
 == Scale Mesh

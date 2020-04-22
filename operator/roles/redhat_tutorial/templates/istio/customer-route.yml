@@ -1,8 +1,8 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ redhat_tutorial.namespace }}
-  namespace: {{redhat_tutorial.control_plane_namespace }}
+  name: {{ meta.namespace }}-route
+  namespace: {{ control_plane_namespace }}
 spec:
   path: /
   to:
