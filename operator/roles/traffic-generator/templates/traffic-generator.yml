@@ -44,3 +44,8 @@ spec:
             configMapKeyRef:
               name: traffic-generator-config
               key: rate
+        - name: SILENT
+          valueFrom:
+            configMapKeyRef:
+              name: traffic-generator-config
+              key: silent
