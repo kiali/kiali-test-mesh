@@ -8,3 +8,4 @@ data:
   duration: "${DURATION}"
   route: ${ROUTE}
   rate: "${RATE}"
+  silent: "${SILENT}"
