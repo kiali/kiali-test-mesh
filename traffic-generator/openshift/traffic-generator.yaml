@@ -20,7 +20,7 @@ spec:
         kiali-test: traffic-generator
     spec:
       containers:
-      - image: kiali/kiali-test-mesh-traffic-generator:latest
+      - image: quay.io/kiali/kiali-test-mesh-traffic-generator:latest
         name: kiali-traffic-generator
         imagePullPolicy: IfNotPresent
         env:
