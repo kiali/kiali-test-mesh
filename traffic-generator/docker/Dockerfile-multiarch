@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi8/ubi:latest
 LABEL maintainer="Kiali <kiali-dev@googlegroups.com>"
 ARG TARGETARCH
-ENV TRAFFIC_GEN_BIN_HOME=/home \
+ENV TRAFFIC_GEN_BIN_HOME=/tmp \
     PATH=$TRAFFIC_GEN_BIN_HOME:$PATH
 COPY vegeta-${TARGETARCH} $TRAFFIC_GEN_BIN_HOME/vegeta
 COPY traffic-generator.sh $TRAFFIC_GEN_BIN_HOME/
