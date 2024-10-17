@@ -19,6 +19,10 @@ spec:
         app: kiali-traffic-generator
         kiali-test: traffic-generator
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - image: quay.io/kiali/kiali-test-mesh-traffic-generator:latest
         name: kiali-traffic-generator
