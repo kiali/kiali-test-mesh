@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 DOCKER_NAME ?= kiali/kiali-test-mesh-traffic-generator
 DOCKER_TAG ?= latest
 
