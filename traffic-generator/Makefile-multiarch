@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 ROOTDIR=$(CURDIR)
 OUTDIR=${ROOTDIR}/_output
 GO ?= go
