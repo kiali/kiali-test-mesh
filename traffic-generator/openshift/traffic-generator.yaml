@@ -15,9 +15,12 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
       labels:
         app: kiali-traffic-generator
         kiali-test: traffic-generator
+        istio.io/dataplane-mode: "none"
     spec:
       securityContext:
         runAsNonRoot: true
